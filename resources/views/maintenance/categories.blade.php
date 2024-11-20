@@ -166,7 +166,7 @@
         function Editar(category) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', 'categories/' + category.id);
+            $('#form-edit').attr('action', '/categories/' + category.id);
             $('#form-edit').find('#name').val(category.name);
             $('#form-edit').find('#targeted_id').val(category.targeted_id);
             $('#form-edit').find('#inspection_type_id').val(category.inspection_type_id);

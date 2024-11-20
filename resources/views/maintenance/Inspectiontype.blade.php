@@ -120,7 +120,7 @@
         function Editar(inspectiontype) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', 'inspectiontypes/' + inspectiontype.id);
+            $('#form-edit').attr('action', '/inspectiontypes/' + inspectiontype.id);
             $('#form-edit').find('#name').val(inspectiontype.name);
             $('#form-edit').find('#description').val(inspectiontype.description);
             $('#form-edit').find('#name').focus();

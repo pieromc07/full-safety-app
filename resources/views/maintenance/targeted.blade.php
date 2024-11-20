@@ -153,7 +153,7 @@
         function Editar(targeted) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', 'targeteds/' + targeted.id);
+            $('#form-edit').attr('action', '/targeteds/' + targeted.id);
             $('#form-edit').find('#name').val(targeted.name);
             $('#form-edit').find('#targeted_id').val(targeted.targeted_id);
             $('#form-edit').find('#name').focus();

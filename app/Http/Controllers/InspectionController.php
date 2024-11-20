@@ -36,64 +36,70 @@ class InspectionController extends Controller
   public function store(Request $request)
   {
     try {
-      DB::beginTransaction(function () use ($request) {
-        $inspection =  $request->input('inspection');
-        $evidences = $request->input('evidences');
-        $convoy = $request->input('convoy');
-        if ($inspection == null || $evidences == null) {
-          return response()->json([
-            'message' => 'Inspeccion y evidencias son requeridas',
-          ], 400);
+      DB::beginTransaction(); // Start transaction
+
+      $inspection = $request->input('inspection');
+      $evidences = $request->input('evidences');
+      $convoy = $request->input('convoy');
+
+      if ($inspection == null || $evidences == null) {
+        return response()->json([
+          'message' => 'Inspeccion y evidencias son requeridas',
+        ], 400);
+      }
+
+      $inspection = json_decode($inspection, true);
+
+      $newInspection = new Inspection();
+      $newInspection->date = $inspection['date'];
+      $newInspection->hour = $inspection['hour'];
+      $newInspection->inspection_type_id = $inspection['inspection_type_id'];
+      $newInspection->supplier_enterprise_id = $inspection['supplier_enterprise_id'];
+      $newInspection->transport_enterprise_id = $inspection['transport_enterprise_id'];
+      $newInspection->checkpoint_id = $inspection['checkpoint_id'];
+      $newInspection->targeted_id = $inspection['targeted_id'];
+      $newInspection->observation = $inspection['observation'];
+      $newInspection->user_id = 1;
+      $newInspection->save();
+
+      if ($convoy != null) {
+        $convoy = json_decode($convoy, true);
+        $newInspectionConvoy = new InspectionConvoy();
+        $newInspectionConvoy->inspection_id = $newInspection->id;
+        $newInspectionConvoy->convoy = $convoy['convoy'];
+        $newInspectionConvoy->convoy_status = $convoy['convoy_status'];
+        $newInspectionConvoy->quantity_light_units = $convoy['quantity_light_units'];
+        $newInspectionConvoy->quantity_heavy_units = $convoy['quantity_heavy_units'];
+        $newInspectionConvoy->save();
+      }
+
+      foreach ($evidences as $evidence) {
+        $evidence = json_decode($evidence, true);
+        if (!isset($evidence['evidence_id'], $evidence['state'])) {
+          Log::warning('Evidencia omitida debido a datos faltantes: ' . json_encode($evidence));
+          continue;
         }
-        $inspection = json_decode($inspection, true);
+        $evidenceOne = $this->saveEvidenceImage($evidence['evidence_one_base64'], $newInspection->id, 'evidence_one');
+        $evidenceTwo = $this->saveEvidenceImage($evidence['evidence_two_base64'], $newInspection->id, 'evidence_two');
 
-        $newInspection = new Inspection();
-        $newInspection->date = $inspection['date'];
-        $newInspection->hour = $inspection['hour'];
-        $newInspection->inspection_type_id = $inspection['inspection_type_id'];
-        $newInspection->enterprise_id = $inspection['enterprise_id'];
-        $newInspection->checkpoint_id = $inspection['checkpoint_id'];
-        $newInspection->targeted_id = $inspection['targeted_id'];
-        $newInspection->observation = $inspection['observation'];
-        $newInspection->user_id = 1;
-        $newInspection->save();
+        $newEvidence = new EvidenceRelsInspection();
+        $newEvidence->inspection_id = $newInspection->id;
+        $newEvidence->evidence_id = $evidence['evidence_id'];
+        $newEvidence->state = $evidence['state'];
+        $newEvidence->evidence_one = $evidenceOne;
+        $newEvidence->evidence_two = $evidenceTwo;
+        $newEvidence->observations = $evidence['observation'] ?? '';
+        $newEvidence->waiting_time = $evidence['waiting_time'] ?? 0;
+        $newEvidence->save();
+      }
 
-        if ($convoy != null) {
-          $convoy = json_decode($convoy, true);
-          $newInspectionConvoy = new InspectionConvoy();
-          $newInspectionConvoy->inspection_id = $newInspection->id;
-          $newInspectionConvoy->convoy = $convoy['convoy'];
-          $newInspectionConvoy->convoy_status = $convoy['convoy_status'];
-          $newInspectionConvoy->quantity_light_units = $convoy['quantity_light_units'];
-          $newInspectionConvoy->quantity_heavy_units = $convoy['quantity_heavy_units'];
-          $newInspectionConvoy->save();
-        }
-
-        foreach ($evidences as $evidence) {
-
-          $evidence = json_decode($evidence, true);
-          if (!isset($evidence['evidence_id'], $evidence['state'])) {
-            Log::warning('Evidencia omitida debido a datos faltantes: ' . json_encode($evidence));
-            continue; // O omitir esta evidencia y pasar a la siguiente
-          }
-          $evidenceOne = $this->saveEvidenceImage($evidence['evidence_one_base64'], $newInspection->id, 'evidence_one');
-          $evidenceTwo = $this->saveEvidenceImage($evidence['evidence_two_base64'], $newInspection->id, 'evidence_two');
-          $newEvidence = new EvidenceRelsInspection();
-          $newEvidence->inspection_id = $newInspection->id;
-          $newEvidence->evidence_id = $evidence['evidence_id'];
-          $newEvidence->state = $evidence['state'];
-          $newEvidence->evidence_one = $evidenceOne;
-          $newEvidence->evidence_two = $evidenceTwo;
-          $newEvidence->observations = $evidence['observation'] ?? '';
-          $newEvidence->waiting_time = $evidence['waiting_time'] ?? 0;
-          $newEvidence->save();
-        }
-      });
+      DB::commit(); // Commit transaction if everything is successful
       return response()->json([
         'status' => true,
         'message' => 'Inspección creada con éxito',
       ], 201);
     } catch (\Exception $e) {
+      DB::rollBack(); // Rollback transaction in case of error
       return response()->json([
         'status' => false,
         'message' => 'Error creating inspection',

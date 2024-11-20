@@ -121,7 +121,7 @@
         function Editar(checkpoint) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', 'checkpoints/' + checkpoint.id);
+            $('#form-edit').attr('action', '/checkpoints/' + checkpoint.id);
             $('#form-edit').find('#name').val(checkpoint.name);
             $('#form-edit').find('#description').val(checkpoint.description);
             $('#form-edit').find('#name').focus();

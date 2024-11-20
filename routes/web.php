@@ -1,10 +1,15 @@
 <?php
 
+use App\Http\Controllers\ActivePauseController;
+use App\Http\Controllers\AlcoholTestController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckPointController;
+use App\Http\Controllers\DailyDialogController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EnterpriseController;
 use App\Http\Controllers\EnterpriseTypeController;
 use App\Http\Controllers\EvidenceController;
+use App\Http\Controllers\GPSControlController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionTypeController;
@@ -99,4 +104,49 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/inspections/{inspection}/edit', [InspectionController::class, 'edit'])->name('inspections.edit');
   Route::put('/inspections/{inspection}', [InspectionController::class, 'update'])->name('inspections.update');
   Route::delete('/inspections/{inspection}', [InspectionController::class, 'destroy'])->name('inspections.destroy');
+
+
+  Route::get('/employees', [EmployeeController::class, 'index'])->name('employee');
+  Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employee.create');
+  Route::post('/employees', [EmployeeController::class, 'store'])->name('employee.store');
+  Route::get('/employees/{employee}', [EmployeeController::class, 'show'])->name('employee.show');
+  Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employee.edit');
+  Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employee.update');
+  Route::delete('/employees/{employee}', [employeeController::class, 'destroy'])->name('employee.destroy');
+
+  Route::get('/dialogues', [DailyDialogController::class, 'index'])->name('dialogues');
+  Route::get('/dialogues/create', [DailyDialogController::class, 'create'])->name('dialogues.create');
+  Route::post('/dialogues', [DailyDialogController::class, 'store'])->name('dialogues.store');
+  Route::post('/dialogues/massive', [DailyDialogController::class, 'storeMany'])->name('dialogues.massive');
+  Route::get('/dialogues/{dialogue}', [DailyDialogController::class, 'show'])->name('dialogues.show');
+  Route::get('/dialogues/{dialogue}/edit', [DailyDialogController::class, 'edit'])->name('dialogues.edit');
+  Route::put('/dialogues/{dialogue}', [DailyDialogController::class, 'update'])->name('dialogues.update');
+  Route::delete('/dialogues/{dialogue}', [DailyDialogController::class, 'destroy'])->name('dialogues.destroy');
+
+  Route::get('/actives', [ActivePauseController::class, 'index'])->name('actives');
+  Route::get('/actives/create', [ActivePauseController::class, 'create'])->name('actives.create');
+  Route::post('/actives', [ActivePauseController::class, 'store'])->name('actives.store');
+  Route::post('/actives/massive', [ActivePauseController::class, 'storeMany'])->name('actives.massive');
+  Route::get('/actives/{active}', [ActivePauseController::class, 'show'])->name('actives.show');
+  Route::get('/actives/{active}/edit', [ActivePauseController::class, 'edit'])->name('actives.edit');
+  Route::put('/actives/{active}', [ActivePauseController::class, 'update'])->name('actives.update');
+  Route::delete('/actives/{active}', [ActivePauseController::class, 'destroy'])->name('actives.destroy');
+
+  Route::get('/tests', [AlcoholTestController::class, 'index'])->name('tests');
+  Route::get('/tests/create', [AlcoholTestController::class, 'create'])->name('tests.create');
+  Route::post('/tests', [AlcoholTestController::class, 'store'])->name('tests.store');
+  Route::post('/tests/massive', [AlcoholTestController::class, 'storeMany'])->name('tests.massive');
+  Route::get('/tests/{test}', [AlcoholTestController::class, 'show'])->name('tests.show');
+  Route::get('/tests/{test}/edit', [AlcoholTestController::class, 'edit'])->name('tests.edit');
+  Route::put('/tests/{test}', [AlcoholTestController::class, 'update'])->name('tests.update');
+  Route::delete('/tests/{test}', [AlcoholTestController::class, 'destroy'])->name('tests.destroy');
+
+  Route::get('/controls', [GPSControlController::class, 'index'])->name('controls');
+  Route::get('/controls/create', [GPSControlController::class, 'create'])->name('controls.create');
+  Route::post('/controls', [GPSControlController::class, 'store'])->name('controls.store');
+  Route::post('/controls/massive', [GPSControlController::class, 'storeMany'])->name('controls.massive');
+  Route::get('/controls/{control}', [GPSControlController::class, 'show'])->name('controls.show');
+  Route::get('/controls/{control}/edit', [GPSControlController::class, 'edit'])->name('controls.edit');
+  Route::put('/controls/{control}', [GPSControlController::class, 'update'])->name('controls.update');
+  Route::delete('/controls/{control}', [GPSControlController::class, 'destroy'])->name('controls.destroy');
 });

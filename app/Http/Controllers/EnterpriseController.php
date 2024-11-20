@@ -111,7 +111,7 @@ class EnterpriseController extends Controller
       $enterprise->name = $validated['name'];
       $enterprise->ruc = $validated['ruc'];
       if ($request->hasFile('image')) {
-        if ($this::dropImage($enterprise->image)) {
+        if ($this::dropImage($enterprise->image) || $enterprise->image == null) {
           $enterprise->image = $this::saveImage($request->file('image'), 'enterprises');
         }
       }

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Inspecciones')
-@section('page', 'Inspecciones')
+@section('title', 'Pausa Activa')
+@section('page', 'Pausa Activa')
 
 @push('styles')
 @endpush
@@ -10,41 +10,41 @@
     <div class="row">
         <div class="col-12">
             <div class="table-reponsive">
-                <x-table id="table-inspections">
+                <x-table id="table-actives">
                     <x-slot name="header">
-                        <th colspan="1">Serie</th>
+                        <th colspan="1">Punto C.</th>
                         <th colspan="1">Fecha</th>
                         <th colspan="1">Supevisor</th>
                         <th colspan="1">Emp. Transportista</th>
-                        <th colspan="1">Dirigido</th>
+                        <th colspan="1">Participantes</th>
                         <th colspan="1">Acciones</th>
                     </x-slot>
                     <x-slot name="slot">
-                        @if ($inspections->isEmpty())
+                        @if ($actives->isEmpty())
                             <tr>
                                 <td colspan="6" class="text-center">No hay registros</td>
                             </tr>
                         @else
-                            @foreach ($inspections as $key => $inspection)
+                            @foreach ($actives as $key => $active)
                                 <tr>
-                                    <td> {{ $inspection->folio }}</td>
-                                    <td>{{ $inspection->date }}</td>
+                                    <td> {{ $active->checkpoint->name }}</td>
+                                    <td>{{ $active->date }}</td>
                                     <td>usuario</td>
-                                    <td>{{ $inspection->enterpriseTransport->name }}</td>
-                                    <td>{{ $inspection->targeted->name }}</td>
+                                    <td>{{ $active->enterpriseTransport->name }}</td>
+                                    <td>{{ $active->participants }}</td>
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
-                                            href="{{ route('inspections.show', $inspection) }}" />
+                                            href="{{ route('actives.show', $active) }}" />
 
 
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
-                                            onclick="Editar({{ $inspection }})" />
-                                        <x-form-table id="form-delete-{{ $inspection->id }}"
-                                            action="{{ route('inspections.destroy', $inspection) }}" method="POST"
+                                            onclick="Editar({{ $active }})" />
+                                        <x-form-table id="form-delete-{{ $active->id }}"
+                                            action="{{ route('actives.destroy', $active) }}" method="POST"
                                             role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $inspection->id }})" />
+                                                onclick="Eliminar({{ $active->id }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -55,8 +55,8 @@
             </div>
             <div class="row">
                 <div class="col-md-12 d-flex justify-content-end">
-                    <x-pagination page="{{ $inspections->currentPage() }}" lastPage="{{ $inspections->lastPage() }}"
-                        route="inspections" perPage="{{ $inspections->perPage() }}" total="{{ $inspections->total() }}" />
+                    <x-pagination page="{{ $actives->currentPage() }}" lastPage="{{ $actives->lastPage() }}"
+                        route="actives" perPage="{{ $actives->perPage() }}" total="{{ $actives->total() }}" />
                 </div>
             </div>
         </div>

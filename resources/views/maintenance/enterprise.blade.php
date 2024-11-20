@@ -267,7 +267,7 @@
         function Editar(enterprise) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', 'enterprises/' + enterprise.id);
+            $('#form-edit').attr('action', '/enterprises/' + enterprise.id);
             $('#form-edit').find('#name').val(enterprise.name);
             $('#form-edit').find('#ruc').val(enterprise.ruc);
             $('#form-edit').find('#enterprise_type_id').val(enterprise.enterprise_type_id);

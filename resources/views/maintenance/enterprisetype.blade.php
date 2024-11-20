@@ -121,7 +121,7 @@
         function Editar(enterpriseType) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', 'enterprisetypes/' + enterpriseType.id);
+            $('#form-edit').attr('action', '/enterprisetypes/' + enterpriseType.id);
             $('#form-edit').find('#name').val(enterpriseType.name);
             $('#form-edit').find('#description').val(enterpriseType.description);
             $('#form-edit').find('#name').focus();

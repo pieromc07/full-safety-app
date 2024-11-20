@@ -21,7 +21,8 @@ return new class extends Migration
       $table->date('date')->index('inspections_date_IDX');
       $table->time('hour')->index('inspections_hour_IDX');
       $table->unsignedBigInteger('inspection_type_id');
-      $table->unsignedBigInteger('enterprise_id');
+      $table->unsignedBigInteger('supplier_enterprise_id');
+      $table->unsignedBigInteger('transport_enterprise_id');
       $table->unsignedBigInteger('checkpoint_id');
       $table->unsignedBigInteger('targeted_id');
       $table->unsignedBigInteger('user_id')->index('inspections_user_IDX');
@@ -29,7 +30,8 @@ return new class extends Migration
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
       $table->foreign('inspection_type_id')->references('id')->on('inspection_types');
-      $table->foreign('enterprise_id')->references('id')->on('enterprises');
+      $table->foreign('supplier_enterprise_id')->references('id')->on('enterprises');
+      $table->foreign('transport_enterprise_id')->references('id')->on('enterprises');
       $table->foreign('checkpoint_id')->references('id')->on('check_points');
       $table->foreign('targeted_id')->references('id')->on('targeteds');
       $table->foreign('user_id')->references('id')->on('users');

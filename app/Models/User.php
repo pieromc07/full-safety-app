@@ -7,13 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
-use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-  use HasApiTokens, HasFactory, Notifiable, HasRoles;
+  use HasFactory, Notifiable, HasRoles;
 
   protected $table = 'users';
 
@@ -22,6 +21,7 @@ class User extends Authenticatable implements JWTSubject
     'username',
     'password',
     'is_active',
+    'token',
     'cuid_inserted',
     'cuid_updated',
   ];
@@ -56,6 +56,7 @@ class User extends Authenticatable implements JWTSubject
 
   protected $hidden = [
     'password',
+    'token',
     'cuid_inserted',
     'cuid_updated',
   ];

@@ -1,28 +1,37 @@
 @extends('layouts.app')
 
 @section('title', 'Registro')
-@section('page', 'Evidencia')
+@section('page', 'Personal')
 
 @push('styles')
 @endpush
 
 @section('content')
     <div class="row">
-        <div class="col-12 col-lg-4">
-            <x-form class="card" id="form-create" action="{{ route('evidence.store') }}" method="POST" role="form">
+        <div class="col-12 col-lg-6">
+            <x-form class="card" id="form-create" action="{{ route('employee.store') }}" method="POST" role="form"
+                enctype="multipart/form-data">
                 <div class="card-body">
                     <div class="row">
+                        <div class="col-12">
+                            <x-input id="document" name="document" label="N° de Documento" class="form-control"
+                                placeholder="N° de documento" required="required" autofocus="autofocus" icon="bi-person" />
+                        </div>
                         <div class="col-12">
                             <x-input id="name" name="name" label="Nombre" class="form-control" placeholder="Nombre"
                                 required="required" autofocus="autofocus" icon="bi-person" />
                         </div>
                         <div class="col-12">
-                            <x-select id="subcategory_id" name="subcategory_id" icon="bi-building" label="Categoría"
-                                placeholder="Seleccione una Categoría">
+                            <x-input id="lastname" name="lastname" label="Apellidos" class="form-control"
+                                placeholder="Apellidos" required="required" autofocus="autofocus" icon="bi-person" />
+                        </div>
+                        <div class="col-12">
+                            <x-select id="transport_enterprise_id" name="transport_enterprise_id" icon="bi-building"
+                                label="Empresa Transportista" placeholder="Seleccione empresa">
                                 <x-slot name="options">
-                                    @foreach ($subcategories as $category)
-                                        <option value="{{ $category->id }}">
-                                            {{ $category->name }}
+                                    @foreach ($enterpriseTransports as $transport)
+                                        <option value="{{ $transport->id }}">
+                                            {{ $transport->name }}
                                         </option>
                                     @endforeach
                                 </x-slot>
@@ -34,25 +43,34 @@
                     <x-button id="btn-store" btn="btn-primary" title="Registrar" position="left" text="Registrar"
                         icon="bi-save" />
                     <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cancelar" position="left" text="Cancelar"
-                        icon="bi-x-circle" href="{{ route('evidence') }}" />
+                        icon="bi-x-circle" href="{{ route('employee') }}" />
                 </div>
             </x-form>
 
-            <x-form class="card" id="form-edit" method="POST" role="form" style="display: none;">
+            <x-form class="card" id="form-edit" method="POST" role="form" style="display: none;"
+                enctype="multipart/form-data">
                 @method('PUT')
                 <div class="card-body">
                     <div class="row">
+                        <div class="col-12">
+                            <x-input id="document" name="document" label="N° de Documento" class="form-control"
+                                placeholder="N° de documento" required="required" autofocus="autofocus" icon="bi-person" />
+                        </div>
                         <div class="col-12">
                             <x-input id="name" name="name" label="Nombre" class="form-control" placeholder="Nombre"
                                 required="required" autofocus="autofocus" icon="bi-person" />
                         </div>
                         <div class="col-12">
-                            <x-select id="subcategory_id" name="subcategory_id" icon="bi-building" label="Categoría"
-                                placeholder="Seleccione una Categoría">
+                            <x-input id="lastname" name="lastname" label="Apellidos" class="form-control"
+                                placeholder="Apellidos" required="required" autofocus="autofocus" icon="bi-person" />
+                        </div>
+                        <div class="col-12">
+                            <x-select id="transport_enterprise_id" name="transport_enterprise_id" icon="bi-building"
+                                label="Empresa Transportista" placeholder="Seleccione empresa">
                                 <x-slot name="options">
-                                    @foreach ($subcategories as $category)
-                                        <option value="{{ $category->id }}">
-                                            {{ $category->name }}
+                                    @foreach ($enterpriseTransports as $transport)
+                                        <option value="{{ $transport->id }}">
+                                            {{ $transport->name }}
                                         </option>
                                     @endforeach
                                 </x-slot>
@@ -64,54 +82,48 @@
                     <x-button id="btn-update" btn="btn-primary" title="Actualizar" position="left" text="Actualizar"
                         icon="bi-save" type="submit" />
 
-                    <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cancelar" position="left" text="Cancelar"
-                        icon="bi-x-circle" href="{{ route('evidence') }}" />
+                    <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cancelar" position="left"
+                        text="Cancelar" icon="bi-x-circle" href="{{ route('employee') }}" />
                 </div>
             </x-form>
 
         </div>
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-lg-6">
             <div class="table-responsive">
-                <x-table id="table-subcategories">
+                <x-table id="table-employees">
                     <x-slot name="header">
                         <th colspan="1" class="text-center">ID</th>
+                        <th colspan="1" class="text-center">Documento</th>
                         <th colspan="1" class="text-center">Nombre</th>
-                        <th colspan="1" class="text-center">Categoría</th>
-                        <th colspan="1" class="text-center">Subcategoría</th>
                         <th colspan="1" class="text-center">Acciones</th>
                     </x-slot>
                     <x-slot name='slot'>
-                        @if ($evidences->isEmpty())
+                        @if ($employees->isEmpty())
                             <tr class="text-center fs-5">
-                                <td colspan="5">
-                                    No hay registros
-                                </td>
+                                <td colspan="4">No hay registros</td>
                             </tr>
                         @else
-                            @foreach ($evidences as $key => $evidence)
+                            @foreach ($employees as $key => $employee)
                                 <tr class="text-center fs-5">
                                     <td class="text-center">
-                                        {{ $evidence->id }}
+                                        {{ $employee->id }}
                                     </td>
                                     <td class="text-center">
-                                        {{ $evidence->name }}
+                                        {{ $employee->document }}
                                     </td>
                                     <td class="text-center">
-                                        {{ $evidence->category->name }}
-                                    </td>
-                                    <td class="text-center">
-                                        {{ $evidence->subcategory->name }}
+                                        {{ $employee->fullname }}
                                     </td>
                                     <td class="text-center">
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
-                                            onclick="Editar({{ $evidence }})" />
-                                        <x-form-table id="form-delete-{{ $evidence->id }}"
-                                            action="{{ route('evidence.destroy', $evidence) }}" method="POST"
+                                            onclick="Editar({{ $employee }})" />
+                                        <x-form-table id="form-delete-{{ $employee->id }}"
+                                            action="{{ route('employee.destroy', $employee) }}" method="POST"
                                             role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $evidence->id }})" />
+                                                onclick="Eliminar({{ $employee->id }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -122,8 +134,8 @@
             </div>
             <div class="row">
                 <div class="col-md-12 d-flex justify-content-end">
-                    <x-pagination page="{{ $evidences->currentPage() }}" lastPage="{{ $evidences->lastPage() }}"
-                        route="evidence" perPage="{{ $evidences->perPage() }}" total="{{ $evidences->total() }}" />
+                    <x-pagination page="{{ $employees->currentPage() }}" lastPage="{{ $employees->lastPage() }}"
+                        route="employee" perPage="{{ $employees->perPage() }}" total="{{ $employees->total() }}" />
                 </div>
             </div>
         </div>
@@ -139,12 +151,14 @@
             });
         });
 
-        function Editar(evidence) {
+        function Editar(employee) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/evidence/' + evidence.id);
-            $('#form-edit').find('#name').val(evidence.name);
-            $('#form-edit').find('#subcategory_id').val(evidence.subcategory_id);
+            $('#form-edit').attr('action', '/employees/' + employee.id);
+            $('#form-edit').find('#document').val(employee.document);
+            $('#form-edit').find('#name').val(employee.name);
+            $('#form-edit').find('#lastname').val(employee.lastname);
+            $('#form-edit').find('#transport_enterprise_id').val(employee.transport_enterprise_id);
             $('#form-edit').find('#name').focus();
         }
     </script>

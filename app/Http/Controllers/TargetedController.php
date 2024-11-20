@@ -54,12 +54,12 @@ class TargetedController extends Controller
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      if ($validated['targeted_id']??null) {
+      if ($validated['targeted_id'] ?? null) {
         return redirect()->route('target')->with('error', 'Ha ocurrido un error al intentar crear el Tipo de dirigido.');
       }
       return redirect()->route('targeted')->with('error', 'Ha ocurrido un error al intentar crear el dirigido.');
     }
-    if ($validated['targeted_id']??null) {
+    if ($validated['targeted_id'] ?? null) {
       return redirect()->route('target')->with('success', 'El Tipo de dirigido se ha creado correctamente.');
     }
     return redirect()->route('targeted')->with('success', 'El dirigido se ha creado correctamente.');
@@ -101,12 +101,12 @@ class TargetedController extends Controller
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      if ($validated['targeted_id']??null) {
+      if ($validated['targeted_id'] ?? null) {
         return redirect()->route('target')->with('error', 'Ha ocurrido un error al intentar actualizar el Tipo de dirigido.');
       }
       return redirect()->route('targeted')->with('error', 'Ha ocurrido un error al intentar actualizar el dirigido.');
     }
-    if ($validated['targeted_id']??null) {
+    if ($validated['targeted_id'] ?? null) {
       return redirect()->route('target')->with('success', 'El Tipo de dirigido se ha actualizado correctamente.');
     }
     return redirect()->route('targeted')->with('success', 'El dirigido se ha actualizado correctamente.');

@@ -139,7 +139,7 @@
         function Editar(category) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', 'categories/' + category.id);
+            $('#form-edit').attr('action', '/categories/' + category.id);
             $('#form-edit').find('#name').val(category.name);
             $('#form-edit').find('#parent_id').val(category.parent_id);
             $('#form-edit').find('#name').focus();

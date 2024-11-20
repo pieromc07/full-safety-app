@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -15,7 +18,7 @@ class AuthController extends Controller
    */
   public function __construct()
   {
-    $this->middleware('auth:api', ['except' => ['login']]);
+    // $this->middleware('auth:api', ['except' => ['login']]);
   }
 
   /**
@@ -25,11 +28,14 @@ class AuthController extends Controller
    */
   public function login()
   {
-    $credentials = request(['email', 'password']);
+    $credentials = request(['username', 'password']);
 
-    if (! $token = JWTAuth::attempt($credentials)) {
-      return response()->json(['error' => 'Unauthorized'], 401);
+    if (!$token = JWTAuth::attempt($credentials)) {
+      return response()->json(['status' => false, 'message' => 'Datos incorrectos'], 401);
     }
+    User::find(JWTAuth::user()->id)->update([
+      'token' => $token
+    ]);
 
     return $this->respondWithToken($token);
   }
@@ -46,14 +52,15 @@ class AuthController extends Controller
 
   /**
    * Log the user out (Invalidate the token).
-   *
    * @return \Illuminate\Http\JsonResponse
    */
-  public function logout()
+  public function logout(Request $request)
   {
-    JWTAuth::logout();
+    User::find($request->id)->update([
+      'token' => null
+    ]);
 
-    return response()->json(['message' => 'Successfully logged out']);
+    return response()->json(['status' => true, 'message' => 'Successfully logged out']);
   }
 
   /**
@@ -76,6 +83,9 @@ class AuthController extends Controller
   protected function respondWithToken($token)
   {
     return response()->json([
+      'status' => true,
+      'message' => 'Successfully',
+      'user' => JWTAuth::user(),
       'access_token' => $token,
       'token_type' => 'bearer',
       'expires_in' => JWTAuth::factory()->getTTL() * 60

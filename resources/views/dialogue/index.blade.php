@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Inspecciones')
-@section('page', 'Inspecciones')
+@section('title', 'Dialogo Diario')
+@section('page', 'Dialogo Diario')
 
 @push('styles')
 @endpush
@@ -10,41 +10,43 @@
     <div class="row">
         <div class="col-12">
             <div class="table-reponsive">
-                <x-table id="table-inspections">
+                <x-table id="table-dialogues">
                     <x-slot name="header">
-                        <th colspan="1">Serie</th>
+                        <th colspan="1">Punto C.</th>
                         <th colspan="1">Fecha</th>
                         <th colspan="1">Supevisor</th>
                         <th colspan="1">Emp. Transportista</th>
-                        <th colspan="1">Dirigido</th>
+                        <th colspan="1">Tema</th>
+                        <th colspan="1">Participantes</th>
                         <th colspan="1">Acciones</th>
                     </x-slot>
                     <x-slot name="slot">
-                        @if ($inspections->isEmpty())
+                        @if ($dialogues->isEmpty())
                             <tr>
                                 <td colspan="6" class="text-center">No hay registros</td>
                             </tr>
                         @else
-                            @foreach ($inspections as $key => $inspection)
+                            @foreach ($dialogues as $key => $dialogue)
                                 <tr>
-                                    <td> {{ $inspection->folio }}</td>
-                                    <td>{{ $inspection->date }}</td>
+                                    <td> {{ $dialogue->checkpoint->name }}</td>
+                                    <td>{{ $dialogue->date }}</td>
                                     <td>usuario</td>
-                                    <td>{{ $inspection->enterpriseTransport->name }}</td>
-                                    <td>{{ $inspection->targeted->name }}</td>
+                                    <td>{{ $dialogue->enterpriseTransport->name }}</td>
+                                    <td>{{ $dialogue->topic }}</td>
+                                    <td>{{ $dialogue->participants }}</td>
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
-                                            href="{{ route('inspections.show', $inspection) }}" />
+                                            href="{{ route('dialogues.show', $dialogue) }}" />
 
 
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
-                                            onclick="Editar({{ $inspection }})" />
-                                        <x-form-table id="form-delete-{{ $inspection->id }}"
-                                            action="{{ route('inspections.destroy', $inspection) }}" method="POST"
+                                            onclick="Editar({{ $dialogue }})" />
+                                        <x-form-table id="form-delete-{{ $dialogue->id }}"
+                                            action="{{ route('dialogues.destroy', $dialogue) }}" method="POST"
                                             role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $inspection->id }})" />
+                                                onclick="Eliminar({{ $dialogue->id }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -55,8 +57,8 @@
             </div>
             <div class="row">
                 <div class="col-md-12 d-flex justify-content-end">
-                    <x-pagination page="{{ $inspections->currentPage() }}" lastPage="{{ $inspections->lastPage() }}"
-                        route="inspections" perPage="{{ $inspections->perPage() }}" total="{{ $inspections->total() }}" />
+                    <x-pagination page="{{ $dialogues->currentPage() }}" lastPage="{{ $dialogues->lastPage() }}"
+                        route="dialogues" perPage="{{ $dialogues->perPage() }}" total="{{ $dialogues->total() }}" />
                 </div>
             </div>
         </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\CheckPoint;
+use App\Models\Employee;
 use App\Models\Enterprise;
 use App\Models\EnterpriseRelsEnterprise;
 use App\Models\EnterpriseType;
@@ -29,6 +30,7 @@ class SyncController extends Controller
     $evidences = Evidence::all();
     $checkPoints = CheckPoint::all();
     $targetedsRelsInspections = TargetedRelsInspection::all();
+    $employees = Employee::all();
 
     return response()->json([
       'inspectionsType' => $inspectionsType,
@@ -40,7 +42,8 @@ class SyncController extends Controller
       'evidences' => $evidences,
       'targeteds' => $targeteds,
       'targetedRelsInspections' => $targetedsRelsInspections,
-      'checkPoints' => $checkPoints
+      'checkPoints' => $checkPoints,
+      'employees' => $employees
     ], 200);
   }
 }

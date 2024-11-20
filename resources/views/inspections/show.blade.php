@@ -40,7 +40,7 @@
                         <div class="col-12 col-lg-3">
                             <x-input id="enterprise" name="enterprise" label="Empresa Transportista" class="form-control"
                                 placeholder="Empresa Transportista" required="required" autofocus="autofocus"
-                                icon="bi-building" value="{{ $inspection->enterprise->name }}" readonly />
+                                icon="bi-building" value="{{ $inspection->enterpriseTransport->name }}" readonly />
                         </div>
                         <div class="col-12 col-lg-3">
                             <x-input id="targeted" name="targeted" label="Dirigido" class="form-control"
@@ -58,16 +58,16 @@
                                 value="{{ $inspection->convoy->convoy_status }}" readonly />
                         </div>
                         <div class="col-3 col-lg-3">
-                            <x-input id="quantity_light_units" name="quantity_light_units"
-                                label="Livianas" class="form-control"
-                                placeholder="Cantidad de Unidades Livianas" required="required" autofocus="autofocus"
-                                icon="bi-truck" value="{{ $inspection->convoy->quantity_light_units }}" readonly />
+                            <x-input id="quantity_light_units" name="quantity_light_units" label="Livianas"
+                                class="form-control" placeholder="Cantidad de Unidades Livianas" required="required"
+                                autofocus="autofocus" icon="bi-truck"
+                                value="{{ $inspection->convoy->quantity_light_units }}" readonly />
                         </div>
                         <div class="col-3 col-lg-3">
-                            <x-input id="quantity_heavy_units" name="quantity_heavy_units"
-                                label="Pesadas" class="form-control"
-                                placeholder="Cantidad de Unidades Pesadas" required="required" autofocus="autofocus"
-                                icon="bi-truck" value="{{ $inspection->convoy->quantity_heavy_units }}" readonly />
+                            <x-input id="quantity_heavy_units" name="quantity_heavy_units" label="Pesadas"
+                                class="form-control" placeholder="Cantidad de Unidades Pesadas" required="required"
+                                autofocus="autofocus" icon="bi-truck"
+                                value="{{ $inspection->convoy->quantity_heavy_units }}" readonly />
                         </div>
 
                     </div>
