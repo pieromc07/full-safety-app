@@ -12,28 +12,30 @@ class Category extends Model
 
   protected $table = 'categories';
 
+  protected $primaryKey = 'id_categories';
+
   protected $fillable = [
     'name',
     'parent_id',
-    'targeted_id',
-    'inspection_type_id',
+    'id_targeteds',
+    'id_inspection_types',
     'cuid_inserted',
     'cuid_updated',
   ];
 
   public static $rules = [
     'name' => 'required|max:64',
-    'parent_id' => 'nullable|exists:categories,id',
-    'targeted_id' => 'nullable|exists:targeteds,id',
-    'inspection_type_id' => 'nullable|exists:inspection_types,id',
+    'parent_id' => 'nullable|exists:categories,id_categories',
+    'id_targeteds' => 'nullable|exists:targeteds,id_targeteds',
+    'id_inspection_types' => 'nullable|exists:inspection_types,id_inspection_types',
   ];
 
   public static $rulesMessages = [
     'name.required' => 'El nombre es obligatorio.',
     'name.max' => 'El nombre no puede tener más de 64 caracteres.',
     'parent_id.exists' => 'La categoría padre no existe.',
-    'targeted_id.exists' => 'El público objetivo no existe.',
-    'inspection_type_id.exists' => 'El tipo de inspección no existe.',
+    'id_targeteds.exists' => 'El público objetivo no existe.',
+    'id_inspection_types.exists' => 'El tipo de inspección no existe.',
   ];
 
   protected $hidden = [
@@ -45,17 +47,17 @@ class Category extends Model
 
   public function parent()
   {
-    return $this->belongsTo(Category::class, 'parent_id');
+    return $this->belongsTo(Category::class, 'parent_id', 'id_categories');
   }
 
   public function targeted()
   {
-    return $this->belongsTo(Targeted::class, 'targeted_id');
+    return $this->belongsTo(Targeted::class, 'id_targeteds', 'id_targeteds');
   }
 
   public function inspectionType()
   {
-    return $this->belongsTo(InspectionType::class, 'inspection_type_id');
+    return $this->belongsTo(InspectionType::class, 'id_inspection_types', 'id_inspection_types');
   }
 
   public function cuidInsertedToDatetime()

@@ -14,8 +14,8 @@ class AlcoholTest extends Model
     'date',
     'hour',
     'checkpoint_id',
-    'supplier_enterprise_id',
-    'transport_enterprise_id',
+    'id_supplier_enterprises',
+    'id_transport_enterprises',
     'employee_id',
     'result',
     'state',
@@ -38,12 +38,12 @@ class AlcoholTest extends Model
 
   public function enterpriseSupplier()
   {
-    return $this->belongsTo(Enterprise::class, 'supplier_enterprise_id');
+    return $this->belongsTo(Enterprise::class, 'id_supplier_enterprises');
   }
 
   public function enterpriseTransport()
   {
-    return $this->belongsTo(Enterprise::class, 'transport_enterprise_id');
+    return $this->belongsTo(Enterprise::class, 'id_transport_enterprises');
   }
 
   public function employee()

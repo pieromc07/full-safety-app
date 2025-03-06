@@ -13,11 +13,12 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('inspection_types', function (Blueprint $table) {
-      $table->id();
+      $table->id('id_inspection_types');
       $table->string('name', 64)->index('inspection_types_name_IDX');
       $table->string('description')->nullable()->index('inspection_types_description_IDX');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
+      $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
     });
 
     // CREATE TRIGGER FOR inspection_types

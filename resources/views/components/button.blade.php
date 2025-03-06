@@ -8,7 +8,7 @@
     $position = $position ?? 'left';
 @endphp
 
-<button class="btn icon {{ $btn }}" id="{{ $id }}" {{ $attributes }}>
+<button class="btn icon {{ $btn }}" id="{{ $id }}" {{ $attributes }} type="button">
     @if ($position == 'left')
         <i class="bi {{ $icon }}"></i>
     @endif

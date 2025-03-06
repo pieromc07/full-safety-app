@@ -12,17 +12,18 @@ return new class extends Migration
    */
   public function up(): void
   {
-    Schema::create('check_points', function (Blueprint $table) {
-      $table->id();
-      $table->string('name', 128)->index('check_points_name_IDX');
-      $table->string('description', 256)->nullable();
+    Schema::create('checkpoints', function (Blueprint $table) {
+      $table->id('id_checkpoints');
+      $table->string('name', 128)->index('checkpoints_name_IDX');
+      $table->string('description', 256)->index('checkpoints_description_IDX')->nullable();
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
+      $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
     });
 
-    // CREATE TRIGGER FOR check_points
+    // CREATE TRIGGER FOR checkpoints
     DB::unprepared('
-            CREATE TRIGGER tr_bi_check_points BEFORE INSERT ON check_points
+            CREATE TRIGGER tr_bi_checkpoints BEFORE INSERT ON checkpoints
             FOR EACH ROW
             BEGIN
                 SET NEW.cuid_inserted = CUID_19D_B10();
@@ -31,7 +32,7 @@ return new class extends Migration
         ');
 
     DB::unprepared('
-            CREATE TRIGGER tr_bu_check_points BEFORE UPDATE ON check_points
+            CREATE TRIGGER tr_bu_checkpoints BEFORE UPDATE ON checkpoints
             FOR EACH ROW
             BEGIN
                 SET NEW.cuid_updated = CUID_19D_B10();
@@ -44,6 +45,6 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('check_points');
+    Schema::dropIfExists('checkpoints');
   }
 };

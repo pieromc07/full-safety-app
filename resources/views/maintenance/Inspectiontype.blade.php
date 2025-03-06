@@ -72,7 +72,7 @@
                             @foreach ($inspectionTypes as $key => $inspectionType)
                                 <tr class="text-center fs-5">
                                     <td class="text-center">
-                                        {{ $inspectionType->id }}
+                                        {{ $inspectionType->id_inspection_types }}
                                     </td>
                                     <td class="text-center">
                                         {{ $inspectionType->name }}
@@ -83,12 +83,12 @@
                                     <td class="text-center">
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $inspectionType }})" />
-                                        <x-form-table id="form-delete-{{ $inspectionType->id }}"
-                                            action="{{ route('inspectiontype.destroy', $inspectionType) }}" method="POST"
+                                        <x-form-table id="form-delete-{{ $inspectionType->id_inspection_types }}"
+                                            action="{{ route('inspectiontype.destroy', $inspectionType->id_inspection_types) }}" method="POST"
                                             role="form">
                                             @method('DELETE')
-                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $inspectionType->id }})" />
+                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar" type="button"
+                                                onclick="Eliminar({{ $inspectionType->id_inspection_types }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -120,10 +120,26 @@
         function Editar(inspectiontype) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/inspectiontypes/' + inspectiontype.id);
+            $('#form-edit').attr('action', '/inspectiontypes/' + inspectiontype.id_inspection_types);
             $('#form-edit').find('#name').val(inspectiontype.name);
             $('#form-edit').find('#description').val(inspectiontype.description);
             $('#form-edit').find('#name').focus();
+        }
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-delete-' + id).submit();
+                }
+            });
         }
     </script>
 @endpush

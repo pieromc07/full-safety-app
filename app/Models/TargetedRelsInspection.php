@@ -14,7 +14,7 @@ class TargetedRelsInspection extends Model
 
   protected $fillable = [
     'targeted_id',
-    'inspection_type_id',
+    'id_inspection_types',
     'cuid_inserted',
     'cuid_updated',
   ];

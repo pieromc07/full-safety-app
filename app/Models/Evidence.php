@@ -10,13 +10,15 @@ class Evidence extends Model
 {
   use HasFactory;
 
-  protected $table = 'evidence';
+  protected $table = 'evidences';
+
+  protected $primaryKey = 'id_evidences';
 
   protected $fillable = [
     'name',
     'description',
-    'category_id',
-    'subcategory_id',
+    'id_categories',
+    'id_subcategories',
     'cuid_inserted',
     'cuid_updated',
   ];
@@ -24,18 +26,18 @@ class Evidence extends Model
   public static $rules = [
     'name' => 'required|max:128',
     'description' => 'nullable',
-    'category_id' => 'nullable|exists:categories,id',
-    'subcategory_id' => 'required|exists:categories,id',
+    'id_categories' => 'nullable|exists:categories,id_categories',
+    'id_subcategories' => 'required|exists:categories,id_categories',
   ];
 
   public static $rulesMessages = [
     'name.required' => 'El nombre es requerido.',
     'name.max' => 'El nombre no puede tener más de 128 caracteres.',
     'description.nullable' => 'La descripción debe ser nula.',
-    'category_id.nullable' => 'La categoría debe ser nula.',
-    'category_id.exists' => 'La categoría no existe.',
-    'subcategory_id.required' => 'La subcategoría es requerida.',
-    'subcategory_id.exists' => 'La subcategoría no existe.',
+    'id_categories.nullable' => 'La categoría debe ser nula.',
+    'id_categories.exists' => 'La categoría no existe.',
+    'id_subcategories.required' => 'La subcategoría es requerida.',
+    'id_subcategories.exists' => 'La subcategoría no existe.',
   ];
 
   protected $hidden = [
@@ -47,12 +49,12 @@ class Evidence extends Model
 
   public function category()
   {
-    return $this->belongsTo(Category::class, 'category_id');
+    return $this->belongsTo(Category::class, 'id_categories');
   }
 
   public function subcategory()
   {
-    return $this->belongsTo(Category::class, 'subcategory_id');
+    return $this->belongsTo(Category::class, 'id_subcategories');
   }
 
   public function cuidInsertedToDatetime()

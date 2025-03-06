@@ -16,7 +16,7 @@ class EvidenceController extends Controller
    */
   public function index()
   {
-    $evidences = Evidence::paginate(5);
+    $evidences = Evidence::paginate(self::LARGETAKE);
     $subcategories = Category::where('parent_id', '<>', null)->get();
     return view($this::$viewDir . '.evidences', compact('evidences', 'subcategories'));
   }
@@ -37,19 +37,19 @@ class EvidenceController extends Controller
     $validated = $request->validate(Evidence::$rules, Evidence::$rulesMessages);
     try {
       DB::beginTransaction();
-      $subcategory = Category::find($validated['subcategory_id']) ?? null;
+      $subcategory = Category::find($validated['id_subcategories']) ?? null;
       $evidence = new Evidence();
       $evidence->name = $validated['name'];
       $evidence->description = $validated['description'] ?? null;
-      $evidence->category_id = $subcategory->parent_id ?? null;
-      $evidence->subcategory_id = $validated['subcategory_id'];
+      $evidence->id_categories = $subcategory->parent_id ?? null;
+      $evidence->id_subcategories = $validated['id_subcategories'];
       $evidence->save();
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('evidence')->with('error', 'Error al guardar la evidencia.');
+      return redirect()->route('evidences')->with('error', 'Error al guardar la evidencia.');
     }
-    return redirect()->route('evidence')->with('success', 'Evidencia guardada correctamente.');
+    return redirect()->route('evidences')->with('success', 'Evidencia guardada correctamente.');
   }
 
   /**
@@ -76,18 +76,18 @@ class EvidenceController extends Controller
     $validated = $request->validate(Evidence::$rules, Evidence::$rulesMessages);
     try {
       DB::beginTransaction();
-      $subcategory = Category::find($validated['subcategory_id']) ?? null;
+      $subcategory = Category::find($validated['id_subcategories']) ?? null;
       $evidence->name = $validated['name'];
       $evidence->description = $validated['description'] ?? null;
-      $evidence->category_id = $subcategory->parent_id ?? null;
-      $evidence->subcategory_id = $validated['subcategory_id'];
+      $evidence->id_categories = $subcategory->parent_id ?? null;
+      $evidence->id_subcategories = $validated['id_subcategories'];
       $evidence->save();
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('evidence')->with('error', 'Error al actualizar la evidencia.');
+      return redirect()->route('evidences')->with('error', 'Error al actualizar la evidencia.');
     }
-    return redirect()->route('evidence')->with('success', 'Evidencia actualizada correctamente.');
+    return redirect()->route('evidences')->with('success', 'Evidencia actualizada correctamente.');
   }
 
   /**
@@ -101,8 +101,8 @@ class EvidenceController extends Controller
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('evidence')->with('error', 'Error al eliminar la evidencia.');
+      return redirect()->route('evidences')->with('error', 'Error al eliminar la evidencia.');
     }
-    return redirect()->route('evidence')->with('success', 'Evidencia eliminada correctamente.');
+    return redirect()->route('evidences')->with('success', 'Evidencia eliminada correctamente.');
   }
 }

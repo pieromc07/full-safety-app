@@ -13,16 +13,17 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('categories', function (Blueprint $table) {
-      $table->id();
+      $table->id('id_categories');
       $table->string('name', 64)->index('categories_name_IDX');
       $table->unsignedBigInteger('parent_id')->nullable();
-      $table->foreign('parent_id')->references('id')->on('categories');
-      $table->unsignedBigInteger('targeted_id')->nullable();
-      $table->foreign('targeted_id')->references('id')->on('targeteds');
-      $table->unsignedBigInteger('inspection_type_id')->nullable();
-      $table->foreign('inspection_type_id')->references('id')->on('inspection_types');
+      $table->foreign('parent_id')->references('id_categories')->on('categories');
+      $table->unsignedBigInteger('id_targeteds')->nullable();
+      $table->unsignedBigInteger('id_inspection_types')->nullable();
+      $table->foreign('id_targeteds')->references('id_targeteds')->on('targeteds');
+      $table->foreign('id_inspection_types')->references('id_inspection_types')->on('inspection_types');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
+      $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
     });
 
     // CREATE TRIGGER FOR categories

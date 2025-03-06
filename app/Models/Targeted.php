@@ -10,6 +10,10 @@ class Targeted extends Model
 {
   use HasFactory;
 
+  protected $table = 'targeteds';
+
+  protected $primaryKey = 'id_targeteds';
+
   protected $fillable = [
     'name',
     'image',
@@ -21,7 +25,7 @@ class Targeted extends Model
   public static $rules = [
     'name' => 'required|max:128',
     'image' => 'nullable',
-    'targeted_id' => 'nullable|exists:targeteds,id',
+    'targeted_id' => 'nullable|exists:targeteds,id_targeteds',
   ];
 
   public static $rulesMessages = [
@@ -39,12 +43,12 @@ class Targeted extends Model
 
   public function targeteds()
   {
-    return $this->hasMany(Targeted::class);
+    return $this->hasMany(Targeted::class, 'targeted_id', 'id_targeteds');
   }
 
   public function targeted()
   {
-    return $this->belongsTo(Targeted::class);
+    return $this->belongsTo(Targeted::class, 'targeted_id', 'id_targeteds');
   }
 
   public function cuidInsertedToDatetime()

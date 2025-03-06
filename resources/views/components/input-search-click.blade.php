@@ -28,7 +28,7 @@
             value="{{ old($name, $value) }}" {{ $attributes }} aria-describedby="{{ $name }}"
             @if ($readonly) readonly @endif
             @if ($uppercase) oninput="this.value = this.value.toUpperCase()" @endif>
-        <button class="btn btn-primary btn-sm" type="button" id={{ $id . '-search' }}>
+        <button class="btn btn-primary btn-sm" type="button" id={{ $id . '-search' }} title="Buscar" @if ($readonly) disabled @endif>
             <i class="fas fa-search"></i>
         </button>
         @error($name)

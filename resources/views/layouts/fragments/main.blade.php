@@ -3,7 +3,7 @@
     <!--begin::Content wrapper-->
     <div class="d-flex flex-column flex-column-fluid">
         <!--begin::Toolbar-->
-        <div id="kt_app_toolbar" class="app-toolbar pt-5">
+        <div id="kt_app_toolbar" class="app-toolbar pt-2">
             <!--begin::Toolbar container-->
             <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
                 <!--begin::Toolbar wrapper-->
@@ -11,7 +11,7 @@
                     <!--begin::Page title-->
                     <div class="page-title d-flex flex-column gap-1 me-3 mb-2">
                         <!--begin::Breadcrumb-->
-                        <ul class="breadcrumb breadcrumb-separatorless fw-semibold mb-6">
+                        <ul class="breadcrumb breadcrumb-separatorless fw-semibold mb-3">
                             <!--begin::Item-->
                             <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
                                 <a href="{{ route('home') }}" class="text-gray-500">
@@ -43,7 +43,7 @@
                         <!--end::Breadcrumb-->
                         <!--begin::Title-->
                         <h1
-                            class="page-heading d-flex flex-column justify-content-center text-dark fw-bolder fs-1 lh-0">
+                            class="page-heading d-flex flex-column justify-content-center text-dark fw-bolder fs-3 lh-0">
                             @yield('page')
                         </h1>
                         <!--end::Title-->

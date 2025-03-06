@@ -35,11 +35,9 @@
                     if (e.key === 'Enter' && $(this).is(':focus') && $(this).val() === '' && search ===
                         '') {
                         e.preventDefault();
-                    } 
+                    }
                 }
             });
-
-
             if (search) {
                 $('#{{ $id }}').val(search);
                 $('#{{ $id }}').focus();

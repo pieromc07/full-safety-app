@@ -16,12 +16,13 @@
                             <x-input id="name" name="name" label="Nombre" class="form-control" placeholder="Nombre"
                                 required="required" autofocus="autofocus" icon="bi-person" />
                         </div>
+                        <input type="hidden" name="parent_id">
                         <div class="col-12">
-                            <x-select id="targeted_id" name="targeted_id" icon="bi-building" label="Dirigido"
+                            <x-select id="id_targeteds" name="id_targeteds" icon="bi-building" label="Dirigido"
                                 placeholder="Seleccione un Dirigido">
                                 <x-slot name="options">
                                     @foreach ($targeteds as $targeted)
-                                        <option value="{{ $targeted->id }}">
+                                        <option value="{{ $targeted->id_targeteds }}">
                                             {{ $targeted->name }}
                                         </option>
                                     @endforeach
@@ -29,11 +30,11 @@
                             </x-select>
                         </div>
                         <div class="col-12">
-                            <x-select id="inspection_type_id" name="inspection_type_id" icon="bi-building"
+                            <x-select id="id_inspection_types" name="id_inspection_types" icon="bi-building"
                                 label="Tipo de Inspección" placeholder="Seleccione un Tipo de Inspección">
                                 <x-slot name="options">
                                     @foreach ($inspectionTypes as $inspectionType)
-                                        <option value="{{ $inspectionType->id }}">
+                                        <option value="{{ $inspectionType->id_inspection_types }}">
                                             {{ $inspectionType->name }}
                                         </option>
                                     @endforeach
@@ -58,12 +59,13 @@
                             <x-input id="name" name="name" label="Nombre" class="form-control" placeholder="Nombre"
                                 required="required" autofocus="autofocus" icon="bi-person" />
                         </div>
+                        <input type="hidden" name="parent_id">
                         <div class="col-12">
-                            <x-select id="targeted_id" name="targeted_id" icon="bi-building" label="Dirigido"
+                            <x-select id="id_targeteds" name="id_targeteds" icon="bi-building" label="Dirigido"
                                 placeholder="Seleccione un Dirigido">
                                 <x-slot name="options">
                                     @foreach ($targeteds as $targeted)
-                                        <option value="{{ $targeted->id }}">
+                                        <option value="{{ $targeted->id_targeteds }}">
                                             {{ $targeted->name }}
                                         </option>
                                     @endforeach
@@ -71,11 +73,11 @@
                             </x-select>
                         </div>
                         <div class="col-12">
-                            <x-select id="inspection_type_id" name="inspection_type_id" icon="bi-building"
+                            <x-select id="id_inspection_types" name="id_inspection_types" icon="bi-building"
                                 label="Tipo de Inspección" placeholder="Seleccione un Tipo de Inspección">
                                 <x-slot name="options">
                                     @foreach ($inspectionTypes as $inspectionType)
-                                        <option value="{{ $inspectionType->id }}">
+                                        <option value="{{ $inspectionType->id_inspection_types }}">
                                             {{ $inspectionType->name }}
                                         </option>
                                     @endforeach
@@ -115,7 +117,7 @@
                             @foreach ($categories as $key => $category)
                                 <tr class="text-center fs-5">
                                     <td class="text-center">
-                                        {{ $category->id }}
+                                        {{ $category->id_categories }}
                                     </td>
                                     <td class="text-center">
                                         {{ $category->name }}
@@ -130,12 +132,12 @@
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $category }})" />
-                                        <x-form-table id="form-delete-{{ $category->id }}"
-                                            action="{{ route('category.destroy', $category) }}" method="POST"
-                                            role="form">
+                                        <x-form-table id="form-delete-{{ $category->id_categories }}"
+                                            action="{{ route('category.destroy', $category->id_categories) }}"
+                                            method="POST" role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $category->id }})" />
+                                                type="button" onclick="Eliminar({{ $category->id_categories }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -166,11 +168,27 @@
         function Editar(category) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/categories/' + category.id);
+            $('#form-edit').attr('action', '/categories/' + category.id_categories);
             $('#form-edit').find('#name').val(category.name);
-            $('#form-edit').find('#targeted_id').val(category.targeted_id);
-            $('#form-edit').find('#inspection_type_id').val(category.inspection_type_id);
+            $('#form-edit').find('#id_targeteds').val(category.id_targeteds);
+            $('#form-edit').find('#id_inspection_types').val(category.id_inspection_types);
             $('#form-edit').find('#name').focus();
+        }
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-delete-' + id).submit();
+                }
+            });
         }
     </script>
 @endpush

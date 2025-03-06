@@ -1,4 +1,4 @@
-@props(['id', 'placeholder', 'icon', 'name', 'label', 'req', 'disabled', 'value', 'filter' => false])
+@props(['id', 'placeholder', 'icon', 'name', 'label', 'req', 'disabled', 'value'])
 
 @php
     $id = $id ?? md5('input-text' . rand(1, 1000));
@@ -12,19 +12,15 @@
 @endphp
 
 <div class="mb-3">
-    @if (!$filter)
-      <label class="form-label" for="{{ $id }}">
-          {{ $label }}
-          @if ($req)
-              <span class="text-danger">*</span>
-          @endif
-      </label>
-    @endif
+    <label class="form-label" for="{{ $id }}">
+        {{ $label }}
+        @if ($req)
+            <span class="text-danger">*</span>
+        @endif
+    </label>
     <select class="form-select  @error($name) is-invalid @enderror" id="{{ $id }}" {{ $attributes }}
         name="{{ $name }}" @if ($disabled) disabled @endif>
-        @if (!$filter)
-          <option value="">{{ $placeholder }}</option>
-        @endif
+        <option value="">{{ $placeholder }}</option>
         {{ $options }}
     </select>
     @error($name)
@@ -39,14 +35,21 @@
         $(document).ready(function(e) {
             $('#{{ $id }}').select2();
             let element;
-            if('{{ $value }}' !== '' && '{{ $value }}' !== 'null') {
-              element = '{{ $value }}';
+            if ('{{ $value }}' !== '' && '{{ $value }}' !== 'null') {
+                element = '{{ $value }}';
             }
 
-            if('{{ old($name) }}' !== '' && '{{ old($name) }}' !== 'null') {
-              element = '{{ old($name) }}';
+            if ('{{ old($name) }}' !== '' && '{{ old($name) }}' !== 'null') {
+                element = '{{ old($name) }}';
             }
 
+            if (!element) {
+                $('#{{ $id }} option').each(function() {
+                    if ($(this).data('local-selected') == 1) {
+                        element = $(this).val();
+                    }
+                });
+            }
 
             $('#{{ $id }}').val(element).trigger('change');
         });

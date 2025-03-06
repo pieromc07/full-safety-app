@@ -12,6 +12,8 @@ class InspectionType extends Model
 
   protected $table = 'inspection_types';
 
+  protected $primaryKey = 'id_inspection_types';
+
   protected $fillable = [
     'name',
     'description',
@@ -38,7 +40,7 @@ class InspectionType extends Model
 
   // public function inspections()
   // {
-  //   return $this->hasMany(Inspection::class, 'inspection_type_id');
+  //   return $this->hasMany(Inspection::class, 'id_inspection_types');
   // }
 
   public function cuidInsertedToDatetime()

@@ -11,8 +11,8 @@ class EnterpriseRelsEnterprise extends Model
   use HasFactory;
 
   protected $fillable = [
-    'supplier_enterprise_id',
-    'transport_enterprise_id',
+    'id_supplier_enterprises',
+    'id_transport_enterprises',
     'cuid_inserted',
     'cuid_updated'
   ];
@@ -26,17 +26,17 @@ class EnterpriseRelsEnterprise extends Model
 
   public function supplierEnterprise()
   {
-    return $this->belongsTo(Enterprise::class, 'supplier_enterprise_id');
+    return $this->belongsTo(Enterprise::class, 'id_supplier_enterprises');
   }
 
   public function transportEnterprise()
   {
-    return $this->belongsTo(Enterprise::class, 'transport_enterprise_id');
+    return $this->belongsTo(Enterprise::class, 'id_transport_enterprises');
   }
 
   public static function uniqueSupplierAndTransport($supplierId, $transportId)
   {
-    return EnterpriseRelsEnterprise::where('supplier_enterprise_id', $supplierId)->where('transport_enterprise_id', $transportId)->first();
+    return EnterpriseRelsEnterprise::where('id_supplier_enterprises', $supplierId)->where('id_transport_enterprises', $transportId)->first();
   }
 
   public function cuidInsertedToDatetime()

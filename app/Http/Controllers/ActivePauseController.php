@@ -31,8 +31,8 @@ class ActivePauseController extends Controller
       $newPauseActive->date = $pauseactive['date'];
       $newPauseActive->hour = $pauseactive['hour'];
       $newPauseActive->checkpoint_id = $pauseactive['checkpoint_id'];
-      $newPauseActive->supplier_enterprise_id = $pauseactive['supplier_enterprise_id'];
-      $newPauseActive->transport_enterprise_id = $pauseactive['transport_enterprise_id'];
+      $newPauseActive->id_supplier_enterprises = $pauseactive['id_supplier_enterprises'];
+      $newPauseActive->id_transport_enterprises = $pauseactive['id_transport_enterprises'];
       $newPauseActive->participants = $pauseactive['participants'];
       $newPauseActive->photo_one = $this->savePauseActiveImage($pauseactive['photo_one_base64'], 'photo_one');
       $newPauseActive->photo_two = $this->savePauseActiveImage($pauseactive['photo_two_base64'], 'photo_two');
@@ -92,7 +92,7 @@ class ActivePauseController extends Controller
     return view('active.index', compact('actives'));
   }
 
-    /**
+  /**
    * Display the specified resource.
    */
   public function show(ActivePause $active)

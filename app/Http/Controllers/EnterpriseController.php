@@ -17,9 +17,9 @@ class EnterpriseController extends Controller
    */
   public function index(Request $request)
   {
-    $enterpriseType = $request->get('enterprise_type_id');
+    $enterpriseType = $request->get('id_enterprise_types');
     if ($enterpriseType) {
-      $enterprises = Enterprise::where('enterprise_type_id', $enterpriseType)->paginate(10);
+      $enterprises = Enterprise::where('id_enterprise_types', $enterpriseType)->paginate(10);
     } else {
       $enterprises = Enterprise::paginate(10);
     }
@@ -50,7 +50,7 @@ class EnterpriseController extends Controller
       if ($request->hasFile('image')) {
         $enterprise->image = $this::saveImage($request->file('image'), 'enterprises');
       }
-      $enterprise->enterprise_type_id = $validated['enterprise_type_id'];
+      $enterprise->id_enterprise_types = $validated['id_enterprise_types'];
       $enterprise->save();
       DB::commit();
     } catch (\Exception $e) {
@@ -63,18 +63,18 @@ class EnterpriseController extends Controller
   public function assign(Request $request)
   {
     $validated = $request->validate([
-      'supplier_enterprise_id' => 'required|exists:enterprises,id',
-      'transport_enterprise_id' => 'required|exists:enterprises,id'
+      'id_supplier_enterprises' => 'required|exists:enterprises,id_enterprises',
+      'id_transport_enterprises' => 'required|exists:enterprises,id_enterprises'
     ]);
     try {
       DB::beginTransaction();
-      $relsExists = EnterpriseRelsEnterprise::uniqueSupplierAndTransport($validated['supplier_enterprise_id'], $validated['transport_enterprise_id']);
+      $relsExists = EnterpriseRelsEnterprise::uniqueSupplierAndTransport($validated['id_supplier_enterprises'], $validated['id_transport_enterprises']);
       if ($relsExists) {
         return redirect()->route('enterprise')->with('error', 'Las empresas ya están asignadas.');
       }
       $enterpriseRelsEnterprise = new EnterpriseRelsEnterprise();
-      $enterpriseRelsEnterprise->supplier_enterprise_id = $validated['supplier_enterprise_id'];
-      $enterpriseRelsEnterprise->transport_enterprise_id = $validated['transport_enterprise_id'];
+      $enterpriseRelsEnterprise->id_supplier_enterprises = $validated['id_supplier_enterprises'];
+      $enterpriseRelsEnterprise->id_transport_enterprises = $validated['id_transport_enterprises'];
       $enterpriseRelsEnterprise->save();
       DB::commit();
     } catch (\Exception $e) {
@@ -89,7 +89,12 @@ class EnterpriseController extends Controller
    */
   public function show(Enterprise $enterprise)
   {
-    return response()->json($enterprise->transportEnterprises());
+    try{
+
+      return response()->json($enterprise->transportEnterprises());
+    } catch (\Exception $e) {
+      return response()->json(['error' => $e->getMessage()]);
+    }
   }
 
   /**
@@ -115,7 +120,7 @@ class EnterpriseController extends Controller
           $enterprise->image = $this::saveImage($request->file('image'), 'enterprises');
         }
       }
-      $enterprise->enterprise_type_id = $validated['enterprise_type_id'];
+      $enterprise->id_enterprise_types = $validated['id_enterprise_types'];
       $enterprise->save();
       DB::commit();
     } catch (\Exception $e) {

@@ -9,21 +9,23 @@
     $total = $total ?? 1;
     $previous = $page - 1;
     $next = $page + 1;
+    $query = request()->query();
 @endphp
 
 <ul class="pagination pagination-circle">
     <li class="page-item previous @if ($page == 1) disabled @endif">
-        <a class="page-link" href="{{ route($route, ['page' => $previous]) }}">
+
+        <a class="page-link" href="{{ route($route, array_merge($query, ['page' => $previous])) }}">
             <i class="previous"></i>
         </a>
     </li>
     @for ($i = 1; $i <= $lastPage; $i++)
         <li class="page-item @if ($page == $i) active @endif">
-            <a class="page-link" href="{{ route($route, ['page' => $i]) }}">{{ $i }}</a>
+            <a class="page-link" href="{{ route($route, array_merge($query, ['page' => $i])) }}">{{ $i }}</a>
         </li>
     @endfor
     <li class="page-item next @if ($page == $lastPage) disabled @endif">
-        <a class="page-link" href="{{ route($route, ['page' => $next]) }}">
+        <a class="page-link" href="{{ route($route, array_merge($query, ['page' => $next])) }}">
             <i class="next"></i>
         </a>
     </li>

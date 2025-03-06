@@ -13,14 +13,16 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('enterprise_rels_enterprises', function (Blueprint $table) {
-      $table->id();
-      $table->unsignedBigInteger('supplier_enterprise_id');
-      $table->foreign('supplier_enterprise_id')->references('id')->on('enterprises');
-      $table->unsignedBigInteger('transport_enterprise_id');
-      $table->foreign('transport_enterprise_id')->references('id')->on('enterprises');
+      $table->id('id_enterprise_rels_enterprises');
+      $table->unsignedBigInteger('id_supplier_enterprises');
+      $table->unsignedBigInteger('id_transport_enterprises');
+      $table->foreign('id_transport_enterprises')->references('id_enterprises')->on('enterprises');
+      $table->foreign('id_supplier_enterprises')->references('id_enterprises')->on('enterprises');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
+      $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
     });
+
 
     // CREATE TRIGGER FOR enterprise_rels_enterprises
     DB::unprepared('

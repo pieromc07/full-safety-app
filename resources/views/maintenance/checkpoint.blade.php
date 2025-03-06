@@ -72,7 +72,7 @@
                             @foreach ($checkpoints as $key => $checkpoint)
                                 <tr class="text-center fs-5">
                                     <td class="text-center">
-                                        {{ $checkpoint->id }}
+                                        {{ $checkpoint->id_checkpoints }}
                                     </td>
                                     <td class="text-center">
                                         {{ $checkpoint->name }}
@@ -84,12 +84,12 @@
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $checkpoint }})" />
-                                        <x-form-table id="form-delete-{{ $checkpoint->id }}"
-                                            action="{{ route('checkpoint.destroy', $checkpoint) }}" method="POST"
-                                            role="form">
+                                        <x-form-table id="form-delete-{{ $checkpoint->id_checkpoints }}"
+                                            action="{{ route('checkpoint.destroy', $checkpoint->id_checkpoints) }}"
+                                            method="POST" role="form">
                                             @method('DELETE')
-                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $checkpoint->id }})" />
+                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar" type="button"
+                                                onclick="Eliminar({{ $checkpoint->id_checkpoints }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -121,10 +121,26 @@
         function Editar(checkpoint) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/checkpoints/' + checkpoint.id);
+            $('#form-edit').attr('action', '/checkpoints/' + checkpoint.id_checkpoints);
             $('#form-edit').find('#name').val(checkpoint.name);
             $('#form-edit').find('#description').val(checkpoint.description);
             $('#form-edit').find('#name').focus();
+        }
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-delete-' + id).submit();
+                }
+            });
         }
     </script>
 @endpush

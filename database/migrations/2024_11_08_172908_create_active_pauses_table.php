@@ -13,20 +13,21 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('active_pauses', function (Blueprint $table) {
-      $table->id();
+      $table->id('id_active_pauses');
       $table->date('date');
       $table->time('hour');
-      $table->unsignedBigInteger('checkpoint_id');
-      $table->unsignedBigInteger('supplier_enterprise_id');
-      $table->unsignedBigInteger('transport_enterprise_id');
+      $table->unsignedBigInteger('id_checkpoints');
+      $table->unsignedBigInteger('id_supplier_enterprises');
+      $table->unsignedBigInteger('id_transport_enterprises');
       $table->integer('participants')->nullable();
       $table->text('photo_one')->nullable();
       $table->text('photo_two')->nullable();
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
-      $table->foreign('checkpoint_id')->references('id')->on('check_points');
-      $table->foreign('supplier_enterprise_id')->references('id')->on('enterprises');
-      $table->foreign('transport_enterprise_id')->references('id')->on('enterprises');
+      $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
+      $table->foreign('id_checkpoints')->references('id_checkpoints')->on('checkpoints');
+      $table->foreign('id_supplier_enterprises')->references('id_enterprises')->on('enterprises');
+      $table->foreign('id_transport_enterprises')->references('id_enterprises')->on('enterprises');
     });
 
 

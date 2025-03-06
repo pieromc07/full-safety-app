@@ -10,11 +10,15 @@ class Enterprise extends Model
 {
   use HasFactory;
 
+  protected $table = 'enterprises';
+
+  protected $primaryKey = 'id_enterprises';
+
   protected $fillable = [
     'name',
     'ruc',
     'image',
-    'enterprise_type_id',
+    'id_enterprise_types',
     'cuid_inserted',
     'cuid_updated'
   ];
@@ -23,7 +27,7 @@ class Enterprise extends Model
     'name' => 'required|max:128',
     'ruc' => 'required|size:11',
     'image' => 'nullable',
-    'enterprise_type_id' => 'required|exists:enterprise_types,id'
+    'id_enterprise_types' => 'required|exists:enterprise_types,id_enterprise_types'
   ];
 
   public static $rulesMessages = [
@@ -31,8 +35,8 @@ class Enterprise extends Model
     'name.max' => 'El nombre no puede tener más de 128 caracteres.',
     'ruc.required' => 'El RUC es obligatorio.',
     'ruc.size' => 'El RUC debe tener 11 caracteres.',
-    'enterprise_type_id.required' => 'El tipo de empresa es obligatorio.',
-    'enterprise_type_id.exists' => 'El tipo de empresa no existe.'
+    'id_enterprise_types.required' => 'El tipo de empresa es obligatorio.',
+    'id_enterprise_types.exists' => 'El tipo de empresa no existe.'
   ];
 
   protected $hidden = [
@@ -44,15 +48,15 @@ class Enterprise extends Model
 
   public function enterpriseType()
   {
-    return $this->belongsTo(EnterpriseType::class);
+    return $this->belongsTo(EnterpriseType::class, 'id_enterprise_types', 'id_enterprise_types');
   }
 
   public function transportEnterprises()
   {
     // Mostar empresas de transporte que estan en la tabla de relaciones
-    return Enterprise::join('enterprise_rels_enterprises', 'enterprise_rels_enterprises.transport_enterprise_id', '=', 'enterprises.id')
-      ->join('enterprise_types', 'enterprises.enterprise_type_id', '=', 'enterprise_types.id')
-      ->where('enterprise_rels_enterprises.supplier_enterprise_id', $this->id)
+    return Enterprise::join('enterprise_rels_enterprises', 'enterprise_rels_enterprises.id_transport_enterprises', '=', 'enterprises.id_enterprises')
+      ->join('enterprise_types', 'enterprises.id_enterprise_types', '=', 'enterprise_types.id_enterprise_types')
+      ->where('enterprise_rels_enterprises.id_supplier_enterprises', $this->id_enterprises)
       ->select('enterprises.*', 'enterprise_types.name AS enterprisetype')
       ->get();
   }
@@ -60,8 +64,8 @@ class Enterprise extends Model
   public static function onlyTransportEnterprises()
   {
     // Mostrar solo empresas de transporte
-    return Enterprise::join('enterprise_types', 'enterprises.enterprise_type_id', '=', 'enterprise_types.id')
-      ->where('enterprise_types.id', 2)
+    return Enterprise::join('enterprise_types', 'enterprises.id_enterprise_types', '=', 'enterprise_types.id_enterprise_types')
+      ->where('enterprise_types.id_enterprise_types', 2)
       ->select('enterprises.*')
       ->get();
   }
@@ -69,8 +73,8 @@ class Enterprise extends Model
   public static function onlySupplierEnterprises()
   {
     // Mostrar solo empresas proveedoras
-    return Enterprise::join('enterprise_types', 'enterprises.enterprise_type_id', '=', 'enterprise_types.id')
-      ->where('enterprise_types.id', 1)
+    return Enterprise::join('enterprise_types', 'enterprises.id_enterprise_types', '=', 'enterprise_types.id_enterprise_types')
+      ->where('enterprise_types.id_enterprise_types', 1)
       ->select('enterprises.*')
       ->get();
   }

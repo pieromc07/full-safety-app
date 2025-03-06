@@ -13,14 +13,14 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('users', function (Blueprint $table) {
-      $table->id();
-      $table->string('name', 128)->index('users_name_IDX');
+      $table->id('id_users');
       $table->string('username', 16)->unique()->index('users_username_IDX');
       $table->string('password', 256)->index('users_password_IDX');
       $table->text('token')->nullable();
-      $table->tinyInteger('is_active')->default(1);
+      $table->tinyInteger('status')->default(1)->index('users_status_IDX');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
+      $table->unsignedBigInteger('cuid_deleted')->nullable();
     });
 
     // CREATE TRIGGER FOR users

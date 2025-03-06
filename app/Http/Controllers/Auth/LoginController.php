@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
+use App\Models\Enterprise;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +31,7 @@ class LoginController extends Controller
    *
    * @var string
    */
-  protected $redirectTo = '/home';
+  protected $redirectTo = RouteServiceProvider::HOME;
 
   /**
    * Create a new controller instance.
@@ -38,9 +41,19 @@ class LoginController extends Controller
   public function __construct()
   {
     $this->middleware('guest')->except('logout');
-    $this->middleware('auth')->only('logout');
   }
 
+  /**
+   * Show the application's login form.
+   *
+   * @return \Illuminate\View\View
+   */
+  public function showLoginForm()
+  {
+
+    $enterprise = Company::where('ruc', '20480865198');
+    return view('auth.login', compact('enterprise'));
+  }
 
   /**
    * Authenticate the user instance.
@@ -52,7 +65,6 @@ class LoginController extends Controller
   public function login(Request $request)
   {
     $this->validateLogin($request);
-
     $user = User::where('username', $request->username)->first();
 
     if (!$user) {
@@ -70,6 +82,17 @@ class LoginController extends Controller
     }
   }
 
+
+  /**
+   * Get the login username to be used by the controller.
+   *
+   * @return string
+   */
+  public function username()
+  {
+    return 'username';
+  }
+
   /**
    * Validate the user login request.
    *
@@ -80,13 +103,28 @@ class LoginController extends Controller
    */
   protected function validateLogin(Request $request)
   {
-    $request->validate(User::$rulesLogin, User::$rulesMessagesLogin);
+    $request->validate(User::$rulesLogin, User::$messagesLogin);
   }
 
-
-
-  public function username()
+  /**
+   * Authenticate master user
+   * @param  \Illuminate\Http\Request  $request
+   * @return boolean
+   *
+   * @throws \Illuminate\Validation\ValidationException
+   */
+  private function authenticateMasterUser(Request $request)
   {
-    return 'username';
+    $user = User::where('username', $request->username)->first();
+    $IsUserMaster = User::find($user->id_users)->hasRole('master');
+    if ($user && password_verify($request->password, $user->password) && $IsUserMaster) {
+      $request->session()->put('user', $user);
+      $request->session()->put('userId', $user->id_users);
+      $request->session()->put('role', 'master');
+      $request->session()->put('branchId', null);
+      Auth::login($user);
+      return true;
+    }
+    return false;
   }
 }

@@ -13,15 +13,16 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('employees', function (Blueprint $table) {
-      $table->id();
+      $table->id('id_employees');
       $table->string('document', 16)->index('employees_document_IDX');
       $table->string('name', 50)->index('employees_name_IDX');
       $table->string('lastname', 50)->index('employees_lastname_IDX');
       $table->string('fullname', 150)->index('employees_fullname_IDX');
-      $table->unsignedBigInteger('transport_enterprise_id');
+      $table->unsignedBigInteger('id_transport_enterprises');
+      $table->foreign('id_transport_enterprises')->references('id_enterprises')->on('enterprises');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
-      $table->foreign('transport_enterprise_id')->references('id')->on('enterprises');
+      $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
     });
 
     // Crear los triggers para insertar y actualizar en la tabla `employees`

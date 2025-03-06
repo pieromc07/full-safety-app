@@ -33,8 +33,8 @@ class GPSControlController extends Controller
       $newGPS->date = $cgps['date'];
       $newGPS->hour = $cgps['hour'];
       $newGPS->checkpoint_id = $cgps['checkpoint_id'];
-      $newGPS->supplier_enterprise_id = $cgps['supplier_enterprise_id'];
-      $newGPS->transport_enterprise_id = $cgps['transport_enterprise_id'];
+      $newGPS->id_supplier_enterprises = $cgps['id_supplier_enterprises'];
+      $newGPS->id_transport_enterprises = $cgps['id_transport_enterprises'];
       $newGPS->option = $cgps['option'];
       $newGPS->state = $cgps['state'];
       $newGPS->observation = $cgps['observation'];
@@ -96,7 +96,7 @@ class GPSControlController extends Controller
     return view('control.index', compact('controls'));
   }
 
-    /**
+  /**
    * Display the specified resource.
    */
   public function show(GPSControl $control)

@@ -39,8 +39,8 @@ class DailyDialogController extends Controller
       $newDialogue->date = $dialogue['date'];
       $newDialogue->hour = $dialogue['hour'];
       $newDialogue->checkpoint_id = $dialogue['checkpoint_id'];
-      $newDialogue->supplier_enterprise_id = $dialogue['supplier_enterprise_id'];
-      $newDialogue->transport_enterprise_id = $dialogue['transport_enterprise_id'];
+      $newDialogue->id_supplier_enterprises = $dialogue['id_supplier_enterprises'];
+      $newDialogue->id_transport_enterprises = $dialogue['id_transport_enterprises'];
       $newDialogue->topic = $dialogue['topic'];
       $newDialogue->participants = $dialogue['participants'];
       $newDialogue->photo_one = $this->saveDialogueImage($dialogue['photo_one_base64'], 'photo_one');

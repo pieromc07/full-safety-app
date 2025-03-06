@@ -14,11 +14,11 @@
             <!--end::Sidebar mobile toggle-->
             <!--begin::Logo-->
             <a href="{{ url('/') }}" class="app-sidebar-logo">
-                <img src="{{ asset('assets/media/logos/logo.png')}}" alt="Full Safety"
-                    class="h-60px theme-light-show" />
-                {{-- <span class="theme-light-show text-dark fs-5 fw-bolder ms-2">Full Safety</span> --}}
-                <img src="{{ asset('assets/media/logos/logo.png') }}" alt="Full Safety"
-                    class="h-60px theme-dark-show" />
+                <img src="{{ asset('assets/media/logos/logo.png') }}" alt="{{ session('logo') }}"
+                    class="h-30px theme-light-show" />
+                <span class="theme-light-show text-dark fs-5 fw-bolder ms-2">Full Safety</span>
+                <img src="{{ asset('assets/media/logos/logo.png') }}" alt="{{ session('logo') }}"
+                    class="h-30px theme-dark-show" />
                 <span class="theme-dark-show text-white fs-5 fw-bolder ms-2">Full Safety</span>
             </a>
             <!--end::Logo-->
@@ -106,7 +106,7 @@
                                         class="d-flex text-dark text-hover-primary align-items-center mb-5">
                                         <!--begin::Symbol-->
                                         <div class="symbol symbol-40px me-4">
-                                            <img src="assets/media/avatars/300-6.jpg" alt="" />
+                                            <img src="{{ asset('assets/media/avatars/300-6.jpg') }}" alt="" />
                                         </div>
                                         <!--end::Symbol-->
                                         <!--begin::Title-->
@@ -123,7 +123,7 @@
                                         class="d-flex text-dark text-hover-primary align-items-center mb-5">
                                         <!--begin::Symbol-->
                                         <div class="symbol symbol-40px me-4">
-                                            <img src="assets/media/avatars/300-2.jpg" alt="" />
+                                            <img src="{{ asset('assets/media/avatars/300-2.jpg') }}" alt="" />
                                         </div>
                                         <!--end::Symbol-->
                                         <!--begin::Title-->
@@ -140,7 +140,7 @@
                                         class="d-flex text-dark text-hover-primary align-items-center mb-5">
                                         <!--begin::Symbol-->
                                         <div class="symbol symbol-40px me-4">
-                                            <img src="assets/media/avatars/300-9.jpg" alt="" />
+                                            <img src="{{ asset('assets/media/avatars/300-9.jpg') }}" alt="" />
                                         </div>
                                         <!--end::Symbol-->
                                         <!--begin::Title-->
@@ -156,7 +156,8 @@
                                         class="d-flex text-dark text-hover-primary align-items-center mb-5">
                                         <!--begin::Symbol-->
                                         <div class="symbol symbol-40px me-4">
-                                            <img src="assets/media/avatars/300-14.jpg" alt="" />
+                                            <img src="{{ asset('assets/media/avatars/300-14.jpg') }}"
+                                                alt="" />
                                         </div>
                                         <!--end::Symbol-->
                                         <!--begin::Title-->
@@ -172,7 +173,8 @@
                                         class="d-flex text-dark text-hover-primary align-items-center mb-5">
                                         <!--begin::Symbol-->
                                         <div class="symbol symbol-40px me-4">
-                                            <img src="assets/media/avatars/300-11.jpg" alt="" />
+                                            <img src="{{ asset('assets/media/avatars/300-11.jpg') }}"
+                                                alt="" />
                                         </div>
                                         <!--end::Symbol-->
                                         <!--begin::Title-->
@@ -195,7 +197,7 @@
                                         <div class="symbol symbol-40px me-4">
                                             <span class="symbol-label bg-light">
                                                 <img class="w-20px h-20px"
-                                                    src="assets/media/svg/brand-logos/volicity-9.svg"
+                                                    src="{{ asset('assets/media/svg/brand-logos/volicity-9.svg') }}"
                                                     alt="" />
                                             </span>
                                         </div>
@@ -214,7 +216,8 @@
                                         <!--begin::Symbol-->
                                         <div class="symbol symbol-40px me-4">
                                             <span class="symbol-label bg-light">
-                                                <img class="w-20px h-20px" src="assets/media/svg/brand-logos/tvit.svg"
+                                                <img class="w-20px h-20px"
+                                                    src="{{ asset('assets/media/svg/brand-logos/tvit.svg') }}"
                                                     alt="" />
                                             </span>
                                         </div>
@@ -234,7 +237,8 @@
                                         <!--begin::Symbol-->
                                         <div class="symbol symbol-40px me-4">
                                             <span class="symbol-label bg-light">
-                                                <img class="w-20px h-20px" src="assets/media/svg/misc/infography.svg"
+                                                <img class="w-20px h-20px"
+                                                    src="{{ asset('assets/media/svg/misc/infography.svg') }}"
                                                     alt="" />
                                             </span>
                                         </div>
@@ -253,7 +257,8 @@
                                         <!--begin::Symbol-->
                                         <div class="symbol symbol-40px me-4">
                                             <span class="symbol-label bg-light">
-                                                <img class="w-20px h-20px" src="assets/media/svg/brand-logos/leaf.svg"
+                                                <img class="w-20px h-20px"
+                                                    src="{{ asset('assets/media/svg/brand-logos/leaf.svg') }}"
                                                     alt="" />
                                             </span>
                                         </div>
@@ -273,7 +278,8 @@
                                         <div class="symbol symbol-40px me-4">
                                             <span class="symbol-label bg-light">
                                                 <img class="w-20px h-20px"
-                                                    src="assets/media/svg/brand-logos/tower.svg" alt="" />
+                                                    src="{{ asset('assets/media/svg/brand-logos/tower.svg') }}"
+                                                    alt="" />
                                             </span>
                                         </div>
                                         <!--end::Symbol-->
@@ -1467,7 +1473,7 @@
                 <div class="cursor-pointer symbol symbol-30px symbol-lg-40px"
                     data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                     data-kt-menu-placement="bottom-end">
-                    <img src="{{ asset('assets/media/avatars/300-2.jpg') }}" alt="user" />
+                    <img src="{{ asset('assets/media/avatars/blank.png') }}" alt="user" />
                 </div>
                 <!--begin::User account menu-->
                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
@@ -1477,16 +1483,19 @@
                         <div class="menu-content d-flex align-items-center px-3">
                             <!--begin::Avatar-->
                             <div class="symbol symbol-50px me-5">
-                                <img alt="Logo" src="{{ asset('assets/media/avatars/300-2.jpg') }}" />
+                                <img alt="Logo" src="{{ asset('assets/media/avatars/blank.png') }}" />
                             </div>
                             <!--end::Avatar-->
                             <!--begin::Username-->
                             <div class="d-flex flex-column">
-                                <div class="fw-bold d-flex align-items-center fs-5">Jane Cooper
+                                <div class="fw-bold d-flex align-items-center fs-5">
+                                    {{ optional(request()->session()->get('employee'))->fullname ?? Auth::user()->username }}
                                     <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">Pro</span>
                                 </div>
-                                <a href="#"
-                                    class="fw-semibold text-muted text-hover-primary fs-7">jane@kt.com</a>
+                                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">
+                                    {{ optional(request()->session()->get('employee'))->workstation->name ?? Auth::user()->username }}
+
+                                </a>
                             </div>
                             <!--end::Username-->
                         </div>
@@ -1496,7 +1505,7 @@
                     <div class="separator my-2"></div>
                     <!--end::Menu separator-->
                     <!--begin::Menu item-->
-                    <div class="menu-item px-5">
+                    <div class="menu-item px-5 d-none">
                         <a href="../dist/account/overview.html" class="menu-link px-5">My Profile</a>
                     </div>
                     <!--end::Menu item-->
@@ -1570,7 +1579,7 @@
                     </div>
                     <!--end::Menu item-->
                     <!--begin::Menu separator-->
-                    <div class="separator my-2"></div>
+                    <div class="separator my-2 d-none"></div>
                     <!--end::Menu separator-->
                     <!--begin::Menu item-->
                     <div class="menu-item px-5" data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
@@ -1663,7 +1672,8 @@
                                 <span
                                     class="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">English
                                     <img class="w-15px h-15px rounded-1 ms-2"
-                                        src="assets/media/flags/united-states.svg" alt="" /></span></span>
+                                        src="{{ asset('assets/media/flags/united-states.svg') }}"
+                                        alt="" /></span></span>
                         </a>
                         <!--begin::Menu sub-->
                         <div class="menu-sub menu-sub-dropdown w-175px py-4">
@@ -1671,7 +1681,8 @@
                             <div class="menu-item px-3">
                                 <a href="../dist/account/settings.html" class="menu-link d-flex px-5 active">
                                     <span class="symbol symbol-20px me-4">
-                                        <img class="rounded-1" src="assets/media/flags/united-states.svg"
+                                        <img class="rounded-1"
+                                            src="{{ asset('assets/media/flags/united-states.svg') }}"
                                             alt="" />
                                     </span>English</a>
                             </div>
@@ -1680,7 +1691,8 @@
                             <div class="menu-item px-3">
                                 <a href="../dist/account/settings.html" class="menu-link d-flex px-5">
                                     <span class="symbol symbol-20px me-4">
-                                        <img class="rounded-1" src="assets/media/flags/spain.svg" alt="" />
+                                        <img class="rounded-1" src="{{ asset('assets/media/flags/spain.svg') }}"
+                                            alt="" />
                                     </span>Spanish</a>
                             </div>
                             <!--end::Menu item-->
@@ -1688,7 +1700,8 @@
                             <div class="menu-item px-3">
                                 <a href="../dist/account/settings.html" class="menu-link d-flex px-5">
                                     <span class="symbol symbol-20px me-4">
-                                        <img class="rounded-1" src="assets/media/flags/germany.svg" alt="" />
+                                        <img class="rounded-1" src="{{ asset('assets/media/flags/germany.svg') }}"
+                                            alt="" />
                                     </span>German</a>
                             </div>
                             <!--end::Menu item-->
@@ -1696,7 +1709,8 @@
                             <div class="menu-item px-3">
                                 <a href="../dist/account/settings.html" class="menu-link d-flex px-5">
                                     <span class="symbol symbol-20px me-4">
-                                        <img class="rounded-1" src="assets/media/flags/japan.svg" alt="" />
+                                        <img class="rounded-1" src="{{ asset('assets/media/flags/japan.svg') }}"
+                                            alt="" />
                                     </span>Japanese</a>
                             </div>
                             <!--end::Menu item-->
@@ -1704,7 +1718,8 @@
                             <div class="menu-item px-3">
                                 <a href="../dist/account/settings.html" class="menu-link d-flex px-5">
                                     <span class="symbol symbol-20px me-4">
-                                        <img class="rounded-1" src="assets/media/flags/france.svg" alt="" />
+                                        <img class="rounded-1" src="{{ asset('assets/media/flags/france.svg') }}"
+                                            alt="" />
                                     </span>French</a>
                             </div>
                             <!--end::Menu item-->
@@ -1713,18 +1728,21 @@
                     </div>
                     <!--end::Menu item-->
                     <!--begin::Menu item-->
-                    <div class="menu-item px-5 my-1">
+                    <div class="menu-item px-5 my-1 d-none">
                         <a href="../dist/account/settings.html" class="menu-link px-5">Account
                             Settings</a>
                     </div>
                     <!--end::Menu item-->
                     <!--begin::Menu item-->
                     <div class="menu-item px-5">
-                        {!! Form::open(['route' => 'logout', 'method' => 'POST']) !!}
+                        <x-form-table action="{{ route('logout') }}" method="POST">
+                            <input type="submit" value="Sign Out" class="menu-link px-5" />
+                        </x-form-table>
+                        {{-- {!! Form::open(['route' => 'logout', 'method' => 'POST']) !!}
                         @csrf
                         <input type="submit" value="Sign Out" class="menu-link px-5" />
-                        {{-- <a href="../dist/authentication/sign-in/basic.html" class="menu-link px-5">Sign Out</a> --}}
-                        {!! Form::close() !!}
+                        {{-- <a href="../dist/authentication/sign-in/basic.html" class="menu-link px-5">Sign Out</a>
+                        {!! Form::close() !!} --}}
                     </div>
                     <!--end::Menu item-->
                 </div>

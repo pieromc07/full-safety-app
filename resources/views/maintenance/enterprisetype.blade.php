@@ -72,7 +72,7 @@
                             @foreach ($enterpriseTypes as $key => $enterpriseType)
                                 <tr class="text-center fs-5">
                                     <td class="text-center">
-                                        {{ $enterpriseType->id }}
+                                        {{ $enterpriseType->id_enterprise_types }}
                                     </td>
                                     <td class="text-center">
                                         {{ $enterpriseType->name }}
@@ -84,12 +84,13 @@
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $enterpriseType }})" />
-                                        <x-form-table id="form-delete-{{ $enterpriseType->id }}"
-                                            action="{{ route('enterprisetype.destroy', $enterpriseType) }}" method="POST"
-                                            role="form">
+                                        <x-form-table id="form-delete-{{ $enterpriseType->id_enterprise_types }}"
+                                            action="{{ route('enterprisetype.destroy', $enterpriseType->id_enterprise_types) }}"
+                                            method="POST" role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $enterpriseType->id }})" />
+                                                type="button"
+                                                onclick="Eliminar({{ $enterpriseType->id_enterprise_types }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -121,10 +122,26 @@
         function Editar(enterpriseType) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/enterprisetypes/' + enterpriseType.id);
+            $('#form-edit').attr('action', '/enterprisetypes/' + enterpriseType.id_enterprise_types);
             $('#form-edit').find('#name').val(enterpriseType.name);
             $('#form-edit').find('#description').val(enterpriseType.description);
             $('#form-edit').find('#name').focus();
+        }
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-delete-' + id).submit();
+                }
+            });
         }
     </script>
 @endpush

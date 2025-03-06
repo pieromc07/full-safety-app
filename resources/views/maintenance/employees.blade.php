@@ -26,11 +26,11 @@
                                 placeholder="Apellidos" required="required" autofocus="autofocus" icon="bi-person" />
                         </div>
                         <div class="col-12">
-                            <x-select id="transport_enterprise_id" name="transport_enterprise_id" icon="bi-building"
+                            <x-select id="id_transport_enterprises" name="id_transport_enterprises" icon="bi-building"
                                 label="Empresa Transportista" placeholder="Seleccione empresa">
                                 <x-slot name="options">
                                     @foreach ($enterpriseTransports as $transport)
-                                        <option value="{{ $transport->id }}">
+                                        <option value="{{ $transport->id_enterprises }}">
                                             {{ $transport->name }}
                                         </option>
                                     @endforeach
@@ -65,11 +65,11 @@
                                 placeholder="Apellidos" required="required" autofocus="autofocus" icon="bi-person" />
                         </div>
                         <div class="col-12">
-                            <x-select id="transport_enterprise_id" name="transport_enterprise_id" icon="bi-building"
+                            <x-select id="id_transport_enterprises" name="id_transport_enterprises" icon="bi-building"
                                 label="Empresa Transportista" placeholder="Seleccione empresa">
                                 <x-slot name="options">
                                     @foreach ($enterpriseTransports as $transport)
-                                        <option value="{{ $transport->id }}">
+                                        <option value="{{ $transport->id_enterprises }}">
                                             {{ $transport->name }}
                                         </option>
                                     @endforeach
@@ -106,7 +106,7 @@
                             @foreach ($employees as $key => $employee)
                                 <tr class="text-center fs-5">
                                     <td class="text-center">
-                                        {{ $employee->id }}
+                                        {{ $employee->id_employees }}
                                     </td>
                                     <td class="text-center">
                                         {{ $employee->document }}
@@ -118,12 +118,12 @@
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $employee }})" />
-                                        <x-form-table id="form-delete-{{ $employee->id }}"
-                                            action="{{ route('employee.destroy', $employee) }}" method="POST"
+                                        <x-form-table id="form-delete-{{ $employee->id_employees }}"
+                                            action="{{ route('employee.destroy', $employee->id_employees) }}" method="POST"
                                             role="form">
                                             @method('DELETE')
-                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $employee->id }})" />
+                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar" type="button"
+                                                onclick="Eliminar({{ $employee->id_employees}})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -154,12 +154,28 @@
         function Editar(employee) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/employees/' + employee.id);
+            $('#form-edit').attr('action', '/employees/' + employee.id_employees);
             $('#form-edit').find('#document').val(employee.document);
             $('#form-edit').find('#name').val(employee.name);
             $('#form-edit').find('#lastname').val(employee.lastname);
-            $('#form-edit').find('#transport_enterprise_id').val(employee.transport_enterprise_id);
+            $('#form-edit').find('#id_transport_enterprises').val(employee.id_transport_enterprises);
             $('#form-edit').find('#name').focus();
+        }
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-delete-' + id).submit();
+                }
+            });
         }
     </script>
 @endpush

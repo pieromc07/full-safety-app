@@ -77,25 +77,27 @@
                     <div class="d-flex flex-row-fluid flex-column text-center p-5 p-lg-10 pt-lg-20">
                         <!--begin::Logo-->
                         <a href="../dist/index.html" class="py-2 py-lg-20">
-                            <img alt="Logo" src="{{ asset('assets/media/logos/logo.png') }}"
-                                class="h-100px h-lg-150px" />
+                            <img alt="Logo" src="{{ asset('assets/media/logos/ledsight.svg') }}"
+                                class="h-40px h-lg-100px" />
                         </a>
                         <!--end::Logo-->
                         <!--begin::Title-->
-                        <h1 class="d-none d-lg-block fw-bold text-white fs-2qx pb-5 pb-md-10">Welcome to Saul HTML Free
+                        <h1 class="d-none d-lg-block fw-bold text-white fs-2qx pb-5 pb-md-10">
+                            Bienvenido a {{ config('app.name') }}
                         </h1>
                         <!--end::Title-->
                         <!--begin::Description-->
-                        <p class="d-none d-lg-block fw-semibold fs-2 text-white">Plan your blog post by choosing a topic
-                            creating
-                            <br />an outline and checking facts
+                        <p class="d-none d-lg-block fw-semibold fs-2 text-white">
+                            {{-- En español --}}
+                           
+                            <br />
                         </p>
                         <!--end::Description-->
                     </div>
                     <!--end::Header-->
                     <!--begin::Illustration-->
                     <div class="d-none d-lg-block d-flex flex-row-auto bgi-no-repeat bgi-position-x-center bgi-size-contain bgi-position-y-bottom min-h-100px min-h-lg-350px"
-                        style="background-image: url(assets/media/illustrations/sketchy-1/17.png)"></div>
+                        style="background-image: url(assets/media/illustrations/dozzy-1/15.png)"></div>
                     <!--end::Illustration-->
                 </div>
                 <!--end::Wrapper-->
@@ -116,15 +118,12 @@
                 <div class="d-flex flex-center flex-wrap fs-6 p-5 pb-0">
                     <!--begin::Links-->
                     <div class="d-flex flex-center fw-semibold fs-6">
-                        <a href="#" class="text-muted text-hover-primary px-2" target="_blank">
-                            {{ __('About') }}
-                        </a>
-                        <a href="#" class="text-muted text-hover-primary px-2" target="_blank">
-                            {{ __('Support') }}
-                        </a>
-                        <a href="#" class="text-muted text-hover-primary px-2" target="_blank">
-                            {{ __('Purchase') }}
-                        </a>
+                        <a href="https://keenthemes.com" class="text-muted text-hover-primary px-2"
+                            target="_blank">About</a>
+                        <a href="https://devs.keenthemes.com" class="text-muted text-hover-primary px-2"
+                            target="_blank">Support</a>
+                        <a href="https://keenthemes.com/products/saul-html-pro"
+                            class="text-muted text-hover-primary px-2" target="_blank">Purchase</a>
                     </div>
                     <!--end::Links-->
                 </div>

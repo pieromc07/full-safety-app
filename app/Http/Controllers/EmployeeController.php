@@ -16,7 +16,7 @@ class EmployeeController extends Controller
   public function index()
   {
     //
-    $enterpriseTransports = Enterprise::where('enterprise_type_id', '=', 2)->get();
+    $enterpriseTransports = Enterprise::where('id_enterprise_types', '=', 2)->get();
     $employees = Employee::paginate(5);
     return view($this::$viewDir . '.employees', compact('employees', 'enterpriseTransports'));
   }
@@ -42,7 +42,7 @@ class EmployeeController extends Controller
       $employee->name = $validated['name'];
       $employee->lastname = $validated['lastname'];
       $employee->fullname = $validated['name'] . ' ' . $validated['lastname'];
-      $employee->transport_enterprise_id = $validated['transport_enterprise_id'];
+      $employee->id_transport_enterprises = $validated['id_transport_enterprises'];
       $employee->save();
       DB::commit();
     } catch (\Exception $e) {
@@ -81,7 +81,7 @@ class EmployeeController extends Controller
       $employee->name = $validated['name'];
       $employee->lastname = $validated['lastname'];
       $employee->fullname = $validated['name'] . ' ' . $validated['lastname'];
-      $employee->transport_enterprise_id = $validated['transport_enterprise_id'];
+      $employee->id_transport_enterprises = $validated['id_transport_enterprises'];
       $employee->save();
       DB::commit();
     } catch (\Exception $e) {

@@ -18,7 +18,7 @@ class InspectionController extends Controller
   public function index(Request $request)
   {
     $type = $request->input('type') ?? 1;
-    $inspections = Inspection::where('inspection_type_id', $type)->orderBy('id', 'desc')->paginate(10);
+    $inspections = Inspection::where('id_inspection_types', $type)->orderBy('id', 'desc')->paginate(10);
     return view('inspections.index', compact('inspections'));
   }
 
@@ -53,9 +53,9 @@ class InspectionController extends Controller
       $newInspection = new Inspection();
       $newInspection->date = $inspection['date'];
       $newInspection->hour = $inspection['hour'];
-      $newInspection->inspection_type_id = $inspection['inspection_type_id'];
-      $newInspection->supplier_enterprise_id = $inspection['supplier_enterprise_id'];
-      $newInspection->transport_enterprise_id = $inspection['transport_enterprise_id'];
+      $newInspection->id_inspection_types = $inspection['id_inspection_types'];
+      $newInspection->id_supplier_enterprises = $inspection['id_supplier_enterprises'];
+      $newInspection->id_transport_enterprises = $inspection['id_transport_enterprises'];
       $newInspection->checkpoint_id = $inspection['checkpoint_id'];
       $newInspection->targeted_id = $inspection['targeted_id'];
       $newInspection->observation = $inspection['observation'];
@@ -130,7 +130,7 @@ class InspectionController extends Controller
           $newInspection = new Inspection();
           $newInspection->date = $inspection['date'];
           $newInspection->hour = $inspection['hour'];
-          $newInspection->inspection_type_id = $inspection['inspection_type_id'];
+          $newInspection->id_inspection_types = $inspection['id_inspection_types'];
           $newInspection->enterprise_id = $inspection['enterprise_id'];
           $newInspection->checkpoint_id = $inspection['checkpoint_id'];
           $newInspection->targeted_id = $inspection['targeted_id'];

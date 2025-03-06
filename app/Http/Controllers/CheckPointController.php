@@ -41,9 +41,9 @@ class CheckPointController extends Controller
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('checkpoint')->with('error', 'Ha ocurrido un error al intentar crear el tipo de empresa.');
+      return redirect()->route('checkpoint')->with('error', 'Ha ocurrido un error al intentar crear el punto de control.');
     }
-    return redirect()->route('checkpoint')->with('success', 'El tipo de empresa se ha creado correctamente.');
+    return redirect()->route('checkpoint')->with('success', 'El punto de control se ha creado correctamente.');
   }
 
   /**
@@ -75,9 +75,9 @@ class CheckPointController extends Controller
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('checkpoint', $checkpoint)->with('error', 'Ha ocurrido un error al intentar actualizar el tipo de empresa.');
+      return redirect()->route('checkpoint', $checkpoint)->with('error', 'Ha ocurrido un error al intentar actualizar el punto de control.');
     }
-    return redirect()->route('checkpoint')->with('success', 'El tipo de empresa se ha actualizado correctamente.');
+    return redirect()->route('checkpoint')->with('success', 'El punto de control se ha actualizado correctamente.');
   }
 
   /**
@@ -91,8 +91,8 @@ class CheckPointController extends Controller
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('checkpoint')->with('error', 'Ha ocurrido un error al intentar eliminar el tipo de empresa.');
+      return redirect()->route('checkpoint')->with('error', 'Ha ocurrido un error al intentar eliminar el punto de control.');
     }
-    return redirect()->route('checkpoint')->with('success', 'El tipo de empresa se ha eliminado correctamente.');
+    return redirect()->route('checkpoint')->with('success', 'El punto de control se ha eliminado correctamente.');
   }
 }

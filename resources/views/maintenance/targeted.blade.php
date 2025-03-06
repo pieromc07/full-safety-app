@@ -27,7 +27,7 @@
                                 placeholder="Seleccione un Dirigido">
                                 <x-slot name="options">
                                     @foreach ($targeteds as $targeted)
-                                        <option value="{{ $targeted->id }}">
+                                        <option value="{{ $targeted->id_targeteds }}">
                                             {{ $targeted->name }}
                                         </option>
                                     @endforeach
@@ -63,7 +63,7 @@
                                 placeholder="Seleccione un Dirigido">
                                 <x-slot name="options">
                                     @foreach ($targeteds as $targeted)
-                                        <option value="{{ $targeted->id }}">
+                                        <option value="{{ $targeted->id_targeteds }}">
                                             {{ $targeted->name }}
                                         </option>
                                     @endforeach
@@ -101,7 +101,7 @@
                             @foreach ($targets as $key => $target)
                                 <tr class="text-center fs-5">
                                     <td class="text-center">
-                                        {{ $target->id }}
+                                        {{ $target->id_targeteds }}
                                     </td>
                                     <td class="text-center">
                                         {{ $target->name }}
@@ -117,12 +117,12 @@
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $target }})" />
-                                        <x-form-table id="form-delete-{{ $target->id }}"
-                                            action="{{ route('targeted.destroy', $target) }}" method="POST"
-                                            role="form">
+                                        <x-form-table id="form-delete-{{ $target->id_targeteds }}"
+                                            action="{{ route('targeted.destroy', $target->id_targeteds) }}"
+                                            method="POST" role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $target->id }})" />
+                                                type="button" onclick="Eliminar({{ $target->id_targeteds }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -153,10 +153,26 @@
         function Editar(targeted) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/targeteds/' + targeted.id);
+            $('#form-edit').attr('action', '/targeteds/' + targeted.id_targeteds);
             $('#form-edit').find('#name').val(targeted.name);
             $('#form-edit').find('#targeted_id').val(targeted.targeted_id);
             $('#form-edit').find('#name').focus();
+        }
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-delete-' + id).submit();
+                }
+            });
         }
     </script>
 @endpush

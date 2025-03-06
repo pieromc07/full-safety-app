@@ -21,7 +21,7 @@
                                 placeholder="Seleccione una Categoría Padre">
                                 <x-slot name="options">
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">
+                                        <option value="{{ $category->id_categories }}">
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
@@ -51,7 +51,7 @@
                                 placeholder="Seleccione una Categoría Padre">
                                 <x-slot name="options">
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">
+                                        <option value="{{ $category->id_categories }}">
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
@@ -90,7 +90,7 @@
                             @foreach ($subcategories as $key => $subcategory)
                                 <tr class="text-center fs-5">
                                     <td class="text-center">
-                                        {{ $subcategory->id }}
+                                        {{ $subcategory->id_categories }}
                                     </td>
                                     <td class="text-center">
                                         {{ $subcategory->name }}
@@ -102,12 +102,12 @@
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $subcategory }})" />
-                                        <x-form-table id="form-delete-{{ $subcategory->id }}"
-                                            action="{{ route('category.destroy', $subcategory) }}" method="POST"
-                                            role="form">
+                                        <x-form-table id="form-delete-{{ $subcategory->id_categories }}"
+                                            action="{{ route('category.destroy', $subcategory->id_categories) }}"
+                                            method="POST" role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $subcategory->id }})" />
+                                                type="button" onclick="Eliminar({{ $subcategory->id_categories }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -139,10 +139,26 @@
         function Editar(category) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/categories/' + category.id);
+            $('#form-edit').attr('action', '/categories/' + category.id_categories);
             $('#form-edit').find('#name').val(category.name);
             $('#form-edit').find('#parent_id').val(category.parent_id);
             $('#form-edit').find('#name').focus();
+        }
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-delete-' + id).submit();
+                }
+            });
         }
     </script>
 @endpush

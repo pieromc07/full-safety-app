@@ -10,12 +10,16 @@ class Employee extends Model
 {
   use HasFactory;
 
+  protected $table = 'employees';
+
+  protected $primaryKey = 'id_employees';
+
   protected $fillable = [
     'document',
     'name',
     'lastname',
     'fullname',
-    'transport_enterprise_id',
+    'id_transport_enterprises',
     'cuid_inserted',
     'cuid_updated'
   ];
@@ -25,7 +29,7 @@ class Employee extends Model
     'document' => 'required|string|max:16',
     'name' => 'required|string|max:50',
     'lastname' => 'required|string|max:50',
-    'transport_enterprise_id' => 'required|exists:enterprises,id',
+    'id_transport_enterprises' => 'required|exists:enterprises,id_enterprises',
   ];
 
   // Mensajes de validación personalizados
@@ -40,8 +44,8 @@ class Employee extends Model
     'lastname.required' => 'El apellido es obligatorio.',
     'lastname.string' => 'El apellido debe ser una cadena de texto.',
     'lastname.max' => 'El apellido no debe exceder los 50 caracteres.',
-    'transport_enterprise_id.required' => 'La empresa de transporte es obligatoria.',
-    'transport_enterprise_id.exists' => 'La empresa de transporte seleccionada no es válida.',
+    'id_transport_enterprises.required' => 'La empresa de transporte es obligatoria.',
+    'id_transport_enterprises.exists' => 'La empresa de transporte seleccionada no es válida.',
   ];
 
   protected $hidden = ['cuid_inserted', 'cuid_updated'];
@@ -50,7 +54,7 @@ class Employee extends Model
 
   public function enterpriseTransport()
   {
-    return $this->belongsTo(Enterprise::class, 'transport_enterprise_id');
+    return $this->belongsTo(Enterprise::class, 'id_transport_enterprises');
   }
 
   public function cuidInsertedToDatetime()

@@ -12,6 +12,8 @@ class EnterpriseType extends Model
 
   protected $table = 'enterprise_types';
 
+  protected $primaryKey = 'id_enterprise_types';  
+
   protected $fillable = [
     'name',
     'description',
@@ -38,7 +40,7 @@ class EnterpriseType extends Model
 
   public function enterprises()
   {
-    return $this->hasMany(Enterprise::class, 'enterprise_type_id');
+    return $this->hasMany(Enterprise::class, 'id_enterprise_types');
   }
 
   public function cuidInsertedToDatetime()

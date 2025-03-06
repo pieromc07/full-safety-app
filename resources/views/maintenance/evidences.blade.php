@@ -9,7 +9,7 @@
 @section('content')
     <div class="row">
         <div class="col-12 col-lg-4">
-            <x-form class="card" id="form-create" action="{{ route('evidence.store') }}" method="POST" role="form">
+            <x-form class="card" id="form-create" action="{{ route('evidences.store') }}" method="POST" role="form">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12">
@@ -17,11 +17,11 @@
                                 required="required" autofocus="autofocus" icon="bi-person" />
                         </div>
                         <div class="col-12">
-                            <x-select id="subcategory_id" name="subcategory_id" icon="bi-building" label="Categoría"
+                            <x-select id="id_subcategories" name="id_subcategories" icon="bi-building" label="Categoría"
                                 placeholder="Seleccione una Categoría">
                                 <x-slot name="options">
                                     @foreach ($subcategories as $category)
-                                        <option value="{{ $category->id }}">
+                                        <option value="{{ $category->id_categories }}">
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
@@ -34,7 +34,7 @@
                     <x-button id="btn-store" btn="btn-primary" title="Registrar" position="left" text="Registrar"
                         icon="bi-save" />
                     <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cancelar" position="left" text="Cancelar"
-                        icon="bi-x-circle" href="{{ route('evidence') }}" />
+                        icon="bi-x-circle" href="{{ route('evidences') }}" />
                 </div>
             </x-form>
 
@@ -47,11 +47,11 @@
                                 required="required" autofocus="autofocus" icon="bi-person" />
                         </div>
                         <div class="col-12">
-                            <x-select id="subcategory_id" name="subcategory_id" icon="bi-building" label="Categoría"
+                            <x-select id="id_subcategories" name="id_subcategories" icon="bi-building" label="Categoría"
                                 placeholder="Seleccione una Categoría">
                                 <x-slot name="options">
                                     @foreach ($subcategories as $category)
-                                        <option value="{{ $category->id }}">
+                                        <option value="{{ $category->id_categories }}">
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
@@ -65,7 +65,7 @@
                         icon="bi-save" type="submit" />
 
                     <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cancelar" position="left" text="Cancelar"
-                        icon="bi-x-circle" href="{{ route('evidence') }}" />
+                        icon="bi-x-circle" href="{{ route('evidences') }}" />
                 </div>
             </x-form>
 
@@ -91,7 +91,7 @@
                             @foreach ($evidences as $key => $evidence)
                                 <tr class="text-center fs-5">
                                     <td class="text-center">
-                                        {{ $evidence->id }}
+                                        {{ $evidence->id_evidences }}
                                     </td>
                                     <td class="text-center">
                                         {{ $evidence->name }}
@@ -106,12 +106,12 @@
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $evidence }})" />
-                                        <x-form-table id="form-delete-{{ $evidence->id }}"
-                                            action="{{ route('evidence.destroy', $evidence) }}" method="POST"
-                                            role="form">
+                                        <x-form-table id="form-delete-{{ $evidence->id_evidences }}"
+                                            action="{{ route('evidences.destroy', $evidence->id_evidences) }}"
+                                            method="POST" role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $evidence->id }})" />
+                                                type="button" onclick="Eliminar({{ $evidence->id_evidences }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -123,7 +123,7 @@
             <div class="row">
                 <div class="col-md-12 d-flex justify-content-end">
                     <x-pagination page="{{ $evidences->currentPage() }}" lastPage="{{ $evidences->lastPage() }}"
-                        route="evidence" perPage="{{ $evidences->perPage() }}" total="{{ $evidences->total() }}" />
+                        route="evidences" perPage="{{ $evidences->perPage() }}" total="{{ $evidences->total() }}" />
                 </div>
             </div>
         </div>
@@ -142,10 +142,26 @@
         function Editar(evidence) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/evidence/' + evidence.id);
+            $('#form-edit').attr('action', '/evidences/' + evidence.id_evidences);
             $('#form-edit').find('#name').val(evidence.name);
-            $('#form-edit').find('#subcategory_id').val(evidence.subcategory_id);
+            $('#form-edit').find('#id_subcategories').val(evidence.id_subcategories);
             $('#form-edit').find('#name').focus();
+        }
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-delete-' + id).submit();
+                }
+            });
         }
     </script>
 @endpush

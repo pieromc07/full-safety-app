@@ -28,6 +28,7 @@
         }
     </script>
     <!--end::Theme mode setup on page load-->
+    <input type="hidden" id="enterpriseId" value="{{ auth()->user()->id_enterprises }}">
     <!--begin::App-->
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <!--begin::Page-->
@@ -54,6 +55,42 @@
         $(document).ready(() => {
             $('[data-control="select2"]').select2();
         });
+
+        function alertMessage(message, status) {
+            message = message.replaceAll('"', '');
+            message = message.replaceAll("'", '');
+            message = message.replaceAll('\n', '');
+            message = message.toUpperCase();
+            console.log(message, status);
+
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toastr-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            if (status == 'warning') {
+                toastr.warning(message, 'Advertencia');
+            } else if (status == 'success') {
+                toastr.success(message, 'Éxito');
+            } else if (status == 'error') {
+                toastr.error(message, 'Error');
+            } else {
+                toastr.info(message, 'Información');
+            }
+        }
     </script>
     <!--end::Global Javascript Bundle-->
     @stack('scripts')

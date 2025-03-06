@@ -88,13 +88,13 @@ Route::group(['middleware' => 'auth'], function () {
   Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
   Route::get('/category', [CategoryController::class, 'index1'])->name('category1');
 
-  Route::get('/evidence', [EvidenceController::class, 'index'])->name('evidence');
-  Route::get('/evidence/create', [EvidenceController::class, 'create'])->name('evidence.create');
-  Route::post('/evidence', [EvidenceController::class, 'store'])->name('evidence.store');
-  Route::get('/evidence/{evidence}', [EvidenceController::class, 'show'])->name('evidence.show');
-  Route::get('/evidence/{evidence}/edit', [EvidenceController::class, 'edit'])->name('evidence.edit');
-  Route::put('/evidence/{evidence}', [EvidenceController::class, 'update'])->name('evidence.update');
-  Route::delete('/evidence/{evidence}', [EvidenceController::class, 'destroy'])->name('evidence.destroy');
+  Route::get('/evidences', [EvidenceController::class, 'index'])->name('evidences');
+  Route::get('/evidences/create', [EvidenceController::class, 'create'])->name('evidences.create');
+  Route::post('/evidences', [EvidenceController::class, 'store'])->name('evidences.store');
+  Route::get('/evidences/{evidence}', [EvidenceController::class, 'show'])->name('evidences.show');
+  Route::get('/evidences/{evidence}/edit', [EvidenceController::class, 'edit'])->name('evidences.edit');
+  Route::put('/evidences/{evidence}', [EvidenceController::class, 'update'])->name('evidences.update');
+  Route::delete('/evidences/{evidence}', [EvidenceController::class, 'destroy'])->name('evidences.destroy');
 
   Route::get('/inspections', [InspectionController::class, 'index'])->name('inspections');
   Route::get('/inspections/create', [InspectionController::class, 'create'])->name('inspections.create');

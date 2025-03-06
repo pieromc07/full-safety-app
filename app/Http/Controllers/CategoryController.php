@@ -18,7 +18,7 @@ class CategoryController extends Controller
   public function index()
   {
     //
-    $categories = Category::where('parent_id', null)->paginate(5);
+    $categories = Category::where('parent_id', null)->paginate(self::MEDIUMTAKE);
     $inspectionTypes = InspectionType::all();
     $targeteds = Targeted::where('targeted_id', null)->get();
     return view($this::$viewDir . '.categories', compact('categories', 'inspectionTypes', 'targeteds'));
@@ -27,7 +27,7 @@ class CategoryController extends Controller
   public function index1()
   {
     //
-    $subcategories = Category::where('parent_id', '<>', null)->paginate(5);
+    $subcategories = Category::where('parent_id', '<>', null)->paginate(self::LARGETAKE);
     $categories = Category::where('parent_id', null)->get();
     return view($this::$viewDir . '.category', compact('categories', 'subcategories'));
   }
@@ -51,18 +51,18 @@ class CategoryController extends Controller
       $category = new Category();
       $category->name = $validated['name'];
       $category->parent_id = $validated['parent_id'] ?? null;
-      $category->targeted_id = $validated['targeted_id'] ?? null;
-      $category->inspection_type_id = $validated['inspection_type_id'] ?? null;
+      $category->id_targeteds = $validated['id_targeteds'] ?? null;
+      $category->id_inspection_types = $validated['id_inspection_types'] ?? null;
       $category->save();
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
       if ($validated['parent_id']) {
-        return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar crear la subcategoría.');
+        return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar crear la subcategoría ' . $e->getMessage());
       }
-      return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar crear la categoría.');
+      return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar crear la categoría. ' . $e->getMessage());
     }
-    if ($validated['parent_id']??false) {
+    if ($validated['parent_id'] ?? false) {
       return redirect()->route('category1')->with('success', 'Subcategoría creada correctamente.');
     }
     return redirect()->route('category')->with('success', 'Categoría creada correctamente.');
@@ -94,18 +94,18 @@ class CategoryController extends Controller
       DB::beginTransaction();
       $category->name = $validated['name'];
       $category->parent_id = $validated['parent_id'] ?? null;
-      $category->targeted_id = $validated['targeted_id'] ?? null;
-      $category->inspection_type_id = $validated['inspection_type_id'] ?? null;
+      $category->id_targeteds = $validated['id_targeteds'] ?? null;
+      $category->id_inspection_types = $validated['id_inspection_types'] ?? null;
       $category->save();
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
       if ($validated['parent_id']) {
-        return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar actualizar la subcategoría.');
+        return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar actualizar la subcategoría. ' . $e->getMessage());
       }
-      return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar actualizar la categoría.');
+      return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar actualizar la categoría. ' . $e->getMessage());
     }
-    if ($validated['parent_id']??false) {
+    if ($validated['parent_id'] ?? false) {
       return redirect()->route('category1')->with('success', 'Subcategoría actualizada correctamente.');
     }
     return redirect()->route('category')->with('success', 'Categoría actualizada correctamente.');
@@ -123,12 +123,12 @@ class CategoryController extends Controller
     } catch (\Exception $e) {
       DB::rollBack();
       if ($category->parent_id) {
-        return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar eliminar la subcategoría.');
+        return redirect()->route('category1')->with('error', 'Ha ocurrido un error al intentar eliminar la subcategoría.');
       }
       return redirect()->route('category')->with('error', 'Ha ocurrido un error al intentar eliminar la categoría.');
     }
     if ($category->parent_id) {
-      return redirect()->route('category')->with('success', 'Subcategoría eliminada correctamente.');
+      return redirect()->route('category1')->with('success', 'Subcategoría eliminada correctamente.');
     }
     return redirect()->route('category')->with('success', 'Categoría eliminada correctamente.');
   }

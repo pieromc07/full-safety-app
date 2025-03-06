@@ -12,21 +12,18 @@ return new class extends Migration
    */
   public function up(): void
   {
-    Schema::create('evidence', function (Blueprint $table) {
-      $table->id();
-      $table->string('name', 128)->index('evidence_name_IDX');
-      $table->text('description')->nullable();
-      $table->unsignedBigInteger('category_id')->nullable();
-      $table->foreign('category_id')->references('id')->on('categories');
-      $table->unsignedBigInteger('subcategory_id');
-      $table->foreign('subcategory_id')->references('id')->on('categories');
+    Schema::create('unit_types', function (Blueprint $table) {
+      $table->id('id_unit_types');
+      $table->string('name', 64)->index('unit_types_name_IDX');
+      $table->text('image')->nullable();
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
+      $table->unsignedBigInteger('cuid_deleted')->nullable();
     });
 
-    // CREATE TRIGGER FOR evidence
+    // CREATE TRIGGER FOR unit_types
     DB::unprepared('
-      CREATE TRIGGER tr_bi_evidence BEFORE INSERT ON evidence
+      CREATE TRIGGER tr_bi_unit_types BEFORE INSERT ON unit_types
       FOR EACH ROW
       BEGIN
         SET NEW.cuid_inserted = CUID_19D_B10();
@@ -35,7 +32,7 @@ return new class extends Migration
     ');
 
     DB::unprepared('
-      CREATE TRIGGER tr_bu_evidence BEFORE UPDATE ON evidence
+      CREATE TRIGGER tr_bu_unit_types BEFORE UPDATE ON unit_types
       FOR EACH ROW
       BEGIN
         SET NEW.cuid_updated = CUID_19D_B10();
@@ -48,6 +45,6 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('evidence');
+    Schema::dropIfExists('unit_types');
   }
 };

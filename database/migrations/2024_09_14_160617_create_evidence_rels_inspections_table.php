@@ -13,18 +13,19 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('evidence_rels_inspections', function (Blueprint $table) {
-      $table->id();
-      $table->unsignedBigInteger('evidence_id');
-      $table->unsignedBigInteger('inspection_id');
+      $table->id('id_evidence_rels_inspections');
+      $table->unsignedBigInteger('id_evidences');
+      $table->unsignedBigInteger('id_inspections');
       $table->integer('state')->comment('1: Conforme, 2: No conforme, 3: Oportunidad de mejora');
       $table->text('evidence_one')->nullable();
       $table->text('evidence_two')->nullable();
       $table->text('observations')->nullable();
       $table->string('waiting_time', 65)->nullable();
-      $table->foreign('evidence_id')->references('id')->on('evidence');
-      $table->foreign('inspection_id')->references('id')->on('inspections');
+      $table->foreign('id_evidences')->references('id_evidences')->on('evidences');
+      $table->foreign('id_inspections')->references('id_inspections')->on('inspections');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
+      $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
     });
 
     DB::unprepared('

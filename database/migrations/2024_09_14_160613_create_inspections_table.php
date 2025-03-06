@@ -14,39 +14,28 @@ return new class extends Migration
   {
 
     Schema::create('inspections', function (Blueprint $table) {
-      $table->id();
+      $table->id('id_inspections');
       $table->integer('correlative')->index('inspections_correlative_IDX');
       $table->integer('year')->index('inspections_year_IDX')->default(date('Y'));
       $table->string('folio', 128)->index('inspections_folio_IDX');
       $table->date('date')->index('inspections_date_IDX');
       $table->time('hour')->index('inspections_hour_IDX');
-      $table->unsignedBigInteger('inspection_type_id');
-      $table->unsignedBigInteger('supplier_enterprise_id');
-      $table->unsignedBigInteger('transport_enterprise_id');
-      $table->unsignedBigInteger('checkpoint_id');
-      $table->unsignedBigInteger('targeted_id');
-      $table->unsignedBigInteger('user_id')->index('inspections_user_IDX');
+      $table->unsignedBigInteger('id_inspection_types');
+      $table->unsignedBigInteger('id_supplier_enterprises');
+      $table->unsignedBigInteger('id_transport_enterprises');
+      $table->unsignedBigInteger('id_checkpoints');
+      $table->unsignedBigInteger('id_targeteds');
+      $table->unsignedBigInteger('id_users');
       $table->text('observation')->nullable();
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
-      $table->foreign('inspection_type_id')->references('id')->on('inspection_types');
-      $table->foreign('supplier_enterprise_id')->references('id')->on('enterprises');
-      $table->foreign('transport_enterprise_id')->references('id')->on('enterprises');
-      $table->foreign('checkpoint_id')->references('id')->on('check_points');
-      $table->foreign('targeted_id')->references('id')->on('targeteds');
-      $table->foreign('user_id')->references('id')->on('users');
-    });
-
-    Schema::create('inspection_convoys', function (Blueprint $table) {
-      $table->id();
-      $table->unsignedBigInteger('inspection_id');
-      $table->integer('convoy')->nullable()->index('inspections_convoy_IDX');
-      $table->tinyInteger('convoy_status')->nullable()->index('inspections_convoy_status_IDX')->comment('1: Bajada, 2: Subida');
-      $table->integer('quantity_light_units')->nullable()->index('inspections_quantity_light_units_IDX');
-      $table->integer('quantity_heavy_units')->nullable()->index('inspections_quantity_heavy_units_IDX');
-      $table->unsignedBigInteger('cuid_inserted')->unique();
-      $table->unsignedBigInteger('cuid_updated')->unique();
-      $table->foreign('inspection_id')->references('id')->on('inspections');
+      $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
+      $table->foreign('id_inspection_types')->references('id_inspection_types')->on('inspection_types');
+      $table->foreign('id_supplier_enterprises')->references('id_enterprises')->on('enterprises');
+      $table->foreign('id_transport_enterprises')->references('id_enterprises')->on('enterprises');
+      $table->foreign('id_checkpoints')->references('id_checkpoints')->on('checkpoints');
+      $table->foreign('id_targeteds')->references('id_targeteds')->on('targeteds');
+      $table->foreign('id_users')->references('id_users')->on('users');
     });
 
     // CREATE TRIGGER FOR inspections
@@ -77,23 +66,7 @@ return new class extends Migration
       END
     ');
 
-    // CREATE TRIGGER FOR inspection_convoys
-    DB::unprepared('
-    CREATE TRIGGER tr_bi_inspection_convoys BEFORE INSERT ON inspection_convoys
-    FOR EACH ROW
-    BEGIN
-      SET NEW.cuid_inserted = CUID_19D_B10();
-      SET NEW.cuid_updated = CUID_19D_B10();
-    END
-');
 
-    DB::unprepared('
-        CREATE TRIGGER tr_bu_inspection_convoys BEFORE UPDATE ON inspection_convoys
-        FOR EACH ROW
-        BEGIN
-          SET NEW.cuid_updated = CUID_19D_B10();
-        END
-      ');
   }
 
   /**

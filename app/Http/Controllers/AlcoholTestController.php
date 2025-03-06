@@ -31,8 +31,8 @@ class AlcoholTestController extends Controller
       $newTest->date = $test['date'];
       $newTest->hour = $test['hour'];
       $newTest->checkpoint_id = $test['checkpoint_id'];
-      $newTest->supplier_enterprise_id = $test['supplier_enterprise_id'];
-      $newTest->transport_enterprise_id = $test['transport_enterprise_id'];
+      $newTest->id_supplier_enterprises = $test['id_supplier_enterprises'];
+      $newTest->id_transport_enterprises = $test['id_transport_enterprises'];
       $newTest->employee_id = $test['employee_id'];
       $newTest->result = $test['result'];
       $newTest->state = $test['state'];
@@ -95,7 +95,7 @@ class AlcoholTestController extends Controller
     return view('test.index', compact('tests'));
   }
 
-    /**
+  /**
    * Display the specified resource.
    */
   public function show(AlcoholTest $test)

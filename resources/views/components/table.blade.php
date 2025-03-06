@@ -5,8 +5,7 @@
 @endphp
 
 
-
-<table class="table table-hover table-rounded table-striped border gy-7 gs-7" id="{{ $id }}">
+<table class="table table-hover table-rounded table-striped border gy-2 gs-2" id="{{ $id }}">
     <thead>
         <tr class="fw-semibold fs-5 text-gray-800 border-bottom-2 border-gray-200 text-uppercase">
             {{ $header }}

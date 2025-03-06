@@ -16,9 +16,9 @@ class Inspection extends Model
     'folio',
     'date',
     'hour',
-    'inspection_type_id',
-    'supplier_enterprise_id',
-    'transport_enterprise_id',
+    'id_inspection_types',
+    'id_supplier_enterprises',
+    'id_transport_enterprises',
     'checkpoint_id',
     'targeted_id',
     'user_id',
@@ -33,10 +33,10 @@ class Inspection extends Model
     'folio' => 'required|string|max:128',
     'date' => 'nullable|date',
     'hour' => 'nullable|date_format:H:i',
-    'inspection_type_id' => 'required|exists:inspection_types,id',
-    'supplier_enterprise_id' => 'required|exists:enterprises,id',
-    'transport_enterprise_id' => 'required|exists:enterprises,id',
-    'checkpoint_id' => 'required|exists:check_points,id',
+    'id_inspection_types' => 'required|exists:inspection_types,id',
+    'id_supplier_enterprises' => 'required|exists:enterprises,id',
+    'id_transport_enterprises' => 'required|exists:enterprises,id',
+    'checkpoint_id' => 'required|exists:checkpoints,id',
     'targeted_id' => 'required|exists:targeteds,id',
     'user_id' => 'required|exists:users,id',
     'observation' => 'nullable'
@@ -48,12 +48,12 @@ class Inspection extends Model
     'folio.required' => 'El folio es obligatorio.',
     'date.date' => 'La fecha no es válida.',
     'hour.date_format' => 'La hora no es válida.',
-    'inspection_type_id.required' => 'El tipo de inspección es obligatorio.',
-    'inspection_type_id.exists' => 'El tipo de inspección no existe.',
-    'supplier_enterprise_id.required' => 'La empresa proveedora es obligatoria.',
-    'supplier_enterprise_id.exists' => 'La empresa proveedora no existe.',
-    'transport_enterprise_id.required' => 'La empresa de transporte es obligatoria.',
-    'transport_enterprise_id.exists' => 'La empresa de transporte no existe.',
+    'id_inspection_types.required' => 'El tipo de inspección es obligatorio.',
+    'id_inspection_types.exists' => 'El tipo de inspección no existe.',
+    'id_supplier_enterprises.required' => 'La empresa proveedora es obligatoria.',
+    'id_supplier_enterprises.exists' => 'La empresa proveedora no existe.',
+    'id_transport_enterprises.required' => 'La empresa de transporte es obligatoria.',
+    'id_transport_enterprises.exists' => 'La empresa de transporte no existe.',
     'checkpoint_id.required' => 'El punto de control es obligatorio.',
     'checkpoint_id.exists' => 'El punto de control no existe.',
     'targeted_id.required' => 'El objetivo es obligatorio.',
@@ -77,12 +77,12 @@ class Inspection extends Model
 
   public function enterpriseSupplier()
   {
-    return $this->belongsTo(Enterprise::class, 'supplier_enterprise_id');
+    return $this->belongsTo(Enterprise::class, 'id_supplier_enterprises');
   }
 
   public function enterpriseTransport()
   {
-    return $this->belongsTo(Enterprise::class, 'transport_enterprise_id');
+    return $this->belongsTo(Enterprise::class, 'id_transport_enterprises');
   }
 
   public function checkpoint()

@@ -24,11 +24,11 @@
                                 required="required" autofocus="autofocus" icon="bi-123" />
                         </div>
                         <div class="col-12">
-                            <x-select id="enterprise_type_id" name="enterprise_type_id" label="Tipo de Empresa"
+                            <x-select id="id_enterprise_types" name="id_enterprise_types" label="Tipo de Empresa"
                                 placeholder="Seleccione un Tipo de Empresa" icon="bi-building">
                                 <x-slot name="options">
                                     @foreach ($enterpriseTypes as $enterpriseType)
-                                        <option value="{{ $enterpriseType->id }}">
+                                        <option value="{{ $enterpriseType->id_enterprise_types }}">
                                             {{ $enterpriseType->name }}
                                         </option>
                                     @endforeach
@@ -64,11 +64,11 @@
                                 required="required" autofocus="autofocus" icon="bi-123" />
                         </div>
                         <div class="col-12">
-                            <x-select id="enterprise_type_id" name="enterprise_type_id" label="Tipo de Empresa"
+                            <x-select id="id_enterprise_types" name="id_enterprise_types" label="Tipo de Empresa"
                                 placeholder="Seleccione un Tipo de Empresa" icon="bi-building">
                                 <x-slot name="options">
                                     @foreach ($enterpriseTypes as $enterpriseType)
-                                        <option value="{{ $enterpriseType->id }}">
+                                        <option value="{{ $enterpriseType->id_enterprise_types }}">
                                             {{ $enterpriseType->name }}
                                         </option>
                                     @endforeach
@@ -102,13 +102,13 @@
                             <form id="form-search" action="{{ route('enterprise') }}" method="GET" role="search">
                                 <div class="row">
                                     <div class="col-12">
-                                        <x-select id="enterprise_type_id" name="enterprise_type_id" filter="true"
+                                        <x-select id="id_enterprise_types" name="id_enterprise_types" filter="true"
                                             icon="bi-building" req="0" onchange="$('#form-search').submit()">
                                             <x-slot name="options">
                                                 <option value="">Todos</option>
                                                 @foreach ($enterpriseTypes as $enterpriseType)
-                                                    <option value="{{ $enterpriseType->id }}"
-                                                        @if ($enterpriseType->id == request('enterprise_type_id')) selected @endif>
+                                                    <option value="{{ $enterpriseType->id_enterprise_types }}"
+                                                        @if ($enterpriseType->id_enterprise_types == request('id_enterprise_types')) selected @endif>
                                                         {{ $enterpriseType->name }}
                                                     </option>
                                                 @endforeach
@@ -140,7 +140,7 @@
                                     @foreach ($enterprises as $key => $enterprise)
                                         <tr class="text-center fs-5">
                                             <td class="text-center">
-                                                {{ $enterprise->id }}
+                                                {{ $enterprise->id_enterprises }}
                                             </td>
                                             <td class="text-start">
                                                 {{ $enterprise->name }}
@@ -157,7 +157,7 @@
                                                     style="width: 50px; height: 50px;">
                                             </td>
                                             <td class="text-center">
-                                                @if ($enterprise->enterpriseType->id == 1)
+                                                @if ($enterprise->enterpriseType->id_enterprise_types == 1)
                                                     <x-button-icon btn="btn-primary" icon="bi-card-checklist"
                                                         title="Lista de empresas asignadas"
                                                         onclick="Listar({{ $enterprise }})" />
@@ -167,12 +167,13 @@
                                                 @endif
                                                 <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                                     onclick="Editar({{ $enterprise }})" />
-                                                <x-form-table id="form-delete-{{ $enterprise->id }}"
-                                                    action="{{ route('enterprise.destroy', $enterprise) }}"
+                                                <x-form-table id="form-delete-{{ $enterprise->id_enterprises }}"
+                                                    action="{{ route('enterprise.destroy', $enterprise->id_enterprises) }}"
                                                     method="POST" role="form">
                                                     @method('DELETE')
                                                     <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                        onclick="Eliminar({{ $enterprise->id }})" />
+                                                        type="button"
+                                                        onclick="Eliminar({{ $enterprise->id_enterprises }})" />
                                                 </x-form-table>
                                             </td>
                                         </tr>
@@ -228,15 +229,15 @@
                 <div class="modal-body">
                     <form id="form-assign" action="{{ route('enterprise.assign') }}" method="POST" role="form">
                         @csrf
-                        <input type="hidden" name="transport_enterprise_id" id="transport_enterprise_id">
+                        <input type="hidden" name="id_transport_enterprises" id="id_transport_enterprises">
                         <div class="row">
                             <div class="col-12">
-                                <x-select id="supplier_enterprise_id" name="supplier_enterprise_id"
+                                <x-select id="id_supplier_enterprises" name="id_supplier_enterprises"
                                     label="Empresa Proveedora" placeholder="Seleccione una Empresa Proveedora"
                                     icon="bi-building">
                                     <x-slot name="options">
                                         @foreach ($onlyTransportEnterprises as $transportEnterprise)
-                                            <option value="{{ $transportEnterprise->id }}">
+                                            <option value="{{ $transportEnterprise->id_enterprises }}">
                                                 {{ $transportEnterprise->name }}
                                             </option>
                                         @endforeach
@@ -267,10 +268,10 @@
         function Editar(enterprise) {
             $('#form-edit').show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/enterprises/' + enterprise.id);
+            $('#form-edit').attr('action', '/enterprises/' + enterprise.id_enterprises);
             $('#form-edit').find('#name').val(enterprise.name);
             $('#form-edit').find('#ruc').val(enterprise.ruc);
-            $('#form-edit').find('#enterprise_type_id').val(enterprise.enterprise_type_id);
+            $('#form-edit').find('#id_enterprise_types').val(enterprise.id_enterprise_types);
             $('#form-edit').find('#image').val(enterprise.image);
             $('#form-edit').find('#name').focus();
         }
@@ -278,12 +279,11 @@
         function Listar(enterprise) {
             $('#modal-list').modal('show');
             $('#table-list').empty();
-            $.get('enterprises/' + enterprise.id + '', (data) => {
-
+            $.get('enterprises/' + enterprise.id_enterprises + '', (data) => {
                 data.forEach((item) => {
                     $('#table-list').append(`
                         <tr>
-                            <td class="text-center">${item.id}</td>
+                            <td class="text-center">${item.id_enterprises}</td>
                             <td class="text-center">${item.name}</td>
                             <td class="text-center">${item.ruc}</td>
                             <td class="text-center">${item.enterprisetype}</td>
@@ -299,7 +299,23 @@
 
         function Asignar(enterprise) {
             $('#modal-assign').modal('show');
-            $('#transport_enterprise_id').val(enterprise.id);
+            $('#id_transport_enterprises').val(enterprise.id_enterprises);
+        }
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-delete-' + id).submit();
+                }
+            });
         }
     </script>
 @endpush

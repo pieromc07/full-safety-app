@@ -13,13 +13,14 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('targeted_rels_inspections', function (Blueprint $table) {
-      $table->id();
-      $table->unsignedBigInteger('targeted_id')->index('targeted_rels_inspections_targeted_id_IDX');
-      $table->foreign('targeted_id')->references('id')->on('targeteds');
-      $table->unsignedBigInteger('inspection_type_id')->index('targeted_rels_inspections_inspection_type_id_IDX');
-      $table->foreign('inspection_type_id')->references('id')->on('inspection_types');
+      $table->id('id_targeted_rels_inspections');
+      $table->unsignedBigInteger('id_targeteds');
+      $table->unsignedBigInteger('id_inspection_types');
+      $table->foreign('id_targeteds')->references('id_targeteds')->on('targeteds');
+      $table->foreign('id_inspection_types')->references('id_inspection_types')->on('inspection_types');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
+      $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
     });
 
     // CREATE TRIGGER FOR targeted_rels_inspections

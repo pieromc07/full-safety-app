@@ -9,7 +9,9 @@ class CheckPoint extends Model
 {
   use HasFactory;
 
-  protected $table = 'check_points';
+  protected $table = 'checkpoints';
+
+  protected $primaryKey = 'id_checkpoints';
 
   protected $fillable = [
     'name',
