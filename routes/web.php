@@ -13,6 +13,8 @@ use App\Http\Controllers\GPSControlController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionTypeController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\TargetedController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -149,4 +151,15 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/controls/{control}/edit', [GPSControlController::class, 'edit'])->name('controls.edit');
   Route::put('/controls/{control}', [GPSControlController::class, 'update'])->name('controls.update');
   Route::delete('/controls/{control}', [GPSControlController::class, 'destroy'])->name('controls.destroy');
+
+  Route::get('/products', [ProductController::class, 'index'])->name('products');
+  Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+  Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+  Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+  Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+  Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+  Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+  Route::get('/products/assign', [ProductController::class, 'assign'])->name('products.assign');
+
+  Route::get('/productstypes/parent/{parent_id}', [ProductTypeController::class, 'findByParentId'])->name('productstypes.parent');
 });

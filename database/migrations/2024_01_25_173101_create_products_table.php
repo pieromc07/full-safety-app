@@ -20,7 +20,6 @@ return new class extends Migration
       $table->integer('flammability')->default(0);
       $table->integer('reactivity')->default(0);
       $table->integer('special')->default(0);
-      $table->string('uid_products', 16)->unique()->index('products_uid_products_IDX');
       $table->unsignedBigInteger('id_product_types')->index('products_id_product_types_IDX');
       $table->unsignedBigInteger('id_unit_types')->index('products_id_unit_types_IDX');
       $table->unsignedBigInteger('id_users_inserted')->index('products_id_users_inserted_IDX');
@@ -39,7 +38,6 @@ return new class extends Migration
       CREATE TRIGGER tr_bi_products BEFORE INSERT ON products
       FOR EACH ROW
       BEGIN
-        SET NEW.uid_products = CUID_13D_B36(CUID_19D_B10());
         SET NEW.cuid_inserted = CUID_19D_B10();
         SET NEW.cuid_updated = CUID_19D_B10();
       END
