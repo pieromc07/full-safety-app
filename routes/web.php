@@ -14,6 +14,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionTypeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductEnterpriseController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\TargetedController;
 use Illuminate\Support\Facades\Auth;
@@ -159,7 +160,14 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
   Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
   Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-  Route::get('/products/assign', [ProductController::class, 'assign'])->name('products.assign');
+
+  Route::get('/productenterprises', [ProductEnterpriseController::class, 'index'])->name('productenterprises');
+  Route::get('/productenterprises/create', [ProductEnterpriseController::class, 'create'])->name('productenterprises.create');
+  Route::post('/productenterprises', [ProductEnterpriseController::class, 'store'])->name('productenterprises.store');
+  Route::get('/productenterprises/{productEnterprise}', [ProductEnterpriseController::class, 'show'])->name('productenterprises.show');
+  Route::get('/productenterprises/{productEnterprise}/edit', [ProductEnterpriseController::class, 'edit'])->name('productenterprises.edit');
+  Route::put('/productenterprises/{productEnterprise}', [ProductEnterpriseController::class, 'update'])->name('productenterprises.update');
+  Route::delete('/productenterprises/{productEnterprise}', [ProductEnterpriseController::class, 'destroy'])->name('productenterprises.destroy');
 
   Route::get('/productstypes/parent/{parent_id}', [ProductTypeController::class, 'findByParentId'])->name('productstypes.parent');
 });

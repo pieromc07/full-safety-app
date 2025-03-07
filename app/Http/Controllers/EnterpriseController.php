@@ -89,7 +89,7 @@ class EnterpriseController extends Controller
    */
   public function show(Enterprise $enterprise)
   {
-    try{
+    try {
 
       return response()->json($enterprise->transportEnterprises());
     } catch (\Exception $e) {

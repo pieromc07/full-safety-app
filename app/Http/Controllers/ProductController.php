@@ -34,7 +34,8 @@ class ProductController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request) {
+  public function store(Request $request)
+  {
     $validated = $request->validate(Product::$rules, Product::$messages);
     try {
       DB::beginTransaction();
@@ -51,7 +52,6 @@ class ProductController extends Controller
         'id_users_updated' => auth()->id(),
       ]);
       DB::commit();
-
     } catch (\Exception $e) {
       DB::rollBack();
       return redirect()->route('products')->with('error', 'Ha ocurrido un error al intentar crear el producto. ' . $e->getMessage())->withInput();
@@ -72,7 +72,8 @@ class ProductController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Product $product) {
+  public function update(Request $request, Product $product)
+  {
     $validated = $request->validate(Product::$rules, Product::$messages);
     try {
       DB::beginTransaction();
@@ -90,7 +91,8 @@ class ProductController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Product $product) {
+  public function destroy(Product $product)
+  {
     try {
       DB::beginTransaction();
       $product->delete();
