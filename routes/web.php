@@ -17,6 +17,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductEnterpriseController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\TargetedController;
+use App\Http\Controllers\UnitMovementController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -168,6 +169,16 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/productenterprises/{productEnterprise}/edit', [ProductEnterpriseController::class, 'edit'])->name('productenterprises.edit');
   Route::put('/productenterprises/{productEnterprise}', [ProductEnterpriseController::class, 'update'])->name('productenterprises.update');
   Route::delete('/productenterprises/{productEnterprise}', [ProductEnterpriseController::class, 'destroy'])->name('productenterprises.destroy');
+  Route::get('/productenterprises/{id_supplier_enterprises}/{id_transport_enterprises}', [ProductEnterpriseController::class, 'getProductsBySupplierAndTransportEnterprise'])->name('productenterprises.getProductsBySupplierAndTransportEnterprise');
 
   Route::get('/productstypes/parent/{parent_id}', [ProductTypeController::class, 'findByParentId'])->name('productstypes.parent');
+
+
+  Route::get('/unitmovements', [UnitMovementController::class, 'index'])->name('unitmovements');
+  Route::get('/unitmovements/create', [UnitMovementController::class, 'create'])->name('unitmovements.create');
+  Route::post('/unitmovements', [UnitMovementController::class, 'store'])->name('unitmovements.store');
+  Route::get('/unitmovements/{unitMovement}', [UnitMovementController::class, 'show'])->name('unitmovements.show');
+  Route::get('/unitmovements/{unitMovement}/edit', [UnitMovementController::class, 'edit'])->name('unitmovements.edit');
+  Route::put('/unitmovements/{unitMovement}', [UnitMovementController::class, 'update'])->name('unitmovements.update');
+  Route::delete('/unitmovements/{unitMovement}', [UnitMovementController::class, 'destroy'])->name('unitmovements.destroy');
 });

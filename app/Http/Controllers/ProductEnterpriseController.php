@@ -94,4 +94,27 @@ class ProductEnterpriseController extends Controller
     }
     return redirect()->route('productenterprises')->with('success', 'La empresa proveedora se ha eliminado correctamente.');
   }
+
+  /**
+   * Get Products by Supplier Enterprise and Transport Enterprise
+   * @param Request $request
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function getProductsBySupplierAndTransportEnterprise($id_supplier_enterprises, $id_transport_enterprises)
+  {
+
+    try {
+
+      if (!$id_supplier_enterprises || !$id_transport_enterprises) {
+        return response()->json(['error' => 'Los parámetros no son válidos.'], 500);
+      }
+      $products = ProductEnterprise::where('id_supplier_enterprises', $id_supplier_enterprises)
+        ->where('id_transport_enterprises', $id_transport_enterprises)
+        ->with('product')
+        ->get();
+      return response()->json($products);
+    } catch (\Exception $e) {
+      return response()->json(['error' => $e->getMessage()]);
+    }
+  }
 }

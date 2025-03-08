@@ -157,6 +157,10 @@
                     url: '/enterprises/' + id_supplier_enterprises,
                     type: 'GET',
                     success: function(data) {
+                        $('#id_transport_enterprises').empty();
+                        $('#id_transport_enterprises').append(
+                            `<option value="">Seleccione una empresa</option>`
+                        );
                         data.forEach(element => {
                             $('#id_transport_enterprises').append(
                                 `<option value="${element.id_enterprises}">${element.name}</option>`
@@ -186,6 +190,10 @@
                 url: '/enterprises/' + id_supplier_enterprises,
                 type: 'GET',
                 success: function(data) {
+                    $('#form-edit').find('#id_transport_enterprises').empty();
+                    $('#form-edit').find('#id_transport_enterprises').append(
+                        `<option value="">Seleccione una empresa</option>`
+                    );
                     data.forEach(element => {
                         $('#form-edit').find('#id_transport_enterprises').append(
                             `<option value="${element.id_enterprises}">${element.name}</option>`

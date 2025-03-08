@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductEnterprise;
 use App\Models\ProductType;
+use App\Models\Unit;
 use App\Models\UnitType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +64,24 @@ class ProductController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(Product $product) {}
+  public function show(Product $product)
+  {
+    $product->load('productType', 'unitType');
+    $productEnterprise = ProductEnterprise::where('id_products', $product->id_products)->first();
+    $products = ProductEnterprise::where('id_supplier_enterprises', $productEnterprise->id_supplier_enterprises)
+      ->where('id_transport_enterprises', $productEnterprise->id_transport_enterprises)->where('id_products', '!=', $product->id_products)
+      ->with('product')
+      ->get();
+
+    $units = Unit::all();
+
+    return response()->json([
+      'product' => $product,
+      'productEnterprise' => $productEnterprise,
+      'products' => $products,
+      'units' => $units
+    ]);
+  }
 
   /**
    * Show the form for editing the specified resource.
