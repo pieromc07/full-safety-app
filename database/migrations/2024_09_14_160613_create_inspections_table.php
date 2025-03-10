@@ -65,8 +65,6 @@ return new class extends Migration
         SET NEW.cuid_updated = CUID_19D_B10();
       END
     ');
-
-
   }
 
   /**

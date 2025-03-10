@@ -35,11 +35,9 @@ class Product extends Model
     'flammability',
     'reactivity',
     'special',
-    'uid_products',
     'id_product_types',
     'id_unit_types',
-    'id_users_inserted',
-    'id_users_updated',
+    'id_users',
     'cuid_inserted',
     'cuid_updated',
     'cuid_deleted',
@@ -51,8 +49,7 @@ class Product extends Model
    * @var array<int, string>
    */
   protected $hidden = [
-    'id_users_inserted',
-    'id_users_updated',
+    'id_users',
     'cuid_inserted',
     'cuid_updated',
     'cuid_deleted',
@@ -119,14 +116,6 @@ class Product extends Model
    */
   public function userInserted()
   {
-    return $this->belongsTo(User::class, 'id_users_inserted', 'id_users');
-  }
-
-  /**
-   * Get the user that updated the product.
-   */
-  public function userUpdated()
-  {
-    return $this->belongsTo(User::class, 'id_users_updated', 'id_users');
+    return $this->belongsTo(User::class, 'id_users', 'id_users');
   }
 }

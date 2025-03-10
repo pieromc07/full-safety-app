@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\CheckPoint;
 use App\Models\Enterprise;
+use App\Models\EnterpriseRelsEnterprise;
 use App\Models\UnitMovement;
 use App\Models\UnitMovementDetail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +20,9 @@ class UnitMovementController extends Controller
   {
 
     $id_checkpoints = $request->id_checkpoints ?? '';
+    $direction = $request->direction ?? '';
+    $convoy_state = $request->convoy_state ?? '';
+    $id_transport_enterprises = $request->id_transport_enterprises ?? '';
     if ($request->rangeDate == null || $request->rangeDate == '') {
       $request->merge(['rangeDate' => $request->session()->get('rangeDate') ?? date('Y-m-d') . ' 00:00:00 - ' . date('Y-m-d') . ' 23:59:59']);
     } else {
@@ -38,13 +43,22 @@ class UnitMovementController extends Controller
       ->when($id_checkpoints, function ($query, $id_checkpoints) {
         return $query->where('id_checkpoints', $id_checkpoints);
       })
+      ->when($direction, function ($query, $direction) {
+        return $query->where('direction', $direction);
+      })
+      ->when($convoy_state, function ($query, $convoy_state) {
+        return $query->where('convoy_state', $convoy_state);
+      })
+      ->when($id_transport_enterprises, function ($query, $id_transport_enterprises) {
+        return $query->where('id_transport_enterprises', $id_transport_enterprises);
+      })
       ->whereBetween('date', [$start, $end])
       ->orderBy('id_unit_movements', 'desc')
       ->paginate(self::LARGETAKE);
-
+    $transportEnterprises = Enterprise::where('id_enterprise_types', 2)->get();
     $checkpoints = CheckPoint::all();
 
-    return view('movements.index', compact('unitmovements', 'checkpoints'));
+    return view('movements.index', compact('unitmovements', 'checkpoints', 'transportEnterprises'));
   }
 
   /**
@@ -62,19 +76,25 @@ class UnitMovementController extends Controller
    */
   public function store(Request $request)
   {
+
     $request->validate(UnitMovement::$rules, UnitMovement::$messages);
     try {
       DB::beginTransaction();
       $unitmovement =  UnitMovement::create([
         'date' => $request->date,
+        'time' => date('H:i:s', strtotime($request->date)),
+        'time_arrival' => $request->time_arrival ?? NULL,
+        'time_departure' => $request->time_departure ?? NULL,
         'id_checkpoints' => $request->id_checkpoints,
         'convoy' => $request->convoy,
+        'convoy_state' => $request->convoy_state,
         'direction' => $request->direction,
         'heavy_vehicle' => $request->heavy_vehicle,
         'light_vehicle' => $request->light_vehicle,
         'id_supplier_enterprises' => $request->id_supplier_enterprises,
         'id_transport_enterprises' => $request->id_transport_enterprises,
-        'id_products' => $request->id_products
+        'id_products' => $request->id_products,
+        'id_users' => auth()->user()->id_users,
       ]);
       $weight = $request->weight;
       $id_products_two = $request->id_products_two;
@@ -130,5 +150,51 @@ class UnitMovementController extends Controller
   public function destroy(UnitMovement $unitMovement)
   {
     //
+  }
+
+  public function exportPdf(Request $request)
+  {
+
+
+    $id_checkpoints = $request->id_checkpoints ?? '';
+    $direction = $request->direction ?? '';
+    $convoy_state = $request->convoy_state ?? '';
+    $id_transport_enterprises = $request->id_transport_enterprises ?? '';
+    $rangeDate = $request->rangeDate ?? '';
+    if ($rangeDate != '') {
+      $dates = explode(' - ', $rangeDate);
+      $start = date('Y-m-d H:i:s', strtotime($dates[0]));
+      $end = date('Y-m-d H:i:s', strtotime($dates[1]));
+    } else {
+      $start = date('Y-m-d H:i:s', strtotime(date('Y-m-d') . ' 00:00:00'));
+      $end = date('Y-m-d H:i:s', strtotime(date('Y-m-d') . ' 23:59:59'));
+    }
+
+    $unitmovements = UnitMovement::with('checkPoint', 'supplierEnterprise', 'transportEnterprise', 'product', 'unitMovementDetails')
+      ->when($id_checkpoints, function ($query, $id_checkpoints) {
+        return $query->where('id_checkpoints', $id_checkpoints);
+      })
+      ->when($direction, function ($query, $direction) {
+        return $query->where('direction', $direction);
+      })
+      ->when($convoy_state, function ($query, $convoy_state) {
+        return $query->where('convoy_state', $convoy_state);
+      })
+      ->when($id_transport_enterprises, function ($query, $id_transport_enterprises) {
+        return $query->where('id_transport_enterprises', $id_transport_enterprises);
+      })
+      ->whereBetween('date', [$start, $end])
+      ->orderBy('id_unit_movements', 'desc')
+      ->get();
+
+    $supplierEnterprise = EnterpriseRelsEnterprise::where('id_transport_enterprises', $id_transport_enterprises)->first()->supplierEnterprise->name ?? '';
+
+    $title = $supplierEnterprise . ' - ' . ($direction == 1 ? 'Subida' : ($direction == 2 ? 'Bajada' : 'Ambas direcciones')) . ' - ' . ($convoy_state == 1 ? 'Cargado' : ($convoy_state == 2 ? 'Vacio' : 'Ambos estados'));
+    $dates = 'Del ' .  date('d-m-Y', strtotime($start)) . ' al ' . date('d-m-Y', strtotime($end));
+    $pdf = Pdf::loadView('movements.report', compact('unitmovements', 'title', 'dates'));
+    $paper_format = 'a4';
+    $type = 'portrait';
+    $pdf->setPaper($paper_format, $type);
+    return $pdf->stream('reporte_movimientos.pdf');
   }
 }

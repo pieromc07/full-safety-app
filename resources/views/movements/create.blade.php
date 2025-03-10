@@ -25,10 +25,18 @@
     @endif
     <x-form class="card" id="form-create" action="{{ route('unitmovements.store') }}" method="POST" role="form">
         <div class="card-body">
-            <div class="row align-items-center g-3">
-                <div class="col-12 col-md-2">
-                    <x-input id="date" label="Fecha" placeholder="Ingrese la fecha" type="date" required
+            <div class="row align-items-center g-3 mb-3">
+                <div class="col-12 col-md-3">
+                    <x-input id="date" label="Fecha" placeholder="Ingrese la fecha" type="datetime-local" required
                         icon="bi-calendar" name="date" />
+                </div>
+                <div class="col-12 col-md-3">
+                    <x-input id="time_arrival" name="time_arrival" label=" Hora de Llegada"
+                        placeholder="Ingrese la hora de llegada" type="time" icon="bi-clock" />
+                </div>
+                <div class="col-12 col-md-3">
+                    <x-input id="time_departure" name="time_departure" label=" Hora de Salida"
+                        placeholder="Ingrese la hora de salida" type="time" icon="bi-clock" />
                 </div>
                 <div class="col-12 col-md-3">
                     <x-select id="id_checkpoints" label="Punto de Control" placeholder="Seleccione un punto de control"
@@ -40,7 +48,7 @@
                         </x-slot>
                     </x-select>
                 </div>
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-3">
                     <x-select id="convoy" label="N° de Convoy" placeholder="N° de Convoy" name="convoy">
                         <x-slot name="options">
                             <option value="1">1ro</option>
@@ -54,10 +62,19 @@
                         </x-slot>
                     </x-select>
                 </div>
-                <div class="col-12 col-md-1">
-                    <div class="row d-flex flex-column">
+
+                <div class="col-12 col-md-2">
+                    <x-input id="heavy_vehicle" name="heavy_vehicle" label="N° Pesado" placeholder="N° Pesado"
+                        type="number" max="9" min="0" value="0" icon="bi-truck" />
+                </div>
+                <div class="col-12 col-md-2">
+                    <x-input id="light_vehicle" name="light_vehicle" label="N° Liviano" placeholder="N° Liviano"
+                        type="number" max="3" min="0" value="0" icon="bi-car-front-fill" />
+                </div>
+                <div class="col-12 col-md-2">
+                    <div class="row d-flex justify-content-center align-items-center">
                         <label for="direction" class="col-12 col
-                      -form-label">Dirección</label>
+                    -form-label">Dirección</label>
                         <div class="col-4 mt-2">
                             <div class="form-check form-check-custom form-check-solid">
                                 <input class="form-check-input" type="radio" value="1" id="direction-up"
@@ -85,17 +102,19 @@
                         </div>
                     @enderror
                 </div>
-                <div class="col-12 col-md-2">
-                    <x-input id="heavy_vehicle" name="heavy_vehicle" label="N° Pesado" placeholder="N° Pesado" type="number" max="9"
-                        min="0" value="0" icon="bi-truck"  />
+                {{-- convoy_state --}}
+                <div class="col-12 col-md-3">
+                  <x-select id="convoy_state" label="Estado de Convoy" placeholder="Seleccione un estado de convoy" name="convoy_state">
+                      <x-slot name="options">
+                          <option value="1">Cargado</option>
+                          <option value="2">Vacio</option>
+                      </x-slot>
+                  </x-select>
                 </div>
-                <div class="col-12 col-md-2">
-                    <x-input id="light_vehicle" name="light_vehicle" label="N° Liviano" placeholder="N° Liviano" type="number" max="3"
-                        min="0" value="0" icon="bi-car-front-fill" />
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <x-select id="id_supplier_enterprises" name="id_supplier_enterprises" label="Empresa Proveedora"
-                        class="form-control" required="required" autofocus="autofocus" placeholder="Seleccione una empresa">
+                        class="form-control" required="required" autofocus="autofocus"
+                        placeholder="Seleccione una empresa">
                         <x-slot name="options">
                             @foreach ($supplierEnterprises as $supplierEnterprise)
                                 <option value="{{ $supplierEnterprise->id_enterprises }}">
@@ -107,8 +126,8 @@
                     </x-select>
                 </div>
                 <div class="col-md-3">
-                    <x-select id="id_transport_enterprises" name="id_transport_enterprises" label="Empresa Transportadora"
-                        class="form-control" required="required" autofocus="autofocus"
+                    <x-select id="id_transport_enterprises" name="id_transport_enterprises"
+                        label="Empresa Transportadora" class="form-control" required="required" autofocus="autofocus"
                         placeholder="Seleccione una empresa">
                         <x-slot name="options">
                         </x-slot>

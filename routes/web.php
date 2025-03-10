@@ -181,4 +181,5 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/unitmovements/{unitMovement}/edit', [UnitMovementController::class, 'edit'])->name('unitmovements.edit');
   Route::put('/unitmovements/{unitMovement}', [UnitMovementController::class, 'update'])->name('unitmovements.update');
   Route::delete('/unitmovements/{unitMovement}', [UnitMovementController::class, 'destroy'])->name('unitmovements.destroy');
+  Route::get('/unitmovements/export/pdf', [UnitMovementController::class, 'exportPdf'])->name('unitmovements.export.pdf');
 });

@@ -186,7 +186,7 @@ return [
       * Package Service Providers...
     */
     Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
-
+    Barryvdh\DomPDF\ServiceProvider::class,
 
     /*
       * Application Service Providers...

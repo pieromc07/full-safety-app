@@ -26,6 +26,7 @@ return new class extends Migration
       $table->text('photo_one_uri')->nullable();
       $table->text('photo_two')->nullable();
       $table->text('photo_two_uri')->nullable();
+      $table->unsignedBigInteger('id_users');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
       $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
@@ -33,6 +34,7 @@ return new class extends Migration
       $table->foreign('id_checkpoints')->references('id_checkpoints')->on('checkpoints');
       $table->foreign('id_supplier_enterprises')->references('id_enterprises')->on('enterprises');
       $table->foreign('id_transport_enterprises')->references('id_enterprises')->on('enterprises');
+      $table->foreign('id_users')->references('id_users')->on('users');
     });
 
     DB::unprepared('

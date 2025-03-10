@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\CheckPoint;
 
 class UnitMovement extends Model
 {
@@ -13,11 +14,16 @@ class UnitMovement extends Model
   protected $primaryKey = 'id_unit_movements';
   protected $fillable = [
     'date',
+    'time',
+    'time_arrival',
+    'time_departure',
     'id_checkpoints',
     'convoy',
+    'convoy_state',
     'heavy_vehicle',
     'light_vehicle',
     'direction',
+    'id_users',
     'id_supplier_enterprises',
     'id_transport_enterprises',
     'id_products',
@@ -30,6 +36,7 @@ class UnitMovement extends Model
     'date' => 'required|date',
     'id_checkpoints' => 'required|integer|exists:checkpoints,id_checkpoints',
     'convoy' => 'required|integer',
+    'convoy_state' => 'required|integer',
     'heavy_vehicle' => 'required|integer',
     'light_vehicle' => 'required|integer',
     'direction' => 'required|integer',
@@ -46,6 +53,8 @@ class UnitMovement extends Model
     'id_checkpoints.exists' => 'El puesto de control seleccionado no existe.',
     'convoy.required' => 'El campo convoy es obligatorio.',
     'convoy.integer' => 'El campo convoy debe ser un número entero.',
+    'convoy_state.required' => 'El campo estado de convoy es obligatorio.',
+    'convoy_state.integer' => 'El campo estado de convoy debe ser un número entero.',
     'heavy_vehicle.required' => 'El campo vehículo pesado es obligatorio.',
     'heavy_vehicle.integer' => 'El campo vehículo pesado debe ser un número entero.',
     'light_vehicle.required' => 'El campo vehículo liviano es obligatorio.',
@@ -88,5 +97,35 @@ class UnitMovement extends Model
   public function product()
   {
     return $this->belongsTo(Product::class, 'id_products', 'id_products');
+  }
+
+  public function user()
+  {
+    return $this->belongsTo(User::class, 'id_users', 'id_users');
+  }
+
+  public function nroConvoy()
+  {
+    if ($this->convoy == 1) {
+      return 'Primero';
+    } elseif ($this->convoy == 2) {
+      return 'Segundo';
+    } elseif ($this->convoy == 3) {
+      return 'Tercero';
+    } elseif ($this->convoy == 4) {
+      return 'Cuarto';
+    } elseif ($this->convoy == 5) {
+      return 'Quinto';
+    } elseif ($this->convoy == 6) {
+      return 'Sexto';
+    } elseif ($this->convoy == 7) {
+      return 'Séptimo';
+    } elseif ($this->convoy == 8) {
+      return 'Octavo';
+    } elseif ($this->convoy == 9) {
+      return 'Noveno';
+    } elseif ($this->convoy == 10) {
+      return 'Décimo';
+    }
   }
 }

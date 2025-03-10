@@ -10,6 +10,8 @@ use App\Models\Enterprise;
 use App\Models\EnterpriseRelsEnterprise;
 use App\Models\EnterpriseType;
 use App\Models\InspectionType;
+use App\Models\Product;
+use App\Models\ProductEnterprise;
 use App\Models\ProductType;
 use App\Models\Targeted;
 use App\Models\Unit;
@@ -28,7 +30,14 @@ class DatabaseSeeder extends Seeder
 
 
     $master = User::create([
+      'fullname' => 'Usuario Maestro',
       'username' => 'master',
+      'password' => Hash::make('password')
+    ])->first();
+
+    $user = User::create([
+      'fullname' => 'Percy Javier Cruz Mejias',
+      'username' => 'pcruz',
       'password' => Hash::make('password')
     ])->first();
 
@@ -502,6 +511,97 @@ class DatabaseSeeder extends Seeder
       'ruc' => '20480865198',
       'id_enterprise_types' => 2,
     ]);
+
+    ## Enterprise Rels Enterprise
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'EXSA S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSPORTES M. CATALAN S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'EXSA S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'MULTITRANSPORTES CAJAMARCA S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'EXSA S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSPORTES ACUARIO S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'EXSA S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSALTISA S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'EXSA S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'RANSA COMERCIAL S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'CEMENTOS PACASMAYO S.A.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'EMPRESA DE TRANSPORTES TRANSGROUP CAJAMARCA S.A')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'CEMENTOS PACASMAYO S.A.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'INVERSIONES GENERALES CRISTIAN S.R.L.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'CEMENTOS PACASMAYO S.A.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'DCR MINERIA Y CONSTRUCCION S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'NUMAY S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'MC TRANSPORTE S.R.L.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'NUMAY S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'APM TERMINALS INLAND SERVICES')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'NUMAY S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'FULL SAFETY S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'ORICA CHEMICALS PERU S.A.C')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSPORTES ACUARIO S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'ORICA CHEMICALS PERU S.A.C')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSALTISA S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'ORICA CHEMICALS PERU S.A.C')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'RANSA COMERCIAL S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'RANSA COMERCIAL S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSPORTES M. CATALAN S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'RANSA COMERCIAL S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'MULTITRANSPORTES CAJAMARCA S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'RANSA COMERCIAL S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSPORTES ACUARIO S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    EnterpriseRelsEnterprise::create([
+      'id_supplier_enterprises' => Enterprise::where('name', 'RANSA COMERCIAL S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSALTISA S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
     ## Check Points
     CheckPoint::create([
       'name' => 'Kuntur Wasi',
@@ -574,5 +674,395 @@ class DatabaseSeeder extends Seeder
       'name' => 'Isotanque',
       'targeted_id' => 3,
     ]);
+
+    ## Product
+    Product::create([
+      'name' => 'Booster',
+      'number_onu' => '0042',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '1.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Emulsión de Nitrato de Amonio',
+      'number_onu' => '3375',
+      'health' => 0,
+      'flammability' => 2,
+      'reactivity'  => 3,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '5.2')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Bombona 2')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Nitrato de Amonio',
+      'number_onu' => '1942',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 2,
+      'special' => 3,
+      'id_product_types' => ProductType::where('code', '5.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Plataforma')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Detonador eléctrico',
+      'number_onu' => '0030',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '1.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cable de disparo',
+      'number_onu' => '0030',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '1.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Emulsión encartuchada',
+      'number_onu' => '0241',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '1.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Nitrato de amonio quantex',
+      'number_onu' => '1942',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '5.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Detonadores no Eléctricos',
+      'number_onu' => '0000',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '1.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Emulsión Emulex 80',
+      'number_onu' => '0000',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '3.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Emulsión Emulex 60',
+      'number_onu' => '0000',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '3.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Emulsión Emulex 45',
+      'number_onu' => '0000',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '3.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Emulsión Emulex 40',
+      'number_onu' => '0000',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '3.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Furgon')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Solución gratificante',
+      'number_onu' => '3219',
+      'health' => 0,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '9.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Plataforma')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Diesel B5',
+      'number_onu' => '1202',
+      'health' => 1,
+      'flammability' => 1,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '3.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Cisterna')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Gasolina',
+      'number_onu' => '1203',
+      'health' => 1,
+      'flammability' => 3,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '3.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Cisterna')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Oxido de Calcio',
+      'number_onu' => '1910',
+      'health' => 2,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '8.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Bombona')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Sulfato de Aluminio',
+      'number_onu' => '1438',
+      'health' => 2,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '8.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Bombona')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Sodio',
+      'number_onu' => '1689',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Potasio',
+      'number_onu' => '1680',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Calcio',
+      'number_onu' => '1587',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Hierro',
+      'number_onu' => '1589',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Plata',
+      'number_onu' => '1685',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Zinc',
+      'number_onu' => '1688',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Mercurio',
+      'number_onu' => '1626',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Plomo',
+      'number_onu' => '1686',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Magnesio',
+      'number_onu' => '1687',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    Product::create([
+      'name' => 'Cianuro de Cobre',
+      'number_onu' => '1588',
+      'health' => 3,
+      'flammability' => 0,
+      'reactivity'  => 0,
+      'special' => 0,
+      'id_product_types' => ProductType::where('code', '6.1')->first()->id_product_types,
+      'id_unit_types' => UnitType::where('name', 'Isotanque')->first()->id_unit_types,
+      'id_users' => $master->id_users,
+    ]);
+
+    ## Product Rel Enterprise
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Booster')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'EXSA S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSPORTES M. CATALAN S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Emulsión de Nitrato de Amonio')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'ORICA CHEMICALS PERU S.A.C')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSPORTES ACUARIO S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Nitrato de Amonio')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'CEMENTOS PACASMAYO S.A.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'EMPRESA DE TRANSPORTES TRANSGROUP CAJAMARCA S.A')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Detonador eléctrico')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'EXSA S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'MULTITRANSPORTES CAJAMARCA S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Cable de disparo')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'EXSA S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSPORTES ACUARIO S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Emulsión encartuchada')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'EXSA S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'TRANSALTISA S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Nitrato de amonio quantex')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'CEMENTOS PACASMAYO S.A.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'RANSA COMERCIAL S.A.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Detonadores no Eléctricos')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'NUMAY S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'MC TRANSPORTE S.R.L.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Emulsión Emulex 80')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'NUMAY S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'APM TERMINALS INLAND SERVICES')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    ProductEnterprise::create([
+      'id_products' => Product::where('name', 'Emulsión Emulex 60')->first()->id_products,
+      'id_supplier_enterprises' => Enterprise::where('name', 'NUMAY S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
+      'id_transport_enterprises' => Enterprise::where('name', 'FULL SAFETY S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
+    ]);
+
+    
+
+
   }
 }

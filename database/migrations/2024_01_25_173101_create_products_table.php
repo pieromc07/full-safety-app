@@ -22,15 +22,13 @@ return new class extends Migration
       $table->integer('special')->default(0);
       $table->unsignedBigInteger('id_product_types')->index('products_id_product_types_IDX');
       $table->unsignedBigInteger('id_unit_types')->index('products_id_unit_types_IDX');
-      $table->unsignedBigInteger('id_users_inserted')->index('products_id_users_inserted_IDX');
-      $table->unsignedBigInteger('id_users_updated')->index('products_id_users_updated_IDX');
+      $table->unsignedBigInteger('id_users')->index('products_id_users_IDX');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
       $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
       $table->foreign('id_product_types')->references('id_product_types')->on('product_types');
       $table->foreign('id_unit_types')->references('id_unit_types')->on('unit_types');
-      $table->foreign('id_users_inserted')->references('id_users')->on('users');
-      $table->foreign('id_users_updated')->references('id_users')->on('users');
+      $table->foreign('id_users')->references('id_users')->on('users');
     });
 
     // CREATE TRIIGER FOR products
