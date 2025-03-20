@@ -20,6 +20,7 @@ class Targeted extends Model
     'targeted_id',
     'cuid_inserted',
     'cuid_updated',
+    'cuid_deleted',
   ];
 
   public static $rules = [
@@ -37,6 +38,7 @@ class Targeted extends Model
   protected $hidden = [
     'cuid_inserted',
     'cuid_updated',
+    'cuid_deleted',
   ];
 
   public $timestamps = false;

@@ -12,8 +12,10 @@ class TargetedRelsInspection extends Model
 
   protected $table = 'targeted_rels_inspections';
 
+  protected $primaryKey = 'id_targeted_rels_inspections';
+
   protected $fillable = [
-    'targeted_id',
+    'id_targeteds',
     'id_inspection_types',
     'cuid_inserted',
     'cuid_updated',
@@ -21,12 +23,12 @@ class TargetedRelsInspection extends Model
 
   public function targeted()
   {
-    return $this->belongsTo(Targeted::class);
+    return $this->belongsTo(Targeted::class, 'id_targeteds', 'id_targeteds');
   }
 
   public function inspectionType()
   {
-    return $this->belongsTo(InspectionType::class);
+    return $this->belongsTo(InspectionType::class, 'id_inspection_types', 'id_inspection_types');
   }
 
   public function cuidInsertedToDatetime()

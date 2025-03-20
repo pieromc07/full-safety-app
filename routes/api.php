@@ -20,17 +20,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['api'])->group(function () {
-  Route::post('logout', [AuthController::class, 'logout']);
-  Route::post('refresh', [AuthController::class, 'refresh']);
-  Route::post('me', [AuthController::class, 'me']);
-  Route::post('/inspection', [InspectionController::class, 'store']);
-  Route::post('/dialogue', [DailyDialogController::class, 'store']);
-  Route::post('/pauseactive', [ActivePauseController::class, 'store']);
-  Route::post('/alcoholtest', [AlcoholTestController::class, 'store']);
-  Route::post('/controlgps', [GPSControlController::class, 'store']);
-  Route::get('/sync', [SyncController::class, 'sync']);
 
-});
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+Route::post('me', [AuthController::class, 'me']);
+Route::post('/inspection', [SyncController::class, 'inspection'])->middleware('auth:api');
+Route::post('/dialogue', [SyncController::class, 'dailyDialog'])->middleware('auth:api');
+Route::post('/pauseactive', [SyncController::class, 'activePause'])->middleware('auth:api');
+Route::post('/alcoholtest', [SyncController::class, 'alcoholTest'])->middleware('auth:api');
+Route::post('/controlgps', [SyncController::class, 'controlGps'])->middleware('auth:api');
+Route::post('/ping', function () {
+  return response()->json(['message' => 'pong']);
+})->middleware('auth:api');
+Route::post('/refresh', [AuthController::class, 'refresh']);
 
-Route::post('login', [AuthController::class, 'login']);
+Route::get('/sync', [SyncController::class, 'sync']);
+Route::post('/login', [AuthController::class, 'login']);

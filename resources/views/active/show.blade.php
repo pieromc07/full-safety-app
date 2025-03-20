@@ -66,7 +66,7 @@
                                 <div class="col-12">
                                     <h5>Foto 1</h5>
                                 </div>
-                                <img src="{{ asset('storage/' . $active->photo_one) }}" class="img-fluid" id="photo_one">
+                                <img src="{{ asset($active->photo_one) }}" class="img-fluid" id="photo_one">
                             </div>
                         </div>
                         <div class="col-6">
@@ -74,7 +74,7 @@
                                 <div class="col-12">
                                     <h5>Foto 2</h5>
                                 </div>
-                                <img src="{{ asset('storage/' . $active->photo_two) }}" class="img-fluid" id="photo_two">
+                                <img src="{{ asset($active->photo_two) }}" class="img-fluid" id="photo_two">
                             </div>
                         </div>
                     </div>

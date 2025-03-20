@@ -23,6 +23,66 @@ use Illuminate\Support\Facades\Hash;
 class DatabaseSeeder extends Seeder
 {
   /**
+   * Algorithm to encrypt the text
+   * @param string $text
+   * @return string
+   */
+  public function encryptText($text)
+  {
+    // Cifrado César
+    $alphabet = 'abcdefghijklmnopqrstuvwxyz';
+    $numeros = '0123456789';
+    $special = '!@#$%^&*()_+{}|:"<>?';
+    $alphabet .= $numeros;
+    $alphabet .= $special;
+    $text = strtolower($text);
+    $text = str_replace(' ', '', $text);
+    $shift = 3;
+    $encrypted = '';
+    for ($i = 0; $i < strlen($text); $i++) {
+      $pos = strpos($alphabet, $text[$i]);
+      if ($pos !== false) {
+        $newPos = ($pos + $shift) % strlen($alphabet);
+        $encrypted .= $alphabet[$newPos];
+      } else {
+        $encrypted .= $text[$i];
+      }
+    }
+    return $encrypted;
+  }
+
+  /**
+   * Algorithm to decrypt the text
+   * @param string $text
+   * @return string
+   */
+  public function decryptText($text)
+  {
+    // Descifrado César
+    $alphabet = 'abcdefghijklmnopqrstuvwxyz';
+    $numeros = '0123456789';
+    $special = '!@#$%^&*()_+{}|:"<>?';
+    $alphabet .= $numeros;
+    $alphabet .= $special;
+    $text = strtolower($text);
+    $text = str_replace(' ', '', $text);
+    $shift = 3;
+    $decrypted = '';
+    for ($i = 0; $i < strlen($text); $i++) {
+      $pos = strpos($alphabet, $text[$i]);
+      if ($pos !== false) {
+        $newPos = ($pos - $shift) % strlen($alphabet);
+        if ($newPos < 0) {
+          $newPos = strlen($alphabet) + $newPos;
+        }
+        $decrypted .= $alphabet[$newPos];
+      } else {
+        $decrypted .= $text[$i];
+      }
+    }
+    return $decrypted;
+  }
+  /**
    * Seed the application's database.
    */
   public function run(): void
@@ -32,13 +92,15 @@ class DatabaseSeeder extends Seeder
     $master = User::create([
       'fullname' => 'Usuario Maestro',
       'username' => 'master',
-      'password' => Hash::make('password')
+      'password' => Hash::make('password'),
+      'token' => $this->encryptText('password')
     ])->first();
 
     $user = User::create([
       'fullname' => 'Percy Javier Cruz Mejias',
       'username' => 'pcruz',
-      'password' => Hash::make('password')
+      'password' => Hash::make('password'),
+      'token' => $this->encryptText('password')
     ])->first();
 
     $enterprise =  Company::create([
@@ -1060,9 +1122,5 @@ class DatabaseSeeder extends Seeder
       'id_supplier_enterprises' => Enterprise::where('name', 'NUMAY S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
       'id_transport_enterprises' => Enterprise::where('name', 'FULL SAFETY S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
     ]);
-
-    
-
-
   }
 }

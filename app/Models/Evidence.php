@@ -21,6 +21,7 @@ class Evidence extends Model
     'id_subcategories',
     'cuid_inserted',
     'cuid_updated',
+    'cuid_deleted',
   ];
 
   public static $rules = [
@@ -43,6 +44,7 @@ class Evidence extends Model
   protected $hidden = [
     'cuid_inserted',
     'cuid_updated',
+    'cuid_deleted',
   ];
 
   public $timestamps = false;

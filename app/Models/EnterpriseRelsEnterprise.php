@@ -10,16 +10,22 @@ class EnterpriseRelsEnterprise extends Model
 {
   use HasFactory;
 
+  protected $table = 'enterprise_rels_enterprises';
+
+  protected $primaryKey = 'id_enterprise_rels_enterprises';
+
   protected $fillable = [
     'id_supplier_enterprises',
     'id_transport_enterprises',
     'cuid_inserted',
-    'cuid_updated'
+    'cuid_updated',
+    'cuid_deleted'
   ];
 
   protected $hidden = [
     'cuid_inserted',
-    'cuid_updated'
+    'cuid_updated',
+    'cuid_deleted'
   ];
 
   public $timestamps = false;

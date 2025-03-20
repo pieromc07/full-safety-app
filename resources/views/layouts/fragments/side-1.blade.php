@@ -129,7 +129,7 @@
                         </i>
                     </span>
                     <span class="menu-title">
-                        Registro
+                        Maestro
                     </span>
                     <span class="menu-arrow"></span>
                 </span>

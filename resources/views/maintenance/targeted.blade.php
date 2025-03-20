@@ -110,7 +110,7 @@
                                         {{ $target->targeted->name }}
                                     </td>
                                     <td class="text-center">
-                                        <img src="{{ asset('storage/' . $target->image) }}" alt="{{ $target->name }}"
+                                        <img src="{{ asset($target->image) }}" alt="{{ $target->name }}"
                                             class="img-thumbnail" style="width: 50px; height: 50px;">
                                     </td>
                                     <td class="text-center">

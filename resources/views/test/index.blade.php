@@ -29,21 +29,23 @@
                                 <tr>
                                     <td> {{ $test->checkpoint->name }}</td>
                                     <td>{{ $test->date }}</td>
-                                    <td>usuario</td>
+                                    <td>
+                                      {{ $test->user->fullname }}
+                                    </td>
                                     <td>{{ $test->enterpriseTransport->name }}</td>
                                     <td>{{ $test->employee->fullname }}</td>
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
-                                            href="{{ route('tests.show', $test) }}" />
+                                            href="{{ route('tests.show', $test->id_alcohol_tests) }}" />
 
 
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $test }})" />
-                                        <x-form-table id="form-delete-{{ $test->id }}"
-                                            action="{{ route('tests.destroy', $test) }}" method="POST" role="form">
+                                        <x-form-table id="form-delete-{{ $test->id_alcohol_tests }}"
+                                            action="{{ route('tests.destroy', $test->id_alcohol_tests) }}" method="POST" role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $test->id }})" />
+                                                onclick="Eliminar({{ $test->id_alcohol_tests }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -54,8 +56,8 @@
             </div>
             <div class="row">
                 <div class="col-md-12 d-flex justify-content-end">
-                    <x-pagination page="{{ $tests->currentPage() }}" lastPage="{{ $tests->lastPage() }}"
-                        route="tests" perPage="{{ $tests->perPage() }}" total="{{ $tests->total() }}" />
+                    <x-pagination page="{{ $tests->currentPage() }}" lastPage="{{ $tests->lastPage() }}" route="tests"
+                        perPage="{{ $tests->perPage() }}" total="{{ $tests->total() }}" />
                 </div>
             </div>
         </div>

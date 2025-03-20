@@ -104,12 +104,13 @@
                 </div>
                 {{-- convoy_state --}}
                 <div class="col-12 col-md-3">
-                  <x-select id="convoy_state" label="Estado de Convoy" placeholder="Seleccione un estado de convoy" name="convoy_state">
-                      <x-slot name="options">
-                          <option value="1">Cargado</option>
-                          <option value="2">Vacio</option>
-                      </x-slot>
-                  </x-select>
+                    <x-select id="convoy_state" label="Estado de Convoy" placeholder="Seleccione un estado de convoy"
+                        name="convoy_state">
+                        <x-slot name="options">
+                            <option value="1">Cargado</option>
+                            <option value="2">Vacio</option>
+                        </x-slot>
+                    </x-select>
                 </div>
                 <div class="col-md-3">
                     <x-select id="id_supplier_enterprises" name="id_supplier_enterprises" label="Empresa Proveedora"
@@ -145,24 +146,27 @@
                         text="Generar" icon="bi-arrow-repeat" />
                 </div>
             </div>
-            <div class="row align-items-center g-3">
-                <div class="col-12">
-                    <x-table id="table-products" class="card">
-                        <x-slot name="header">
-                            <tr class="align-middle">
-                                <th colspan="1" style="width: 20%;">Producto</th>
-                                <th colspan="1" style="width: 10%">Peso 1</th>
-                                <th colspan="1" style="width: 20%;">Producto 2</th>
-                                <th colspan="1" style="width: 10%;">Peso 2</th>
-                                <th colspan="1" style="width: 15%;">U.M.</th>
-                                <th colspan="1" style="width: 15%;">Guia de Remisión</th>
-                            </tr>
-                        </x-slot>
-                        <x-slot name="slot">
-                        </x-slot>
-                    </x-table>
-                </div>
+            {{-- <div class="row align-items-center g-3">
+                <div class="col-12"> --}}
+            <div class="table-responsive">
+                <x-table id="table-products" class="table table-striped">
+                    <x-slot name="header">
+                        <tr class="align-middle">
+                            <th class="text-center">Producto</th>
+                            <th class="text-center">Peso 1</th>
+                            <th class="text-center">Producto 2</th>
+                            <th class="text-center">Peso 2</th>
+                            <th class="text-center">U.M.</th>
+                            <th class="text-center">Guía de Remisión</th>
+                        </tr>
+                    </x-slot>
+                    <x-slot name="slot">
+                    </x-slot>
+                </x-table>
             </div>
+            {{--
+                </div>
+            </div> --}}
         </div>
         <div class="card-footer">
             <x-button type="submit" id="btn-store" btn="btn-primary" title="Registrar" position="left"
@@ -254,46 +258,47 @@
                         console.log(data);
 
                         for (let i = 0; i < heavy_vehicle; i++) {
-                            $('#table-products tbody').append(
-                                `<tr class="align-middle">
-                                    <td class="d-flex flex-column align-items-center">
-                                        <img src="/assets/media/resources/units/${data.product.id_unit_types}.png"
-                                            alt="${data.product.name}" class="img-thumbnail"
-                                            style="width: 80px; height: 50px;">
-                                        <span class="ms-2">${data.product.name}</span>
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control" name="weight[]"
-                                              id="weight${i}" placeholder="Peso" required>
-                                    </td>
-                                    <td class="d-flex flex-column align-items-center">
-                                        <select name="id_products_two[]" id="id_products_two${i}"
-                                                class="form-control" autofocus="autofocus">
-                                            <option value="">Seleccione un producto</option>
-                                            ${data.products.map(item =>
-                                                `<option value="${item.product.id_products}">${item.product.name}</option>`
-                                            ).join('')}
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control" name="weight_two[]"
-                                              id="weight_two${i}" placeholder="Peso">
-                                    </td>
-                                    <td style="width: 100px;">
-                                        <select name="id_units[]" id="id_units${i}"
-                                                class="form-control" required="required" autofocus="autofocus">
-                                            <option value="">Seleccione una unidad</option>
-                                            ${data.units.map(unit =>
-                                                `<option value="${unit.id_units}">${unit.abbreviation}</option>`
-                                            ).join('')}
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" name="guide[]"
-                                              id="guide${i}" placeholder="Guia de Remisión">
-                                    </td>
-                              </tr>`
-                            );
+                            $('#table-products tbody').append(`
+                              <tr class="text-center align-middle">
+                                  <td>
+                                      <img src="/assets/media/resources/units/${data.product.id_unit_types}.png"
+                                          alt="${data.product.name}" class="img-thumbnail"
+                                          style="max-width: 80px; height: auto;">
+                                      <span class="mt-1">${data.product.name}</span>
+                                  </td>
+                                  <td>
+                                      <input type="number" class="form-control form-control-sm" name="weight[]"
+                                            id="weight${i}" placeholder="Peso" required style="width: 100px;">
+                                  </td>
+                                  <td>
+                                      <select name="id_products_two[]" id="id_products_two${i}"
+                                              class="form-control form-control-sm" style="width: 150px;">
+                                          <option value="">Seleccione un producto</option>
+                                          ${data.products.map(item =>
+                                              `<option value="${item.product.id_products}">${item.product.name}</option>`
+                                          ).join('')}
+                                      </select>
+                                  </td>
+                                  <td>
+                                      <input type="number" class="form-control form-control-sm" name="weight_two[]"
+                                            id="weight_two${i}" placeholder="Peso" style="width: 100px;">
+                                  </td>
+                                  <td>
+                                      <select name="id_units[]" id="id_units${i}"
+                                              class="form-control form-control-sm" required style="width: 150px;">
+                                          <option value="">Seleccione una unidad</option>
+                                          ${data.units.map(unit =>
+                                              `<option value="${unit.id_units}">${unit.abbreviation}</option>`
+                                          ).join('')}
+                                      </select>
+                                  </td>
+                                  <td>
+                                      <input type="text" class="form-control form-control-sm" name="guide[]"
+                                            id="guide${i}" placeholder="Guia de Remisión" style="width: 150px;">
+                                  </td>
+                              </tr>
+                          `);
+
                         }
 
                     },

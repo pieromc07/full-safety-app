@@ -30,23 +30,25 @@
                                 <tr>
                                     <td> {{ $dialogue->checkpoint->name }}</td>
                                     <td>{{ $dialogue->date }}</td>
-                                    <td>usuario</td>
+                                    <td>
+                                        {{ $dialogue->user->fullname }}
+                                    </td>
                                     <td>{{ $dialogue->enterpriseTransport->name }}</td>
                                     <td>{{ $dialogue->topic }}</td>
                                     <td>{{ $dialogue->participants }}</td>
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
-                                            href="{{ route('dialogues.show', $dialogue) }}" />
+                                            href="{{ route('dialogues.show', $dialogue->id_daily_dialogs) }}" />
 
 
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $dialogue }})" />
-                                        <x-form-table id="form-delete-{{ $dialogue->id }}"
+                                        <x-form-table id="form-delete-{{ $dialogue->id_daily_dialogs }}"
                                             action="{{ route('dialogues.destroy', $dialogue) }}" method="POST"
                                             role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $dialogue->id }})" />
+                                                onclick="Eliminar({{ $dialogue->id_daily_dialogs }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>

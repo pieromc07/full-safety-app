@@ -82,7 +82,7 @@
                                         {{ $targeted->name }}
                                     </td>
                                     <td class="text-center">
-                                        <img src="{{ asset('storage/' . $targeted->image) }}" alt="{{ $targeted->name }}"
+                                        <img src="{{ asset($targeted->image) }}" alt="{{ $targeted->name }}"
                                             class="img-thumbnail" style="width: 50px; height: 50px;">
                                     </td>
                                     <td class="text-center">
@@ -90,11 +90,11 @@
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $targeted }})" />
                                         <x-form-table id="form-delete-{{ $targeted->id_targeteds }}"
-                                            action="{{ route('targeted.destroy', $targeted->id_targeteds) }}" method="POST"
-                                            role="form">
+                                            action="{{ route('targeted.destroy', $targeted->id_targeteds) }}"
+                                            method="POST" role="form">
                                             @method('DELETE')
-                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar" type="button"
-                                                onclick="Eliminar({{ $targeted->id_targeteds }})" />
+                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
+                                                type="button" onclick="Eliminar({{ $targeted->id_targeteds }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>

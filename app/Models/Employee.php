@@ -21,7 +21,8 @@ class Employee extends Model
     'fullname',
     'id_transport_enterprises',
     'cuid_inserted',
-    'cuid_updated'
+    'cuid_updated',
+    'cuid_deleted',
   ];
 
   // Reglas de validación
@@ -48,7 +49,7 @@ class Employee extends Model
     'id_transport_enterprises.exists' => 'La empresa de transporte seleccionada no es válida.',
   ];
 
-  protected $hidden = ['cuid_inserted', 'cuid_updated'];
+  protected $hidden = ['cuid_inserted', 'cuid_updated', 'cuid_deleted'];
 
   public $timestamps = false;
 

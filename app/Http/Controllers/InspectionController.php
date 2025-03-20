@@ -18,7 +18,7 @@ class InspectionController extends Controller
   public function index(Request $request)
   {
     $type = $request->input('type') ?? 1;
-    $inspections = Inspection::where('id_inspection_types', $type)->orderBy('id', 'desc')->paginate(10);
+    $inspections = Inspection::where('id_inspection_types', $type)->orderBy('id_inspections', 'desc')->paginate(10);
     return view('inspections.index', compact('inspections'));
   }
 

@@ -10,17 +10,23 @@ class ActivePause extends Model
 {
   use HasFactory;
 
+  protected $table = 'active_pauses';
+
+  protected $primaryKey = 'id_active_pauses';
+
   protected $fillable = [
     'date',
     'hour',
-    'checkpoint_id',
+    'id_checkpoints',
     'id_supplier_enterprises',
     'id_transport_enterprises',
     'participants',
     'photo_one',
     'photo_two',
+    'id_users',
     'cuid_inserted',
-    'cuid_updated'
+    'cuid_updated',
+    'cuid_deleted'
   ];
 
   protected $hidden = ['cuid_inserted', 'cuid_updated'];
@@ -29,17 +35,22 @@ class ActivePause extends Model
 
   public function checkpoint()
   {
-    return $this->belongsTo(CheckPoint::class);
+    return $this->belongsTo(CheckPoint::class, 'id_checkpoints', 'id_checkpoints');
   }
 
   public function enterpriseSupplier()
   {
-    return $this->belongsTo(Enterprise::class, 'id_supplier_enterprises');
+    return $this->belongsTo(Enterprise::class, 'id_supplier_enterprises', 'id_enterprises');
   }
 
   public function enterpriseTransport()
   {
-    return $this->belongsTo(Enterprise::class, 'id_transport_enterprises');
+    return $this->belongsTo(Enterprise::class, 'id_transport_enterprises', 'id_enterprises');
+  }
+
+  public function user()
+  {
+    return $this->belongsTo(User::class, 'id_users', 'id_users');
   }
 
   public function cuidInsertedToDatetime()

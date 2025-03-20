@@ -92,4 +92,65 @@ class Controller extends BaseController
       }
     }
   }
+
+  /**
+   * Algorithm to encrypt the text
+   * @param string $text
+   * @return string
+   */
+  public static function encryptText($text)
+  {
+    // Cifrado César
+    $alphabet = 'abcdefghijklmnopqrstuvwxyz';
+    $numeros = '0123456789';
+    $special = '!@#$%^&*()_+{}|:"<>?';
+    $alphabet .= $numeros;
+    $alphabet .= $special;
+    $text = strtolower($text);
+    $text = str_replace(' ', '', $text);
+    $shift = 3;
+    $encrypted = '';
+    for ($i = 0; $i < strlen($text); $i++) {
+      $pos = strpos($alphabet, $text[$i]);
+      if ($pos !== false) {
+        $newPos = ($pos + $shift) % strlen($alphabet);
+        $encrypted .= $alphabet[$newPos];
+      } else {
+        $encrypted .= $text[$i];
+      }
+    }
+    return $encrypted;
+  }
+
+  /**
+   * Algorithm to decrypt the text
+   * @param string $text
+   * @return string
+   */
+  public static function decryptText($text)
+  {
+    // Descifrado César
+    $alphabet = 'abcdefghijklmnopqrstuvwxyz';
+    $numeros = '0123456789';
+    $special = '!@#$%^&*()_+{}|:"<>?';
+    $alphabet .= $numeros;
+    $alphabet .= $special;
+    $text = strtolower($text);
+    $text = str_replace(' ', '', $text);
+    $shift = 3;
+    $decrypted = '';
+    for ($i = 0; $i < strlen($text); $i++) {
+      $pos = strpos($alphabet, $text[$i]);
+      if ($pos !== false) {
+        $newPos = ($pos - $shift) % strlen($alphabet);
+        if ($newPos < 0) {
+          $newPos = strlen($alphabet) + $newPos;
+        }
+        $decrypted .= $alphabet[$newPos];
+      } else {
+        $decrypted .= $text[$i];
+      }
+    }
+    return $decrypted;
+  }
 }

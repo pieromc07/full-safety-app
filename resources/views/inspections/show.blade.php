@@ -159,9 +159,9 @@
 @push('scripts')
     <script type="text/javascript">
         function Ver(evidence) {
-            const pathBase = '{{ asset('storage') }}';
-            $('#evidence_one').attr('src', pathBase + '/' + evidence.evidence_one);
-            $('#evidence_two').attr('src', pathBase + '/' + evidence.evidence_two);
+            const pathBase = '{{ asset('') }}';
+            $('#evidence_one').attr('src', pathBase + evidence.evidence_one);
+            $('#evidence_two').attr('src', pathBase + evidence.evidence_two);
             $('#modal-evidence').modal('show');
 
         }

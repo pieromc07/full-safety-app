@@ -16,10 +16,7 @@ class AuthController extends Controller
    *
    * @return void
    */
-  public function __construct()
-  {
-    // $this->middleware('auth:api', ['except' => ['login']]);
-  }
+  public function __construct() {}
 
   /**
    * Get a JWT via given credentials.
@@ -33,10 +30,6 @@ class AuthController extends Controller
     if (!$token = JWTAuth::attempt($credentials)) {
       return response()->json(['status' => false, 'message' => 'Datos incorrectos'], 401);
     }
-    User::find(JWTAuth::user()->id)->update([
-      'token' => $token
-    ]);
-
     return $this->respondWithToken($token);
   }
 
@@ -68,9 +61,17 @@ class AuthController extends Controller
    *
    * @return \Illuminate\Http\JsonResponse
    */
-  public function refresh()
+  public function refresh(Request $request)
   {
-    return $this->respondWithToken(JWTAuth::refresh());
+    try {
+      $user = User::find($request->id);
+      $token = JWTAuth::attempt(['username' => $user->username, 'password' => self::decryptText($user->token)]);
+      return $this->respondWithToken($token);
+    } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+      return response()->json(['error' => 'Token inválido'], 401);
+    } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+      return response()->json(['error' => 'No se encontró el token'], 401);
+    }
   }
 
   /**
@@ -85,7 +86,13 @@ class AuthController extends Controller
     return response()->json([
       'status' => true,
       'message' => 'Successfully',
-      'user' => JWTAuth::user(),
+      'user' => [
+        'id' => JWTAuth::user()->id_users,
+        'fullname' => JWTAuth::user()->fullname,
+        'username' => JWTAuth::user()->username,
+        'status' => JWTAuth::user()->status,
+        'token' => JWTAuth::user()->token
+      ],
       'access_token' => $token,
       'token_type' => 'bearer',
       'expires_in' => JWTAuth::factory()->getTTL() * 60

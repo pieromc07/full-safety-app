@@ -20,7 +20,8 @@ class Enterprise extends Model
     'image',
     'id_enterprise_types',
     'cuid_inserted',
-    'cuid_updated'
+    'cuid_updated',
+    'cuid_deleted',
   ];
 
   public static $rules = [
@@ -41,7 +42,8 @@ class Enterprise extends Model
 
   protected $hidden = [
     'cuid_inserted',
-    'cuid_updated'
+    'cuid_updated',
+    'cuid_deleted',
   ];
 
   public $timestamps = false;

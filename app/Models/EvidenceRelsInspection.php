@@ -10,9 +10,13 @@ class EvidenceRelsInspection extends Model
 {
   use HasFactory;
 
+  protected $table = 'evidence_rels_inspections';
+
+  protected $primaryKey = 'id_evidence_rels_inspections';
+
   protected $fillable = [
-    'inspection_id',
-    'evidence_id',
+    'id_inspections',
+    'id_evidences',
     'state',
     'evidence_one',
     'evidence_two',
@@ -23,8 +27,8 @@ class EvidenceRelsInspection extends Model
   ];
 
   public static $rules = [
-    'inspection_id' => 'required|exists:inspections,id',
-    'evidence_id' => 'required|exists:evidence,id',
+    'id_inspections' => 'required|exists:inspections,id',
+    'id_evidences' => 'required|exists:evidence,id',
     'state' => 'required|in:1,2,3',
     'evidence_one' => 'nullable',
     'evidence_two' => 'nullable',
@@ -33,10 +37,10 @@ class EvidenceRelsInspection extends Model
   ];
 
   public static $rulesMessages = [
-    'inspection_id.required' => 'La inspección es obligatoria.',
-    'inspection_id.exists' => 'La inspección no existe.',
-    'evidence_id.required' => 'La evidencia es obligatoria.',
-    'evidence_id.exists' => 'La evidencia no existe.',
+    'id_inspections.required' => 'La inspección es obligatoria.',
+    'id_inspections.exists' => 'La inspección no existe.',
+    'id_evidences.required' => 'La evidencia es obligatoria.',
+    'id_evidences.exists' => 'La evidencia no existe.',
     'state.required' => 'El estado es obligatorio.',
     'state.in' => 'El estado no es válido.'
   ];
@@ -50,12 +54,12 @@ class EvidenceRelsInspection extends Model
 
   public function inspection()
   {
-    return $this->belongsTo(Inspection::class);
+    return $this->belongsTo(Inspection::class, 'id_inspections', 'id_inspections');
   }
 
   public function evidence()
   {
-    return $this->belongsTo(Evidence::class);
+    return $this->belongsTo(Evidence::class, 'id_evidences', 'id_evidences');
   }
 
   public function cuidInsertedToDatetime()

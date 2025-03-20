@@ -12,13 +12,14 @@ class EnterpriseType extends Model
 
   protected $table = 'enterprise_types';
 
-  protected $primaryKey = 'id_enterprise_types';  
+  protected $primaryKey = 'id_enterprise_types';
 
   protected $fillable = [
     'name',
     'description',
     'cuid_inserted',
     'cuid_updated',
+    'cuid_deleted',
   ];
 
   public static $rules = [
@@ -34,6 +35,7 @@ class EnterpriseType extends Model
   protected $hidden = [
     'cuid_inserted',
     'cuid_updated',
+    'cuid_deleted',
   ];
 
   public $timestamps = false;

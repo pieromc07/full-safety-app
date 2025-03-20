@@ -19,10 +19,14 @@ return new class extends Migration
       $table->tinyInteger('convoy_status')->nullable()->index('inspections_convoy_status_IDX')->comment('1: Bajada, 2: Subida');
       $table->integer('quantity_light_units')->nullable()->index('inspections_quantity_light_units_IDX');
       $table->integer('quantity_heavy_units')->nullable()->index('inspections_quantity_heavy_units_IDX');
+      $table->unsignedBigInteger('id_products')->nullable()->index('inspections_products_IDX');
+      $table->unsignedBigInteger('id_products_two')->nullable()->index('inspections_products_two_IDX');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
       $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
       $table->foreign('id_inspections')->references('id_inspections')->on('inspections');
+      $table->foreign('id_products')->references('id_products')->on('products');
+      $table->foreign('id_products_two')->references('id_products')->on('products');
     });
 
     // CREATE TRIGGER FOR inspection_convoys

@@ -23,14 +23,16 @@
                     <x-slot name="slot">
                         @if ($controls->isEmpty())
                             <tr>
-                                <td colspan="7 class="text-center">No hay registros</td>
+                                <td colspan="7" class="text-center">No hay registros</td>
                             </tr>
                         @else
                             @foreach ($controls as $key => $control)
                                 <tr>
                                     <td> {{ $control->checkpoint->name }}</td>
                                     <td>{{ $control->date }}</td>
-                                    <td>usuario</td>
+                                    <td>
+                                        {{ $control->user->fullname }}
+                                    </td>
                                     <td>{{ $control->enterpriseTransport->name }}</td>
                                     <td>{{ $control->option }}</td>
                                     <td>
@@ -44,16 +46,17 @@
                                     </td>
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
-                                            href="{{ route('controls.show', $control) }}" />
+                                            href="{{ route('controls.show', $control->id_gps_controls) }}" />
 
 
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $control }})" />
-                                        <x-form-table id="form-delete-{{ $control->id }}"
-                                            action="{{ route('controls.destroy', $control) }}" method="POST" role="form">
+                                        <x-form-table id="form-delete-{{ $control->id_gps_controls }}"
+                                            action="{{ route('controls.destroy', $control->id_gps_controls) }}"
+                                            method="POST" role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $control->id }})" />
+                                                onclick="Eliminar({{ $control->id_gps_controls }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>
@@ -64,8 +67,8 @@
             </div>
             <div class="row">
                 <div class="col-md-12 d-flex justify-content-end">
-                    <x-pagination page="{{ $controls->currentPage() }}" lastPage="{{ $controls->lastPage() }}" route="controls"
-                        perPage="{{ $controls->perPage() }}" total="{{ $controls->total() }}" />
+                    <x-pagination page="{{ $controls->currentPage() }}" lastPage="{{ $controls->lastPage() }}"
+                        route="controls" perPage="{{ $controls->perPage() }}" total="{{ $controls->total() }}" />
                 </div>
             </div>
         </div>

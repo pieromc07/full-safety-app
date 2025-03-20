@@ -17,7 +17,8 @@ class CheckPoint extends Model
     'name',
     'description',
     'cuid_inserted',
-    'cuid_updated'
+    'cuid_updated',
+    'cuid_deleted'
   ];
 
   public static $rules = [
@@ -29,6 +30,12 @@ class CheckPoint extends Model
     'name.required' => 'El nombre es obligatorio.',
     'name.max' => 'El nombre no puede tener más de 128 caracteres.',
     'description.max' => 'La descripción no puede tener más de 256 caracteres.'
+  ];
+
+  protected $hidden = [
+    'cuid_inserted',
+    'cuid_updated',
+    'cuid_deleted'
   ];
 
   public $timestamps = false;

@@ -19,6 +19,7 @@ class InspectionType extends Model
     'description',
     'cuid_inserted',
     'cuid_updated',
+    'cuid_deleted',
   ];
 
   public static $rules = [
@@ -34,6 +35,7 @@ class InspectionType extends Model
   protected $hidden = [
     'cuid_inserted',
     'cuid_updated',
+    'cuid_deleted',
   ];
 
   public $timestamps = false;

@@ -29,22 +29,24 @@
                                 <tr>
                                     <td> {{ $active->checkpoint->name }}</td>
                                     <td>{{ $active->date }}</td>
-                                    <td>usuario</td>
+                                    <td>
+
+                                        {{ $active->user->fullname }}
+                                    </td>
                                     <td>{{ $active->enterpriseTransport->name }}</td>
                                     <td>{{ $active->participants }}</td>
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
-                                            href="{{ route('actives.show', $active) }}" />
+                                            href="{{ route('actives.show', $active->id_active_pauses) }}" />
 
 
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $active }})" />
-                                        <x-form-table id="form-delete-{{ $active->id }}"
-                                            action="{{ route('actives.destroy', $active) }}" method="POST"
-                                            role="form">
+                                        <x-form-table id="form-delete-{{ $active->id_active_pauses }}"
+                                            action="{{ route('actives.destroy', $active->id_active_pauses) }}" method="POST" role="form">
                                             @method('DELETE')
                                             <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $active->id }})" />
+                                                onclick="Eliminar({{ $active->id_active_pauses }})" />
                                         </x-form-table>
                                     </td>
                                 </tr>

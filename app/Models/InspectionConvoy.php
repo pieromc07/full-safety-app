@@ -12,27 +12,33 @@ class InspectionConvoy extends Model
 
   protected $table = 'inspection_convoys';
 
+  protected $primaryKey = 'id_inspection_convoys';
+
   protected $fillable = [
-    'inspection_id',
+    'id_inspections',
     'convoy',
     'convoy_status',
     'quantity_light_units',
     'quantity_heavy_units',
+    'id_products',
+    'id_products_two',
     'cuid_inserted',
     'cuid_updated',
   ];
 
   public static $rules = [
-    'inspection_id' => 'required|exists:inspections,id',
+    'id_inspections' => 'required|exists:inspections,id',
     'convoy' => 'nullable',
     'convoy_status' => 'nullable',
     'quantity_light_units' => 'nullable',
     'quantity_heavy_units' => 'nullable',
+    'id_products' => 'nullable',
+    'id_products_two' => 'nullable',
   ];
 
   public static $rulesMessages = [
-    'inspection_id.required' => 'La inspección es requerida.',
-    'inspection_id.exists' => 'La inspección no existe.',
+    'id_inspections.required' => 'La inspección es requerida.',
+    'id_inspections.exists' => 'La inspección no existe.',
   ];
 
   protected $hidden = [

@@ -9,8 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
   use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
@@ -34,11 +35,11 @@ class User extends Authenticatable
    * @var array<int, string>
    */
   protected $fillable = [
+    'fullname',
     'username',
     'password',
-    'state',
-    'id_branches',
-    'id_enterprises',
+    'token',
+    'status',
     'cuid_inserted',
     'cuid_updated',
     'cuid_deleted',
@@ -78,7 +79,6 @@ class User extends Authenticatable
   public static $rules = [
     'username' => 'required|string|max:255',
     'password' => 'required|string|min:8|max:255',
-    'id_branches' => 'required|integer',
   ];
 
   public static $rulesLogin = [
@@ -96,8 +96,6 @@ class User extends Authenticatable
     'password.string' => 'La contraseña debe ser una cadena de caracteres',
     'password.min' => 'La contraseña debe tener al menos 8 caracteres',
     'password.max' => 'La contraseña no debe exceder los 255 caracteres',
-    'id_branches.required' => 'La sucursal es requerida',
-    'id_branches.integer' => 'La sucursal debe ser un número entero',
   ];
 
   public static $messagesLogin = [
@@ -184,5 +182,25 @@ class User extends Authenticatable
   public function isActive()
   {
     return DB::table('users')->where('id_users', $this->id_users)->whereNull('cuid_deleted')->exists();
+  }
+
+  /**
+   * Get the identifier that will be stored in the subject claim of the JWT.
+   *
+   * @return mixed
+   */
+  public function getJWTIdentifier()
+  {
+    return $this->getKey();
+  }
+
+  /**
+   * Return a key value array, containing any custom claims to be added to the JWT.
+   *
+   * @return array
+   */
+  public function getJWTCustomClaims()
+  {
+    return [];
   }
 }
