@@ -6,8 +6,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Client\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+
 
 class Controller extends BaseController
 {
@@ -16,8 +15,30 @@ class Controller extends BaseController
   public static function saveImage($image, $folder)
   {
     try {
-      return Storage::disk('public')->put($folder, $image);
+      // Verifica si el archivo es válido
+      if (!$image->isValid()) {
+        return null;
+      }
+
+      // Genera un nombre único para la imagen
+      $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+
+      // Define la ruta completa donde se guardará la imagen
+      $path =  'uploads/' . $folder;
+      $fullPath = public_path($path);
+
+      // Crea la carpeta si no existe
+      if (!file_exists($fullPath)) {
+        mkdir($fullPath, 0755, true);
+      }
+
+      // Mueve la imagen a la carpeta especificada
+      $image->move($fullPath, $fileName);
+
+      // Retorna la ruta relativa de la imagen guardada
+      return $path . '/' . $fileName;
     } catch (\Exception $e) {
+      // Manejo de errores
       return null;
     }
   }
@@ -25,12 +46,23 @@ class Controller extends BaseController
   public static function dropImage($path)
   {
     try {
-      return Storage::disk('public')->delete($path);
+      // Obtiene la ruta completa del archivo
+      $fullPath = public_path($path);
+
+      // Verifica si el archivo existe
+      if (file_exists($fullPath)) {
+        // Elimina el archivo
+        unlink($fullPath);
+        return true;
+      }
+
+      // Si no existe, retorna false
+      return false;
     } catch (\Exception $e) {
+      // Manejo de errores
       return false;
     }
   }
-
   /**
    * Global configuration of the controller
    */
@@ -62,36 +94,6 @@ class Controller extends BaseController
     }
   }
 
-  /**
-   * saving files to storage
-   */
-  public function saveFiles($file, $path, $name = null)
-  {
-    if ($name) {
-      $name = $name . '.' . $file->getClientOriginalExtension();
-      $file->move(public_path($path), $name);
-      return $path . '/' . $name;
-    }
-    $name = time() . '.' . $file->getClientOriginalExtension();
-    $file->move(public_path($path), $name);
-    return $path . '/' . $name;
-  }
-
-  /**
-   * delete files from storage
-   */
-  public function deleteFiles($path)
-  {
-    $fullPath = public_path($path);
-    if (file_exists($fullPath)) {
-      try {
-        unlink($fullPath);
-      } catch (\Exception $e) {
-        // Manejar la excepción, por ejemplo, registrarla en el log
-        Log::error('Error deleting file: ' . $e->getMessage());
-      }
-    }
-  }
 
   /**
    * Algorithm to encrypt the text

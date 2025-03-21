@@ -152,8 +152,9 @@
                                                 {{ $enterprise->enterpriseType->name }}
                                             </td>
                                             <td class="text-center">
-                                                <img src="{{ asset($enterprise->image) }}" alt="{{ $enterprise->name }}"
-                                                    class="img-thumbnail" style="width: 50px; height: 50px;">
+                                              <img src="{{ asset($enterprise->image) }}" alt="{{ $enterprise->name }}"
+                                              class="img-thumbnail" style="width: 50px; height: 50px;">
+
                                             </td>
                                             <td class="text-center">
                                                 @if ($enterprise->enterpriseType->id_enterprise_types == 1)

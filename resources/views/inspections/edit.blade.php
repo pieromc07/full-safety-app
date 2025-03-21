@@ -27,18 +27,17 @@
                         <div class="col-12 col-sm-12 col-md-4 col-lg-3">
                             <x-input id="date" name="date" label="Fecha" class="form-control" placeholder="Fecha"
                                 req={{ true }} autofocus="autofocus" icon="bi-calendar"
-                                value="{{ $inspection->date }}" type="date" readonly={{ true }} />
+                                value="{{ $inspection->date }}" type="date" />
                         </div>
                         <div class="col-12 col-sm-12 col-md-4 col-lg-3 mb-3">
                             <x-input id="hour" name="hour" label="Hora" class="form-control" placeholder="Hora"
                                 req={{ true }} autofocus="autofocus" icon="bi-clock"
-                                value="{{ $inspection->hour }}" type="time" readonly={{ true }} />
+                                value="{{ $inspection->hour }}" type="time" />
                         </div>
                         <div class="col-12 col-sm-12 col-md-4 col-lg-3">
                             <x-select id="id_checkpoints" name="id_checkpoints" label="Punto de Control"
                                 class="form-control" req={{ true }} autofocus="autofocus" icon="bi-geo-alt"
-                                value="{{ $inspection->id_checkpoints }}" placeholder="Seleccione un Punto de Control"
-                                disabled={{ true }}>
+                                value="{{ $inspection->id_checkpoints }}" placeholder="Seleccione un Punto de Control">
                                 <x-slot name="options">
                                     @foreach ($checkpoints as $checkpoint)
                                         <option value="{{ $checkpoint->id_checkpoints }}"
@@ -53,7 +52,7 @@
                                 label="Empresa Transportista" class="form-control" req={{ true }}
                                 autofocus="autofocus" icon="bi-building"
                                 value="{{ $inspection->id_transport_enterprises }}"
-                                placeholder="Seleccione una Empresa Transportista" disabled={{ true }}>
+                                placeholder="Seleccione una Empresa Transportista">
                                 <x-slot name="options">
                                     @foreach ($transports as $transport)
                                         <option value="{{ $transport->id_enterprises }}"
@@ -66,8 +65,7 @@
                         <div class="col-12 col-sm-12 col-md-4 col-lg-3">
                             <x-select id="id_targeteds" name="id_targeteds" label="Dirigido" class="form-control"
                                 req={{ true }} autofocus="autofocus" icon="bi-person"
-                                value="{{ $inspection->id_targeteds }}" placeholder="Seleccione un Dirigido"
-                                disabled={{ true }}>
+                                value="{{ $inspection->id_targeteds }}" placeholder="Seleccione un Dirigido">
                                 <x-slot name="options">
                                     @foreach ($targeteds as $targeted)
                                         <option value="{{ $targeted->id_targeteds }}"
@@ -81,31 +79,29 @@
                         <div class="col-3 col-sm-12 col-md-3 col-lg-1">
                             <x-input id="convoy" name="convoy" label="Convoy" class="form-control" placeholder="Convoy"
                                 req={{ true }} autofocus="autofocus" icon="bi-truck"
-                                value="{{ $inspection->convoy->convoy }}" readonly={{ true }} />
+                                value="{{ $inspection->convoy->convoy }}" />
                         </div>
                         <div class="col-3 col-sm-12 col-md-3 col-lg-2">
                             <x-input id="convoy_status" name="convoy_status" label="Estado" class="form-control"
                                 placeholder="Estado del Convoy" req={{ true }} autofocus="autofocus"
-                                icon="bi-truck" value="{{ $inspection->convoy->convoy_status }}"
-                                readonly={{ true }} />
+                                icon="bi-truck" value="{{ $inspection->convoy->convoy_status }}" />
                         </div>
                         <div class="col-3 col-sm-12 col-md-3 col-lg-1">
                             <x-input id="quantity_light_units" name="quantity_light_units" label="Livianas"
                                 class="form-control" placeholder="Cantidad de Unidades Livianas" req={{ true }}
                                 autofocus="autofocus" icon="bi-truck"
-                                value="{{ $inspection->convoy->quantity_light_units }}" readonly={{ true }} />
+                                value="{{ $inspection->convoy->quantity_light_units }}" />
                         </div>
                         <div class="col-3 col-sm-12 col-md-3 col-lg-1">
                             <x-input id="quantity_heavy_units" name="quantity_heavy_units" label="Pesadas"
                                 class="form-control" placeholder="Cantidad de Unidades Pesadas" req={{ true }}
                                 autofocus="autofocus" icon="bi-truck"
-                                value="{{ $inspection->convoy->quantity_heavy_units }}" readonly={{ true }} />
+                                value="{{ $inspection->convoy->quantity_heavy_units }}" />
                         </div>
                         <div class="col-12 col-sm-12 col-md-3 col-lg-2">
                             <x-select id="id_products" name="id_products" label="Producto" class="form-control"
                                 req={{ true }} autofocus="autofocus" icon="bi-box"
-                                value="{{ $inspection->convoy->id_products }}" placeholder="Seleccione un Producto"
-                                disabled={{ true }}>
+                                value="{{ $inspection->convoy->id_products }}" placeholder="Seleccione un Producto">
                                 <x-slot name="options">
                                     @foreach ($products as $product)
                                         <option value="{{ $product->id_products }}"
@@ -119,8 +115,8 @@
                         <div class="col-12 col-sm-12 col-md-3 col-lg-2">
                             <x-select id="id_products_two" name="id_products_two" label="Producto 2"
                                 class="form-control" req={{ true }} autofocus="autofocus" icon="bi-box"
-                                value="{{ $inspection->convoy->id_products_two }}" placeholder="Seleccione un Producto 2"
-                                disabled={{ true }}>
+                                value="{{ $inspection->convoy->id_products_two }}"
+                                placeholder="Seleccione un Producto 2">
                                 <x-slot name="options">
                                     @foreach ($products as $product)
                                         <option value="{{ $product->id_products }}"
@@ -179,12 +175,6 @@
                                 </x-table>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="card-footer">
-                        <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cerrar" position="left"
-                            text="Cerrar" icon="bi-x-circle" href="{{ route('inspections') }}?type={{$inspection->id_inspection_types}}" />
                     </div>
                 </div>
             </div>
