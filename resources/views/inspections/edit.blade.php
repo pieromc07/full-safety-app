@@ -194,8 +194,9 @@
                                                     <td>{{ $evidence->evidence->category->name }}</td>
                                                     <td>{{ $evidence->evidence->subcategory->name }}</td>
                                                     <td>
-                                                        <x-button-icon btn="btn-primary" icon="bi-eye-fill"
-                                                            title="Ver" onclick="Ver({{ $evidence }})" />
+                                                        <x-button-icon type="button" btn="btn-primary"
+                                                            icon="bi-eye-fill" title="Ver"
+                                                            onclick="Ver({{ $evidence }})" />
                                                     </td>
                                                 </tr>
                                             @endforeach
