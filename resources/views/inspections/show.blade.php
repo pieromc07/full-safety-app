@@ -24,17 +24,17 @@
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">
-                        <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                        <div class="col-12 col-sm-12 col-md-3 col-lg-2">
                             <x-input id="date" name="date" label="Fecha" class="form-control" placeholder="Fecha"
                                 req={{ true }} autofocus="autofocus" icon="bi-calendar"
                                 value="{{ $inspection->date }}" type="date" readonly={{ true }} />
                         </div>
-                        <div class="col-12 col-sm-12 col-md-4 col-lg-3 mb-3">
+                        <div class="col-12 col-sm-12 col-md-3 col-lg-2 mb-3">
                             <x-input id="hour" name="hour" label="Hora" class="form-control" placeholder="Hora"
                                 req={{ true }} autofocus="autofocus" icon="bi-clock"
                                 value="{{ $inspection->hour }}" type="time" readonly={{ true }} />
                         </div>
-                        <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                        <div class="col-12 col-sm-12 col-md-4 col-lg-2">
                             <x-select id="id_checkpoints" name="id_checkpoints" label="Punto de Control"
                                 class="form-control" req={{ true }} autofocus="autofocus" icon="bi-geo-alt"
                                 value="{{ $inspection->id_checkpoints }}" placeholder="Seleccione un Punto de Control"
@@ -44,6 +44,20 @@
                                         <option value="{{ $checkpoint->id_checkpoints }}"
                                             {{ $inspection->id_checkpoints == $checkpoint->id_checkpoints ? 'selected' : '' }}>
                                             {{ $checkpoint->name }}</option>
+                                    @endforeach
+                                </x-slot>
+                            </x-select>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                            <x-select id="id_supplier_enterprises" name="id_supplier_enterprises" label="Empresa Proveedora"
+                                class="form-control" req={{ true }} autofocus="autofocus" icon="bi-building"
+                                value="{{ $inspection->id_supplier_enterprises }}"
+                                placeholder="Seleccione una Empresa Proveedora" disabled={{ true }}>
+                                <x-slot name="options">
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id_enterprises }}"
+                                            {{ $inspection->id_supplier_enterprises == $supplier->id_enterprises ? 'selected' : '' }}>
+                                            {{ $supplier->name }}</option>
                                     @endforeach
                                 </x-slot>
                             </x-select>
@@ -169,7 +183,7 @@
                                                     <td>{{ $evidence->evidence->category->name }}</td>
                                                     <td>{{ $evidence->evidence->subcategory->name }}</td>
                                                     <td>
-                                                        <x-button-icon btn="btn-primary" icon="bi-eye-fill"
+                                                        <x-button-icon type="button" btn="btn-primary" icon="bi-eye-fill"
                                                             title="Ver" onclick="Ver({{ $evidence }})" />
                                                     </td>
                                                 </tr>
@@ -184,7 +198,8 @@
                 <div class="card-footer">
                     <div class="card-footer">
                         <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cerrar" position="left"
-                            text="Cerrar" icon="bi-x-circle" href="{{ route('inspections') }}?type={{$inspection->id_inspection_types}}" />
+                            text="Cerrar" icon="bi-x-circle"
+                            href="{{ route('inspections') }}?type={{ $inspection->id_inspection_types }}" />
                     </div>
                 </div>
             </div>

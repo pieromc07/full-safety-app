@@ -24,9 +24,7 @@ class AlcoholTest extends Model
     'result',
     'state',
     'photo_one',
-    'photo_one_uri',
     'photo_two',
-    'photo_two_uri',
     'id_users',
     'cuid_inserted',
     'cuid_updated',
@@ -36,6 +34,29 @@ class AlcoholTest extends Model
   protected $hidden = ['cuid_inserted', 'cuid_updated', 'cuid_deleted'];
 
   public $timestamps = false;
+
+  public static $rules = [
+    'date' => 'nullable|date',
+    'hour' => 'nullable|date_format:H:i:s',
+    'id_supplier_enterprises' => 'required|exists:enterprises,id_enterprises',
+    'id_transport_enterprises' => 'required|exists:enterprises,id_enterprises',
+    'id_checkpoints' => 'required|exists:checkpoints,id_checkpoints',
+  ];
+
+  public static $messages = [
+    'date.date' => 'La fecha debe ser válida.',
+    'hour.date_format' => 'La hora debe tener el formato HH:MM:SS.',
+
+    'id_supplier_enterprises.required' => 'El proveedor es obligatorio.',
+    'id_supplier_enterprises.exists' => 'El proveedor seleccionado no es válido.',
+
+    'id_transport_enterprises.required' => 'La empresa de transporte es obligatoria.',
+    'id_transport_enterprises.exists' => 'La empresa de transporte seleccionada no es válida.',
+
+    'id_checkpoints.required' => 'El punto de control es obligatorio.',
+    'id_checkpoints.exists' => 'El punto de control seleccionado no es válido.',
+
+  ];
 
   public function checkpoint()
   {

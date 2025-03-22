@@ -110,7 +110,7 @@ class InspectionController extends Controller
       DB::rollBack();
       return redirect()->route('inspections.edit', $inspection->id_inspections)->with('error', 'Ocurrió un error al actualizar el inspeccion' . $e->getMessage())->withInput();
     }
-    return redirect()->back()->with('success', 'Producto actualizado correctamente');
+    return redirect()->back()->with('success', 'Inspeccion actualizado correctamente');
   }
 
   /**

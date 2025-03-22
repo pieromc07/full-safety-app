@@ -39,17 +39,15 @@
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
                                             href="{{ route('dialogues.show', $dialogue->id_daily_dialogs) }}" />
-
-
-                                        <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
-                                            onclick="Editar({{ $dialogue }})" />
+                                        <x-link-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
+                                            href="{{ route('dialogues.edit', $dialogue->id_daily_dialogs) }}" />
                                         <x-form-table id="form-delete-{{ $dialogue->id_daily_dialogs }}"
                                             action="{{ route('dialogues.destroy', $dialogue) }}" method="POST"
                                             role="form">
                                             @method('DELETE')
-                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $dialogue->id_daily_dialogs }})" />
                                         </x-form-table>
+                                        <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
+                                            onclick="Eliminar({{ $dialogue->id_daily_dialogs }})" />
                                     </td>
                                 </tr>
                             @endforeach
@@ -68,4 +66,26 @@
 @endsection
 
 @push('scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+        });
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción no se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-' + id).submit();
+                }
+            });
+        }
+    </script>
 @endpush

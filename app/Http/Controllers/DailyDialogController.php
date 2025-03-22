@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CheckPoint;
 use App\Models\DailyDialog;
+use App\Models\Enterprise;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -18,88 +21,68 @@ class DailyDialogController extends Controller
   }
 
   /**
-   * Store a newly created resource in storage.
-   */
-  public function store(Request $request)
-  {
-    try {
-      DB::beginTransaction();
-
-      $dialogue = $request->input('dialogue');
-
-      if ($dialogue == null) {
-        return response()->json([
-          'message' => 'Dialogo diario es requerido',
-        ], 400);
-      }
-
-      $dialogue = json_decode($dialogue, true);
-
-      $newDialogue = new DailyDialog();
-      $newDialogue->date = $dialogue['date'];
-      $newDialogue->hour = $dialogue['hour'];
-      $newDialogue->checkpoint_id = $dialogue['checkpoint_id'];
-      $newDialogue->id_supplier_enterprises = $dialogue['id_supplier_enterprises'];
-      $newDialogue->id_transport_enterprises = $dialogue['id_transport_enterprises'];
-      $newDialogue->topic = $dialogue['topic'];
-      $newDialogue->participants = $dialogue['participants'];
-      $newDialogue->photo_one = $this->saveDialogueImage($dialogue['photo_one_base64'], 'photo_one');
-      $newDialogue->photo_two = $this->saveDialogueImage($dialogue['photo_two_base64'], 'photo_two');
-      $newDialogue->save();
-      DB::commit(); // Commit transaction if everything is successful
-      return response()->json([
-        'status' => true,
-        'message' => 'Dialogo diario creado con éxito',
-      ], 201);
-    } catch (\Exception $e) {
-      DB::rollBack(); // Rollback transaction in case of error
-      return response()->json([
-        'status' => false,
-        'message' => 'Error al crear el Dialogo diario',
-        'error' => $e->getMessage()
-      ], 500);
-    }
-  }
-
-
-  /**
-   * Decodifica y guarda la imagen en base64 en el disco.
-   *
-   * @param string|null $base64Image Imagen en formato base64.
-   * @param int $inspectionId ID de la inspección asociada.
-   * @param string $type Tipo de evidencia (evidence_one, evidence_two, etc.).
-   * @return string|null Ruta de la imagen guardada o null si no se guarda.
-   */
-  private function saveDialogueImage(?string $base64Image, string $type): ?string
-  {
-    if (!$base64Image) {
-      return null;
-    }
-
-    try {
-      // Eliminar la cabecera del base64
-      $base64Image = str_replace('data:image/png;base64,', '', $base64Image);
-      $base64Image = str_replace(' ', '+', $base64Image);
-      $imageData = base64_decode($base64Image);
-
-      // Generar nombre de archivo único
-      $fileName = time() . "_{$type}.png";
-      if (Storage::disk('public')->put('dialogue/' . $fileName, $imageData)) {
-        return 'dialogue/' . $fileName;
-      }
-
-      return null;
-    } catch (\Exception $e) {
-      // En caso de error, devolver null
-      return null;
-    }
-  }
-
-  /**
    * Display the specified resource.
    */
   public function show(DailyDialog $dialogue)
   {
-    return view('dialogue.show', compact('dialogue'));
+    $checkpoints = CheckPoint::all();
+    $transports = Enterprise::where('id_enterprise_types', 2)->get();
+    $suppliers = Enterprise::where('id_enterprise_types', 1)->get();
+    return view('dialogue.show', compact('dialogue', 'checkpoints', 'transports', 'suppliers'));
+  }
+
+  /**
+   * Show the form for editing the specified resource.
+   */
+  public function edit(DailyDialog $dialogue)
+  {
+    $checkpoints = CheckPoint::all();
+    $transports = Enterprise::where('id_enterprise_types', 2)->get();
+    $suppliers = Enterprise::where('id_enterprise_types', 1)->get();
+    return view('dialogue.edit', compact('dialogue', 'checkpoints', 'transports', 'suppliers'));
+  }
+
+  /**
+   * Update the specified resource in storage.
+   */
+  public function update(Request $request, DailyDialog $dialogue)
+  {
+    $request->merge(['id_users' => Auth::user()->id_users]);
+    $request->validate(DailyDialog::$rules, DailyDialog::$messages);
+    try {
+      DB::beginTransaction();
+      $dialogue->update([
+        'date' => $request->date,
+        'hour' => $request->hour,
+        'id_checkpoints' => $request->id_checkpoints,
+        'id_supplier_enterprises' => $request->id_supplier_enterprises,
+        'id_transport_enterprises' => $request->id_transport_enterprises,
+        'topic' => $request->topic,
+        'participants' => $request->participants,
+      ]);
+      DB::commit();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return redirect()->route('dialogues.edit', $dialogue->id_daily_dialogs)->with('error', 'Ocurrió un error al actualizar el dialogo diario' . $e->getMessage())->withInput();
+    }
+    return redirect()->back()->with('success', 'Dialogo diario actualizado correctamente');
+  }
+
+  /**
+   * Remove the specified resource from storage.
+   */
+  public function destroy(DailyDialog $dialogue)
+  {
+    try {
+      DB::beginTransaction();
+      self::dropImage($dialogue->photo_one);
+      self::dropImage($dialogue->photo_two);
+      $dialogue->delete();
+      DB::commit();
+      return redirect()->route('dialogues')->with('success', 'Dialogo diario Eliminado');
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return redirect()->route('dialogues')->with('error', 'Ocurrió un error al eliminar el Dialogo diario' . $e->getMessage());
+    }
   }
 }

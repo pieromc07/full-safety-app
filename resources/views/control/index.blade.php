@@ -34,7 +34,14 @@
                                         {{ $control->user->fullname }}
                                     </td>
                                     <td>{{ $control->enterpriseTransport->name }}</td>
-                                    <td>{{ $control->option }}</td>
+                                    <td>
+                                      @if ($control->option == 1)
+                                            <span class="badge badge-success">VELOCIDAD</span>
+                                        @elseif ($control->option == 2)
+                                            <span class="badge badge-success">UBICACION</span>
+
+                                        @endif
+                                    </td>
                                     <td>
                                         @if ($control->state == 1)
                                             <span class="badge badge-success">Conforme</span>
@@ -47,17 +54,15 @@
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
                                             href="{{ route('controls.show', $control->id_gps_controls) }}" />
-
-
-                                        <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
-                                            onclick="Editar({{ $control }})" />
+                                        <x-link-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
+                                            href="{{ route('controls.edit', $control->id_gps_controls) }}" />
                                         <x-form-table id="form-delete-{{ $control->id_gps_controls }}"
                                             action="{{ route('controls.destroy', $control->id_gps_controls) }}"
                                             method="POST" role="form">
                                             @method('DELETE')
-                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $control->id_gps_controls }})" />
                                         </x-form-table>
+                                        <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
+                                            onclick="Eliminar({{ $control->id_gps_controls }})" />
                                     </td>
                                 </tr>
                             @endforeach
@@ -74,6 +79,27 @@
         </div>
     </div>
 @endsection
-
 @push('scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+        });
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción no se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-' + id).submit();
+                }
+            });
+        }
+    </script>
 @endpush

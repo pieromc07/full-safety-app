@@ -30,23 +30,22 @@
                                     <td> {{ $test->checkpoint->name }}</td>
                                     <td>{{ $test->date }}</td>
                                     <td>
-                                      {{ $test->user->fullname }}
+                                        {{ $test->user->fullname }}
                                     </td>
                                     <td>{{ $test->enterpriseTransport->name }}</td>
                                     <td>{{ $test->employee->fullname }}</td>
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
                                             href="{{ route('tests.show', $test->id_alcohol_tests) }}" />
-
-
-                                        <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
-                                            onclick="Editar({{ $test }})" />
+                                        <x-link-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
+                                            href="{{ route('tests.edit', $test->id_alcohol_tests) }}" />
                                         <x-form-table id="form-delete-{{ $test->id_alcohol_tests }}"
-                                            action="{{ route('tests.destroy', $test->id_alcohol_tests) }}" method="POST" role="form">
+                                            action="{{ route('tests.destroy', $test->id_alcohol_tests) }}" method="POST"
+                                            role="form">
                                             @method('DELETE')
-                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $test->id_alcohol_tests }})" />
                                         </x-form-table>
+                                        <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
+                                            onclick="Eliminar({{ $test->id_alcohol_tests }})" />
                                     </td>
                                 </tr>
                             @endforeach
@@ -65,4 +64,26 @@
 @endsection
 
 @push('scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+        });
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción no se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-' + id).submit();
+                }
+            });
+        }
+    </script>
 @endpush

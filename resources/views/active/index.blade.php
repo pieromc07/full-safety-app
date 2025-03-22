@@ -38,16 +38,16 @@
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
                                             href="{{ route('actives.show', $active->id_active_pauses) }}" />
+                                        <x-link-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
+                                            href="{{ route('actives.edit', $active->id_active_pauses) }}" />
 
-
-                                        <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
-                                            onclick="Editar({{ $active }})" />
                                         <x-form-table id="form-delete-{{ $active->id_active_pauses }}"
-                                            action="{{ route('actives.destroy', $active->id_active_pauses) }}" method="POST" role="form">
+                                            action="{{ route('actives.destroy', $active->id_active_pauses) }}"
+                                            method="POST" role="form">
                                             @method('DELETE')
-                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $active->id_active_pauses }})" />
                                         </x-form-table>
+                                        <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
+                                            onclick="Eliminar({{ $active->id_active_pauses }})" />
                                     </td>
                                 </tr>
                             @endforeach
@@ -66,4 +66,26 @@
 @endsection
 
 @push('scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+        });
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción no se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-' + id).submit();
+                }
+            });
+        }
+    </script>
 @endpush
