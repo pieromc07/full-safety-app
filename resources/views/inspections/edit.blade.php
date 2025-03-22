@@ -14,6 +14,13 @@
 @endpush
 
 @section('content')
+    {{ Form::open([
+        'route' => ['inspections.update', $inspection->id_inspections],
+        'method' => 'PUT',
+        'files' => true,
+        'id' => 'form-inspections',
+    ]) }}
+    @csrf
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -24,17 +31,17 @@
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">
-                        <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                        <div class="col-12 col-sm-12 col-md-3 col-lg-2">
                             <x-input id="date" name="date" label="Fecha" class="form-control" placeholder="Fecha"
                                 req={{ true }} autofocus="autofocus" icon="bi-calendar"
                                 value="{{ $inspection->date }}" type="date" />
                         </div>
-                        <div class="col-12 col-sm-12 col-md-4 col-lg-3 mb-3">
+                        <div class="col-12 col-sm-12 col-md-3 col-lg-2 mb-3">
                             <x-input id="hour" name="hour" label="Hora" class="form-control" placeholder="Hora"
                                 req={{ true }} autofocus="autofocus" icon="bi-clock"
                                 value="{{ $inspection->hour }}" type="time" />
                         </div>
-                        <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                        <div class="col-12 col-sm-12 col-md-3 col-lg-2">
                             <x-select id="id_checkpoints" name="id_checkpoints" label="Punto de Control"
                                 class="form-control" req={{ true }} autofocus="autofocus" icon="bi-geo-alt"
                                 value="{{ $inspection->id_checkpoints }}" placeholder="Seleccione un Punto de Control">
@@ -43,6 +50,20 @@
                                         <option value="{{ $checkpoint->id_checkpoints }}"
                                             {{ $inspection->id_checkpoints == $checkpoint->id_checkpoints ? 'selected' : '' }}>
                                             {{ $checkpoint->name }}</option>
+                                    @endforeach
+                                </x-slot>
+                            </x-select>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                            <x-select id="id_supplier_enterprises" name="id_supplier_enterprises" label="Empresa Proveedora"
+                                class="form-control" req={{ true }} autofocus="autofocus" icon="bi-building"
+                                value="{{ $inspection->id_supplier_enterprises }}"
+                                placeholder="Seleccione una Empresa Proveedora">
+                                <x-slot name="options">
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id_enterprises }}"
+                                            {{ $inspection->id_supplier_enterprises == $supplier->id_enterprises ? 'selected' : '' }}>
+                                            {{ $supplier->name }}</option>
                                     @endforeach
                                 </x-slot>
                             </x-select>
@@ -82,9 +103,17 @@
                                 value="{{ $inspection->convoy->convoy }}" />
                         </div>
                         <div class="col-3 col-sm-12 col-md-3 col-lg-2">
-                            <x-input id="convoy_status" name="convoy_status" label="Estado" class="form-control"
-                                placeholder="Estado del Convoy" req={{ true }} autofocus="autofocus"
-                                icon="bi-truck" value="{{ $inspection->convoy->convoy_status }}" />
+                            <x-select id="convoy_status" name="convoy_status" label="Estado" class="form-control"
+                                req={{ true }} autofocus="autofocus" icon="bi-truck"
+                                value="{{ $inspection->convoy->convoy_status == 'Bajada' ? 1 : 2 }}"
+                                placeholder="Seleccione un Estado">
+                                <x-slot name="options">
+                                    <option value="1">
+                                        Bajada</option>
+                                    <option value="2">
+                                        Subida</option>
+                                </x-slot>
+                            </x-select>
                         </div>
                         <div class="col-3 col-sm-12 col-md-3 col-lg-1">
                             <x-input id="quantity_light_units" name="quantity_light_units" label="Livianas"
@@ -177,10 +206,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="card-footer">
+                    <x-button id="btn-store" btn="btn-primary" title="Actualizar" position="left" text="Actualizar"
+                        icon="bi-save" type="submit" />
+                    <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cancelar" position="left"
+                        text="Cancelar" icon="bi-x-circle" href="{{ route('inspections') }}" />
+                </div>
             </div>
         </div>
     </div>
-
+    {{ Form::close() }}
     <div class="row">
         <x-modal id="modal-evidence" title="Evidencia" maxWidth="lg">
             <div class="row">
@@ -212,16 +247,85 @@
             </div>
         </x-modal>
     </div>
+
 @endsection
 
 @push('scripts')
     <script type="text/javascript">
+        $(document).ready(function() {
+
+            $('#id_supplier_enterprises').on('change', function() {
+                const id_supplier_enterprises = $(this).val();
+                $.ajax({
+                    url: "{{ url('enterprises') }}/" + id_supplier_enterprises,
+                    id_supplier_enterprises,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#id_transport_enterprises').empty();
+                        $('#id_transport_enterprises').append(
+                            '<option value="">Seleccione una Empresa Transportista</option>'
+                        );
+                        $.each(data, function(index, enterprise) {
+                            $('#id_transport_enterprises').append('<option value="' +
+                                enterprise.id_enterprises + '">' + enterprise.name +
+                                '</option>');
+                        });
+                    }
+                });
+            });
+
+            $('#id_transport_enterprises').on('change', function() {
+                const id_transport_enterprises = $(this).val();
+                const id_supplier_enterprises = $('#id_supplier_enterprises').val();
+                $.ajax({
+                    url: "{{ url('enterprises') }}/" + id_supplier_enterprises + '/' +
+                        id_transport_enterprises,
+                    id_supplier_enterprises,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#id_products').empty();
+                        $('#id_products').append(
+                            '<option value="">Seleccione Producto</option>'
+                        );
+                        $.each(data, function(index, productEnterprise) {
+                            $('#id_products').append('<option value="' +
+                                productEnterprise.product.id_products + '">' +
+                                productEnterprise.product.name +
+                                '</option>');
+                        });
+
+                        $('#id_products_two').empty();
+                        $('#id_products_two').append(
+                            '<option value="">Seleccione Producto 2</option>'
+                        );
+                        $.each(data, function(index, productEnterprise) {
+                            $('#id_products_two').append('<option value="' +
+                                productEnterprise.product.id_products + '">' +
+                                productEnterprise.product.name +
+                                '</option>');
+                        });
+
+                    }
+                });
+            });
+
+            $('#id_products_two').on('change', function() {
+                const id_products = $('#id_products').val();
+                const id_products_two = $(this).val();
+
+                if (id_products == id_products_two) {
+                    alertMessage('El Producto 1 no puede ser igual al Producto 2', 'warning');
+                    return;
+                }
+            });
+
+        });
+
         function Ver(evidence) {
             const pathBase = '{{ asset('') }}';
             $('#evidence_one').attr('src', pathBase + evidence.evidence_one);
             $('#evidence_two').attr('src', pathBase + evidence.evidence_two);
             $('#modal-evidence').modal('show');
-
         }
     </script>
 @endpush

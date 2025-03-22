@@ -73,6 +73,7 @@ Route::group(['middleware' => 'auth'], function () {
   Route::put('/enterprises/{enterprise}', [EnterpriseController::class, 'update'])->name('enterprise.update');
   Route::delete('/enterprises/{enterprise}', [EnterpriseController::class, 'destroy'])->name('enterprise.destroy');
   Route::post('/enterprises/assign', [EnterpriseController::class, 'assign'])->name('enterprise.assign');
+  Route::get('/enterprises/{supplier}/{transport}', [EnterpriseController::class, 'allProductsByEnterprise'])->name('enterprise.products');
 
   Route::get('/targeteds', [TargetedController::class, 'index'])->name('targeted');
   Route::get('/targeteds/create', [TargetedController::class, 'create'])->name('targeted.create');

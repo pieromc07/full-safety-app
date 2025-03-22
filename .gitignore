@@ -8,6 +8,7 @@
 /public/controlGps
 /public/dailyDialog
 /public/evidences
+/public/inspection
 /public/uploads
 /storage/*.key
 /vendor

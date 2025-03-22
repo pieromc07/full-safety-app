@@ -32,24 +32,18 @@ class Inspection extends Model
   ];
 
   public static $rules = [
-    'correlative' => 'required|integer',
-    'year' => 'required|integer',
-    'folio' => 'required|string|max:128',
     'date' => 'nullable|date',
-    'hour' => 'nullable|date_format:H:i',
-    'id_inspection_types' => 'required|exists:inspection_types,id',
-    'id_supplier_enterprises' => 'required|exists:enterprises,id',
-    'id_transport_enterprises' => 'required|exists:enterprises,id',
-    'id_checkpoints' => 'required|exists:checkpoints,id',
-    'id_targeteds' => 'required|exists:targeteds,id',
-    'id_users' => 'required|exists:users,id',
+    'hour' => 'nullable|date_format:H:i:s',
+    'id_inspection_types' => 'required|exists:inspection_types,id_inspection_types',
+    'id_supplier_enterprises' => 'required|exists:enterprises,id_enterprises',
+    'id_transport_enterprises' => 'required|exists:enterprises,id_enterprises',
+    'id_checkpoints' => 'required|exists:checkpoints,id_checkpoints',
+    'id_targeteds' => 'required|exists:targeteds,id_targeteds',
+    'id_users' => 'required|exists:users,id_users',
     'observation' => 'nullable'
   ];
 
-  public static $rulesMessages = [
-    'correlative.required' => 'El correlativo es obligatorio.',
-    'year.required' => 'El año es obligatorio.',
-    'folio.required' => 'El folio es obligatorio.',
+  public static $messages = [
     'date.date' => 'La fecha no es válida.',
     'hour.date_format' => 'La hora no es válida.',
     'id_inspection_types.required' => 'El tipo de inspección es obligatorio.',

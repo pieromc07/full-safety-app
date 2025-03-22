@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Enterprise;
 use App\Models\EnterpriseRelsEnterprise;
 use App\Models\EnterpriseType;
+use App\Models\ProductEnterprise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -144,5 +145,25 @@ class EnterpriseController extends Controller
       return redirect()->route('enterprise')->with('error', 'Ha ocurrido un error al intentar eliminar la empresa.');
     }
     return redirect()->route('enterprise')->with('success', 'La empresa se ha eliminado correctamente.');
+  }
+
+  /**
+   * all products
+   *
+   * @param $supplier
+   * @param $transport
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function allProductsByEnterprise(Enterprise $supplier, Enterprise $transport)
+  {
+    try {
+      $products = ProductEnterprise::where('id_supplier_enterprises', $supplier->id_enterprises)
+        ->where('id_transport_enterprises', $transport->id_enterprises)
+        ->with('product')
+        ->get();
+      return response()->json($products);
+    } catch (\Exception $e) {
+      return response()->json(['error' => $e->getMessage()]);
+    }
   }
 }

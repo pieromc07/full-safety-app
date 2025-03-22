@@ -10,6 +10,7 @@ use App\Models\InspectionConvoy;
 use App\Models\Product;
 use App\Models\Targeted;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -42,77 +43,7 @@ class InspectionController extends Controller
    */
   public function store(Request $request)
   {
-    try {
-      DB::beginTransaction(); // Start transaction
-
-      $inspection = $request->input('inspection');
-      $evidences = $request->input('evidences');
-      $convoy = $request->input('convoy');
-
-      if ($inspection == null || $evidences == null) {
-        return response()->json([
-          'message' => 'Inspeccion y evidencias son requeridas',
-        ], 400);
-      }
-
-      $inspection = json_decode($inspection, true);
-
-      $newInspection = new Inspection();
-      $newInspection->date = $inspection['date'];
-      $newInspection->hour = $inspection['hour'];
-      $newInspection->id_inspection_types = $inspection['id_inspection_types'];
-      $newInspection->id_supplier_enterprises = $inspection['id_supplier_enterprises'];
-      $newInspection->id_transport_enterprises = $inspection['id_transport_enterprises'];
-      $newInspection->checkpoint_id = $inspection['checkpoint_id'];
-      $newInspection->targeted_id = $inspection['targeted_id'];
-      $newInspection->observation = $inspection['observation'];
-      $newInspection->user_id = 1;
-      $newInspection->save();
-
-      if ($convoy != null) {
-        $convoy = json_decode($convoy, true);
-        $newInspectionConvoy = new InspectionConvoy();
-        $newInspectionConvoy->inspection_id = $newInspection->id;
-        $newInspectionConvoy->convoy = $convoy['convoy'];
-        $newInspectionConvoy->convoy_status = $convoy['convoy_status'];
-        $newInspectionConvoy->quantity_light_units = $convoy['quantity_light_units'];
-        $newInspectionConvoy->quantity_heavy_units = $convoy['quantity_heavy_units'];
-        $newInspectionConvoy->save();
-      }
-
-      foreach ($evidences as $evidence) {
-        $evidence = json_decode($evidence, true);
-        if (!isset($evidence['evidence_id'], $evidence['state'])) {
-          Log::warning('Evidencia omitida debido a datos faltantes: ' . json_encode($evidence));
-          continue;
-        }
-        $evidenceOne = $this->saveEvidenceImage($evidence['evidence_one_base64'], $newInspection->id, 'evidence_one');
-        $evidenceTwo = $this->saveEvidenceImage($evidence['evidence_two_base64'], $newInspection->id, 'evidence_two');
-
-        $newEvidence = new EvidenceRelsInspection();
-        $newEvidence->inspection_id = $newInspection->id;
-        $newEvidence->evidence_id = $evidence['evidence_id'];
-        $newEvidence->state = $evidence['state'];
-        $newEvidence->evidence_one = $evidenceOne;
-        $newEvidence->evidence_two = $evidenceTwo;
-        $newEvidence->observations = $evidence['observation'] ?? '';
-        $newEvidence->waiting_time = $evidence['waiting_time'] ?? 0;
-        $newEvidence->save();
-      }
-
-      DB::commit(); // Commit transaction if everything is successful
-      return response()->json([
-        'status' => true,
-        'message' => 'Inspección creada con éxito',
-      ], 201);
-    } catch (\Exception $e) {
-      DB::rollBack(); // Rollback transaction in case of error
-      return response()->json([
-        'status' => false,
-        'message' => 'Error creating inspection',
-        'error' => $e->getMessage()
-      ], 500);
-    }
+    //
   }
 
   /**
@@ -137,7 +68,10 @@ class InspectionController extends Controller
     $transports = Enterprise::where('id_enterprise_types', 2)->get();
     $suppliers = Enterprise::where('id_enterprise_types', 1)->get();
     $targeteds = Targeted::all();
-    $products = Product::all();
+    $products = Product::join('product_enterprises', 'products.id_products', '=', 'product_enterprises.id_products')
+      ->where('id_supplier_enterprises', $inspection->id_supplier_enterprises)
+      ->where('id_transport_enterprises', $inspection->id_transport_enterprises)
+      ->get();
     return view('inspections.edit', compact('inspection', 'checkpoints', 'transports', 'suppliers', 'targeteds', 'products'));
   }
 
@@ -146,7 +80,37 @@ class InspectionController extends Controller
    */
   public function update(Request $request, Inspection $inspection)
   {
-    //
+    $request->merge(['id_users' => Auth::user()->id_users]);
+    $request->merge(['id_inspection_types' => $inspection->id_inspection_types]);
+    $request->validate(Inspection::$rules, Inspection::$messages);
+    try {
+      DB::beginTransaction();
+      $inspection->update([
+        'date' => $request->date,
+        'hour' => $request->hour,
+        'id_inspection_types' => $request->id_inspection_types,
+        'id_supplier_enterprises' => $request->id_supplier_enterprises,
+        'id_transport_enterprises' => $request->id_transport_enterprises,
+        'id_checkpoints' => $request->id_checkpoints,
+        'id_targeteds' => $request->id_targeteds,
+        'id_users' => $request->id_users,
+      ]);
+      InspectionConvoy::where('id_inspections', $inspection->id_inspections)->update(
+        [
+          'convoy' => $request->convoy,
+          'convoy_status' => $request->convoy_status,
+          'quantity_light_units' => $request->quantity_light_units,
+          'quantity_heavy_units' => $request->quantity_heavy_units,
+          'id_products' => $request->id_products,
+          'id_products_two' => $request->id_products_two,
+        ]
+      );
+      DB::commit();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return redirect()->route('inspections.edit', $inspection->id_inspections)->with('error', 'Ocurrió un error al actualizar el inspeccion' . $e->getMessage())->withInput();
+    }
+    return redirect()->back()->with('success', 'Producto actualizado correctamente');
   }
 
   /**
@@ -154,6 +118,21 @@ class InspectionController extends Controller
    */
   public function destroy(Inspection $inspection)
   {
-    //
+    try {
+      DB::beginTransaction();
+      $evidences = EvidenceRelsInspection::where('id_inspections', $inspection->id_inspections)->get();
+      foreach ($evidences as $evidence) {
+        self::dropImage($evidence->evidence_one);
+        self::dropImage($evidence->evidence_two);
+        $evidence->delete();
+      }
+      InspectionConvoy::where('id_inspections', $inspection->id_inspections)->delete();
+      Inspection::where('id_inspections', $inspection->id_inspections)->delete();
+      DB::commit();
+      return redirect()->route('inspections')->with('success', 'Inspeccion Eliminada');
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return redirect()->route('inspections')->with('error', 'Ocurrió un error al eliminar el inspeccion' . $e->getMessage());
+    }
   }
 }

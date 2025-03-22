@@ -43,9 +43,9 @@
                                             action="{{ route('inspections.destroy', $inspection->id_inspections) }}"
                                             method="POST" role="form">
                                             @method('DELETE')
-                                            <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
-                                                onclick="Eliminar({{ $inspection->id_inspections }})" />
                                         </x-form-table>
+                                        <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
+                                            onclick="Eliminar({{ $inspection->id_inspections }})" />
                                     </td>
                                 </tr>
                             @endforeach
@@ -64,4 +64,26 @@
 @endsection
 
 @push('scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+        });
+
+        function Eliminar(id) {
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción no se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-' + id).submit();
+                }
+            });
+        }
+    </script>
 @endpush
