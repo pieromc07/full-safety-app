@@ -95,7 +95,7 @@
             </x-slot>
         </x-table>
     </div>
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-md-12 d-flex justify-content-end">
             <x-pagination page="{{ $employees->currentPage() }}" lastPage="{{ $employees->lastPage() }}" route="employees"
                 perPage="{{ $employees->perPage() }}" total="{{ $employees->total() }}" />

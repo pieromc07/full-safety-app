@@ -9,7 +9,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <div class="table-reponsive">
+            <div class="table-responsive">
                 <x-table id="table-dialogues">
                     <x-slot name="header">
                         <th colspan="1">Punto C.</th>
@@ -55,7 +55,7 @@
                     </x-slot>
                 </x-table>
             </div>
-            <div class="row">
+            <div class="row mt-4">
                 <div class="col-md-12 d-flex justify-content-end">
                     <x-pagination page="{{ $dialogues->currentPage() }}" lastPage="{{ $dialogues->lastPage() }}"
                         route="dialogues" perPage="{{ $dialogues->perPage() }}" total="{{ $dialogues->total() }}" />

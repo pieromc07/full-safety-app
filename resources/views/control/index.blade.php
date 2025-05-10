@@ -9,7 +9,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <div class="table-reponsive">
+            <div class="table-responsive">
                 <x-table id="table-controls">
                     <x-slot name="header">
                         <th colspan="1">Punto C.</th>
@@ -35,11 +35,10 @@
                                     </td>
                                     <td>{{ $control->enterpriseTransport->name }}</td>
                                     <td>
-                                      @if ($control->option == 1)
+                                        @if ($control->option == 1)
                                             <span class="badge badge-success">VELOCIDAD</span>
                                         @elseif ($control->option == 2)
                                             <span class="badge badge-success">UBICACION</span>
-
                                         @endif
                                     </td>
                                     <td>
@@ -70,7 +69,7 @@
                     </x-slot>
                 </x-table>
             </div>
-            <div class="row">
+            <div class="row mt-4">
                 <div class="col-md-12 d-flex justify-content-end">
                     <x-pagination page="{{ $controls->currentPage() }}" lastPage="{{ $controls->lastPage() }}"
                         route="controls" perPage="{{ $controls->perPage() }}" total="{{ $controls->total() }}" />
