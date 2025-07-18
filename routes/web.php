@@ -16,6 +16,7 @@ use App\Http\Controllers\InspectionTypeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductEnterpriseController;
 use App\Http\Controllers\ProductTypeController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TargetedController;
 use App\Http\Controllers\UnitMovementController;
 use Illuminate\Support\Facades\Auth;
@@ -183,4 +184,7 @@ Route::group(['middleware' => 'auth'], function () {
   Route::put('/unitmovements/{unitMovement}', [UnitMovementController::class, 'update'])->name('unitmovements.update');
   Route::delete('/unitmovements/{unitMovement}', [UnitMovementController::class, 'destroy'])->name('unitmovements.destroy');
   Route::get('/unitmovements/export/pdf', [UnitMovementController::class, 'exportPdf'])->name('unitmovements.export.pdf');
+
+  Route::get('/report/daily', [ReportController::class, 'daily'])->name('report.daily');
+  Route::get('/rreport/daily/pdf', [ReportController::class, 'dailyPdf'])->name('report.daily.pdf');
 });

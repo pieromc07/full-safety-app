@@ -59,6 +59,25 @@ class Evidence extends Model
     return $this->belongsTo(Category::class, 'id_subcategories');
   }
 
+  public function categoryName()
+  {
+    if ($this->category) {
+      return $this->category->name;
+    } else if ($this->subcategory) {
+      return $this->subcategory->name;
+    }
+    return null;
+  }
+  public function subcategoryName()
+  {
+    if ($this->subcategory) {
+      return $this->subcategory->name;
+    } else if ($this->category) {
+      return $this->category->name;
+    }
+    return null;
+  }
+
   public function cuidInsertedToDatetime()
   {
     return $this->cuidToDatetime($this->cuid_inserted);

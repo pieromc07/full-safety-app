@@ -103,6 +103,19 @@ class Inspection extends Model
     return $this->hasMany(EvidenceRelsInspection::class, 'id_inspections', 'id_inspections');
   }
 
+  public function groupedEvidencesByCategory()
+  {
+    $evidences = $this->evidences()->with('evidence.category', 'evidence.subcategory')->get();
+    $namesGroup = [];
+    foreach ($evidences as $evidenceRel) {
+      $categoryName = $evidenceRel->evidence->categoryName();
+      if ($categoryName && !in_array($categoryName, $namesGroup)) {
+        $namesGroup[] = $categoryName;
+      }
+    }
+    return $namesGroup;
+  }
+
   public function convoy()
   {
     return $this->hasOne(InspectionConvoy::class, 'id_inspections', 'id_inspections');

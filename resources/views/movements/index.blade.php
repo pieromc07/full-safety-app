@@ -61,6 +61,7 @@
                             @endforeach
                         </x-slot>
                     </x-select-filter>
+                </div>
             </x-table-filter>
         </div>
         <div class="row">
