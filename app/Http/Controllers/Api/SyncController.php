@@ -12,6 +12,7 @@ use App\Models\Employee;
 use App\Models\Enterprise;
 use App\Models\EnterpriseRelsEnterprise;
 use App\Models\EnterpriseType;
+use App\Models\ErrorLog;
 use App\Models\Evidence;
 use App\Models\EvidenceRelsInspection;
 use App\Models\GPSControl;
@@ -56,7 +57,7 @@ class SyncController extends Controller
     $enterprisesRelsEnterprise = EnterpriseRelsEnterprise::select('id_enterprise_rels_enterprises as id', 'id_supplier_enterprises as supplier_enterprise_id', 'id_transport_enterprises as transport_enterprise_id')->get();
     $categories = Category::select('id_categories as id', 'name', 'parent_id', 'id_targeteds as targeted_id', 'id_inspection_types as inspection_type_id')->where('parent_id', null)->get();
     $subcategories = Category::select('id_categories as id', 'name', 'parent_id', 'id_targeteds as targeted_id', 'id_inspection_types as inspection_type_id')->where('parent_id', '!=', null)->get();
-    $targeteds = Targeted::select('id_targeteds as id', 'name', 'image', 'targeted_id')->get();
+    $targeteds = Targeted::select('id_targeteds as id', 'name', 'image', 'targeted_id', 'id_load_types as load_type_id')->get();
     $evidences = Evidence::select('id_evidences as id', 'name', 'description', 'id_categories as category_id', 'id_subcategories as subcategory_id')->get();
     $checkPoints = CheckPoint::select('id_checkpoints as id', 'name', 'description')->get();
     $targetedsRelsInspections = TargetedRelsInspection::select('id_targeted_rels_inspections as id', 'id_targeteds as targeted_id', 'id_inspection_types as inspection_type_id')->get();
@@ -101,11 +102,21 @@ class SyncController extends Controller
       $user = $request->input('user');
 
       if ($inspection == null || $evidences == null) {
+        ErrorLog::create([
+          'date' => Carbon::now('America/Lima')->format('Y-m-d H:i:s'),
+          'type' => 'SyncController - inspection',
+          'source' => 'Mobile App',
+          'message' => 'Inspeccion y evidencias son requeridas',
+          'trace' => null,
+          'data' => json_encode($request->all()),
+        ]);
         return response()->json([
+          'status' => false,
           'message' => 'Inspeccion y evidencias son requeridas',
         ], 400);
       }
 
+      // TODO: Comentar para usar en insomia
       $inspection = json_decode($inspection, true);
       $user = json_decode($user, true);
 
@@ -121,7 +132,7 @@ class SyncController extends Controller
       $newInspection->id_users = $user['id'];
       $newInspection->save();
       if ($convoy != null) {
-        $convoy = json_decode($convoy, true);
+        $convoy = json_decode($convoy, true); // TODO: Comentar para usar en insomia
         $newInspectionConvoy = new InspectionConvoy();
         $newInspectionConvoy->id_inspections = $newInspection->id_inspections;
         $newInspectionConvoy->convoy = $convoy['convoy'];
@@ -134,9 +145,8 @@ class SyncController extends Controller
       }
 
       foreach ($evidences as $evidence) {
-        $evidence = json_decode($evidence, true);
+        $evidence = json_decode($evidence, true); // TODO: Comentar para usar en insomia
         if (!isset($evidence['evidence_id'], $evidence['state'])) {
-          Log::warning('Evidencia omitida debido a datos faltantes: ' . json_encode($evidence));
           continue;
         }
         $evidenceOne = $this->saveImageBase64($evidence['evidence_one_base64'], 'inspection', 'evidence_one');
@@ -160,13 +170,17 @@ class SyncController extends Controller
       ], 201);
     } catch (\Exception $e) {
       DB::rollBack(); // Rollback transaction in case of error
-      Log::error('Error al crear la inspección: ' . $e->getMessage());
+      ErrorLog::create([
+        'date' => Carbon::now('America/Lima')->format('Y-m-d H:i:s'),
+        'type' => 'Create Inspection',
+        'source' => 'SyncController@inspection',
+        'message' => 'Ocurrió un error al crear la inspección : Línea ' . $e->getLine() . ' en el archivo ' . $e->getFile() . ' Mensaje: ' . $e->getMessage(),
+        'trace' => $e->getTraceAsString(),
+        'data' => json_encode($request->all()),
+      ]);
       return response()->json([
         'status' => false,
         'message' => "Ocurrió un error al crear la inspección",
-        'error' => $e->getMessage(),
-        'line' => $e->getLine(),
-        'file' => $e->getFile()
       ], 500);
     }
   }
@@ -303,23 +317,61 @@ class SyncController extends Controller
       $newTest->id_checkpoints = $test['checkpoint_id'];
       $newTest->id_supplier_enterprises = $test['supplier_enterprise_id'];
       $newTest->id_transport_enterprises = $test['transport_enterprise_id'];
-      $newTest->id_employees = $test['employee_id'];
-      $newTest->result = $test['result'];
-      $newTest->state = $test['state'];
-      $newTest->photo_one = $this->saveImageBase64($test['photo_one_base64'], 'alcoholTest', 'photo_one');
-      $newTest->photo_two = $this->saveImageBase64($test['photo_two_base64'], 'alcoholTest', 'photo_two');
+
+      // El employee_id ahora viene en los detalles; no se guarda en la tabla principal
+      if (isset($test['employee_id'])) {
+        Log::info('employee_id presente en payload principal (ignorado, se usa detalles): ' . $test['employee_id']);
+      } else {
+        Log::info('employee_id no presente en el payload principal; se usará la información desde los detalles.');
+      }
+      // Los resultados, estado y fotos por persona se almacenan en alcohol_test_details;
+      // no se guardan en la tabla `alcohol_tests` (no existen las columnas).
       $newTest->id_users = $user['id'];
       $newTest->save();
+
+      // Guardar detalles si vienen en el request
+      if (isset($test['details']) && is_array($test['details'])) {
+        // No guardar campos de detalle en la tabla principal; iterar y persistir detalles a continuación
+        foreach ($test['details'] as $detail) {
+          // Aceptar tanto detalle como JSON string o array
+          if (is_string($detail)) {
+            $detail = json_decode($detail, true);
+          }
+
+          if (!is_array($detail) || !isset($detail['employee_id'])) {
+            Log::warning('Detalle omitido por datos faltantes: ' . json_encode($detail));
+            continue;
+          }
+
+          Log::info('Procesando detalle de prueba de alcohol: ' . json_encode($detail));
+
+          $detailPhotoOne = $this->saveImageBase64($detail['photo_one_base64'] ?? null, 'alcoholTest', 'detail_photo_one');
+          $detailPhotoTwo = $this->saveImageBase64($detail['photo_two_base64'] ?? null, 'alcoholTest', 'detail_photo_two');
+
+          $newDetail = new \App\Models\AlcoholTestDetail();
+          $newDetail->id_alcohol_tests = $newTest->id_alcohol_tests;
+          $newDetail->id_employees = $detail['employee_id'];
+          $newDetail->result = isset($detail['result']) ? $detail['result'] : null;
+          $newDetail->state = isset($detail['state']) ? $detail['state'] : null;
+          $newDetail->photo_one = $detailPhotoOne;
+          $newDetail->photo_one_uri = $detail['photo_one'] ?? null;
+          $newDetail->photo_two = $detailPhotoTwo;
+          $newDetail->photo_two_uri = $detail['photo_two'] ?? null;
+          $newDetail->save();
+        }
+      }
+
       DB::commit(); // Commit transaction if everything is successful
       return response()->json([
         'status' => true,
         'message' => 'Prueba de Alcohol creado con éxito',
       ], 201);
     } catch (\Exception $e) {
+      Log::error('Error al crear la Prueba de Alcohol: ' . $e->getMessage());
       DB::rollBack(); // Rollback transaction in case of error
       return response()->json([
         'status' => false,
-        'message' => 'Error al crear el Pausa Activa',
+        'message' => 'Error al crear la Prueba de Alcohol ' . $e->getMessage(),
         'error' => $e->getMessage()
       ], 500);
     }

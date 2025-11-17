@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AlcoholTestController extends Controller
 {
@@ -50,7 +51,20 @@ class AlcoholTestController extends Controller
   public function update(Request $request, AlcoholTest $test)
   {
     $request->merge(['id_users' => Auth::user()->id_users]);
+    // Validar campos principales
     $request->validate(AlcoholTest::$rules, AlcoholTest::$messages);
+
+    // Validar details si vienen
+    if ($request->has('details')) {
+      $detailsRules = [
+        'details' => 'array',
+        'details.*.result' => 'nullable|numeric',
+        'details.*.state' => 'nullable|in:0,1',
+        'details.*.id_alcohol_test_details' => 'nullable|exists:alcohol_test_details,id_alcohol_test_details',
+        'details.*.employee_id' => 'nullable|exists:employees,id_employees',
+      ];
+      $request->validate($detailsRules);
+    }
     try {
       DB::beginTransaction();
       $test->update([
@@ -59,15 +73,62 @@ class AlcoholTestController extends Controller
         'id_checkpoints' => $request->id_checkpoints,
         'id_supplier_enterprises' => $request->id_supplier_enterprises,
         'id_transport_enterprises' => $request->id_transport_enterprises,
-        'id_employees' => $request->id_employees,
-        'result' => $request->result,
-        'state' => $request->result > 0 ? 1 : 0,
         'id_users' => $request->id_users,
       ]);
+
+      // Procesar details si vienen (ya validados)
+      if ($request->has('details')) {
+        $details = $request->input('details');
+        foreach ($details as $d) {
+          if (is_string($d)) {
+            $d = json_decode($d, true);
+          }
+          if (!is_array($d)) continue;
+
+          // eliminar si viene flag delete
+          if (!empty($d['id_alcohol_test_details']) && !empty($d['delete'])) {
+            $detailToDelete = \App\Models\AlcoholTestDetail::find($d['id_alcohol_test_details']);
+            if ($detailToDelete) {
+              $detailToDelete->delete();
+            }
+            continue;
+          }
+
+          // si viene id_alcohol_test_details -> actualizar
+          if (!empty($d['id_alcohol_test_details'])) {
+            $detailModel = \App\Models\AlcoholTestDetail::find($d['id_alcohol_test_details']);
+            if ($detailModel) {
+              $detailModel->result = $d['result'] ?? $detailModel->result;
+              $detailModel->state = $d['state'] ?? $detailModel->state;
+              $detailModel->save();
+            }
+            continue;
+          }
+
+          // crear nuevo detalle si viene employee_id
+          if (!empty($d['employee_id'])) {
+            \App\Models\AlcoholTestDetail::create([
+              'id_alcohol_tests' => $test->id_alcohol_tests,
+              'id_employees' => $d['employee_id'],
+              'result' => $d['result'] ?? null,
+              'state' => $d['state'] ?? null,
+              'photo_one_uri' => $d['photo_one'] ?? null,
+              'photo_two_uri' => $d['photo_two'] ?? null,
+            ]);
+          }
+        }
+
+        // Validar que al menos quede un detalle asociado
+        $remaining = \App\Models\AlcoholTestDetail::where('id_alcohol_tests', $test->id_alcohol_tests)->count();
+        if ($remaining == 0) {
+          throw new \Exception('La Prueba de Alcohol debe tener al menos un detalle.');
+        }
+      }
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('tests', $test->id_alcohol_tests)->with('error', 'Ocurrió un error al actualizar el Prueba de Alcohol' . $e->getMessage())->withInput();
+      Log::error('Error updating AlcoholTest: ' . $e->getMessage());
+      return redirect()->back()->withInput()->with('error', 'Ocurrió un error al actualizar la Prueba de Alcohol');
     }
     return redirect()->back()->with('success', 'Prueba de Alcohol actualizado correctamente');
   }
@@ -79,14 +140,40 @@ class AlcoholTestController extends Controller
   {
     try {
       DB::beginTransaction();
-      self::dropImage($test->photo_one);
-      self::dropImage($test->photo_two);
+
+      // Eliminar imágenes del test si existen
+      if (!empty($test->photo_one)) {
+        self::dropImage($test->photo_one);
+      }
+      if (!empty($test->photo_two)) {
+        self::dropImage($test->photo_two);
+      }
+
+      // Eliminar imágenes y registros de detalles asociados
+      foreach ($test->details as $detail) {
+        try {
+          if (!empty($detail->photo_one_uri)) {
+            self::dropImage($detail->photo_one_uri);
+          }
+          if (!empty($detail->photo_two_uri)) {
+            self::dropImage($detail->photo_two_uri);
+          }
+        } catch (\Exception $e) {
+          // No detener la eliminación si no encuentra la imagen; loguear
+          Log::warning('Error deleting detail image: ' . $e->getMessage());
+        }
+        $detail->delete();
+      }
+
+      // Finalmente eliminar la prueba
       $test->delete();
+
       DB::commit();
       return redirect()->route('tests')->with('success', 'Prueba de Alcohol Eliminado');
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('tests')->with('error', 'Ocurrió un error al eliminar el Prueba de Alcohol' . $e->getMessage());
+      Log::error('Error deleting AlcoholTest: ' . $e->getMessage());
+      return redirect()->route('tests')->with('error', 'Ocurrió un error al eliminar la Prueba de Alcohol');
     }
   }
 }

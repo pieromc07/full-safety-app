@@ -71,55 +71,49 @@
                                 </x-slot>
                             </x-select>
                         </div>
-                        <div class="col-3 col-lg-3">
-                            <x-select id="id_employees" name="id_employees" label="Personal" class="form-control"
-                                req={{ true }} autofocus="autofocus" icon="bi-building"
-                                value="{{ $test->id_employees }}" placeholder="Seleccione una Personal"
-                                disabled={{ true }}>
-                                <x-slot name="options">
-                                    @foreach ($employees as $employee)
-                                        <option value="{{ $employee->id_employees }}"
-                                            {{ $test->id_employees == $employee->id_employees ? 'selected' : '' }}>
-                                            {{ $employee->fullname }}</option>
-                                    @endforeach
-                                </x-slot>
-                            </x-select>
-                        </div>
-                        <div class="col-3 col-lg-3">
-                            <x-input id="result" name="result" label="Resultado" class="form-control"
-                                placeholder="Resultado" required="required" autofocus="autofocus" icon="bi-truck"
-                                value="{{ $test->result }}" readonly />
-                        </div>
-                        <div class="col-3 col-lg-3">
-                            <x-input id="state" name="state" label="Estado" class="form-control" placeholder="Estado"
-                                required="required" autofocus="autofocus" icon="bi-truck" :value="$test->state === 1 ? 'POSITIVO' : 'CONFORME'" readonly />
-                        </div>
+                        <!-- Campos personales y resultados movidos a detalles; se omiten aquí -->
                     </div>
-                    <div class="row justify-content-center mt-3">
-                        <div class="col-10">
+
+                    <div class="row mt-3">
+                        <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Evidencias</h3>
+                                    <h3 class="card-title">Detalles</h3>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row justify-content-center">
-                                        <div class="col-6">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <h5>Foto 1</h5>
-                                                </div>
-                                                <img src="{{ asset($test->photo_one) }}" class="img-fluid" id="photo_one">
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <h5>Foto 2</h5>
-                                                </div>
-                                                <img src="{{ asset($test->photo_two) }}" class="img-fluid"
-                                                    id="photo_two">
-                                            </div>
-                                        </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Empleado</th>
+                                                    <th>Resultado</th>
+                                                    <th>Estado</th>
+                                                    <th>Foto 1</th>
+                                                    <th>Foto 2</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($test->details as $detail)
+                                                    <tr>
+                                                        <td>{{ $detail->employee->fullname ?? '-' }}</td>
+                                                        <td>{{ $detail->result }}</td>
+                                                        <td>{{ $detail->state === 1 ? 'POSITIVO' : 'CONFORME' }}</td>
+                                                        <td>
+                                                            @if ($detail->photo_one)
+                                                                <img src="{{ asset($detail->photo_one) }}"
+                                                                    width="100" />
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if ($detail->photo_two)
+                                                                <img src="{{ asset($detail->photo_two) }}"
+                                                                    width="100" />
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

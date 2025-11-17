@@ -16,8 +16,10 @@ return new class extends Migration
       $table->id('id_targeteds');
       $table->string('name', 128)->index('targeteds_name_IDX');
       $table->text('image')->nullable();
+      $table->unsignedBigInteger('id_load_types')->nullable();
       $table->unsignedBigInteger('targeted_id')->nullable();
       $table->foreign('targeted_id')->references('id_targeteds')->on('targeteds');
+      $table->foreign('id_load_types')->references('id_load_types')->on('load_types');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
       $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InspectionType;
+use App\Models\LoadType;
 use App\Models\Targeted;
+use App\Models\TargetedRelsInspection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +20,10 @@ class TargetedController extends Controller
   {
     //
     $targeteds = Targeted::where('targeted_id', null)->paginate(5);
-    return view($this::$viewDir . '.targeteds', compact('targeteds'));
+    $inspectionTypes = InspectionType::all();
+    $loadTypes = LoadType::all();
+    // dd($targeteds[0]->targetedRelsInspections);
+    return view($this::$viewDir . '.targeteds', compact('targeteds', 'inspectionTypes', 'loadTypes'));
   }
 
   public function index1()
@@ -46,6 +52,7 @@ class TargetedController extends Controller
       DB::beginTransaction();
       $targeted = new Targeted();
       $targeted->name = $validated['name'];
+      $targeted->id_load_types = $validated['id_load_types'] ?? null;
       if ($request->hasFile('image')) {
         $targeted->image = $this::saveImage($request->file('image'), 'targeteds');
       }
@@ -91,6 +98,7 @@ class TargetedController extends Controller
     try {
       DB::beginTransaction();
       $targeted->name = $validated['name'];
+      $targeted->id_load_types = $validated['id_load_types'] ?? null;
       if ($request->hasFile('image')) {
         if ($this::dropImage($targeted->image)) {
           $targeted->image = $this::saveImage($request->file('image'), 'targeteds');
@@ -98,18 +106,32 @@ class TargetedController extends Controller
       }
       $targeted->targeted_id = $validated['targeted_id'] ?? null;
       $targeted->save();
+
+      // Eliminar relaciones anteriores
+      TargetedRelsInspection::where('id_targeteds', $targeted->id_targeteds)->delete();
+
+      // Crear nuevas relaciones
+      if (!empty($validated['id_inspection_types'])) {
+        foreach ($validated['id_inspection_types'] as $typeId) {
+          TargetedRelsInspection::create([
+            'id_targeteds' => $targeted->id_targeteds,
+            'id_inspection_types' => $typeId,
+          ]);
+        }
+      }
+
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
       if ($validated['targeted_id'] ?? null) {
-        return redirect()->route('target')->with('error', 'Ha ocurrido un error al intentar actualizar el Tipo de dirigido.');
+        return redirect()->route('target')->with('error', 'Ha ocurrido un error al intentar actualizar el Tipo de dirigido. ' . $e->getMessage());
       }
-      return redirect()->route('targeted')->with('error', 'Ha ocurrido un error al intentar actualizar el dirigido.');
+      return redirect()->route('targeted')->with('error', 'Ha ocurrido un error al intentar actualizar el dirigido. ' . $e->getMessage());
     }
     if ($validated['targeted_id'] ?? null) {
-      return redirect()->route('target')->with('success', 'El Tipo de dirigido se ha actualizado correctamente.');
+      return redirect()->route('target')->with('success', 'El Tipo de dirigido se ha actualizado correctamente. ' . $targeted->name);
     }
-    return redirect()->route('targeted')->with('success', 'El dirigido se ha actualizado correctamente.');
+    return redirect()->route('targeted')->with('success', 'El dirigido se ha actualizado correctamente. ' . $targeted->name);
   }
 
   /**

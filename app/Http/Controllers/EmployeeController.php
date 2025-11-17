@@ -17,7 +17,7 @@ class EmployeeController extends Controller
   {
     //
     $enterpriseTransports = Enterprise::where('id_enterprise_types', '=', 2)->get();
-    $employees = Employee::paginate(5);
+    $employees = Employee::paginate(10);
     return view($this::$viewDir . '.employees', compact('employees', 'enterpriseTransports'));
   }
 

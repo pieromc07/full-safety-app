@@ -20,11 +20,6 @@ class AlcoholTest extends Model
     'id_checkpoints',
     'id_supplier_enterprises',
     'id_transport_enterprises',
-    'id_employees',
-    'result',
-    'state',
-    'photo_one',
-    'photo_two',
     'id_users',
     'cuid_inserted',
     'cuid_updated',
@@ -73,14 +68,14 @@ class AlcoholTest extends Model
     return $this->belongsTo(Enterprise::class, 'id_transport_enterprises', 'id_enterprises');
   }
 
-  public function employee()
-  {
-    return $this->belongsTo(Employee::class, 'id_employees', 'id_employees');
-  }
-
   public function user()
   {
     return $this->belongsTo(User::class, 'id_users', 'id_users');
+  }
+
+  public function details()
+  {
+    return $this->hasMany(AlcoholTestDetail::class, 'id_alcohol_tests', 'id_alcohol_tests');
   }
 
   public function cuidInsertedToDatetime()

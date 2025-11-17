@@ -21,6 +21,13 @@ class TargetedRelsInspection extends Model
     'cuid_updated',
   ];
 
+  protected $hidden = [
+    'cuid_inserted',
+    'cuid_updated',
+  ];
+
+  public $timestamps = false;
+
   public function targeted()
   {
     return $this->belongsTo(Targeted::class, 'id_targeteds', 'id_targeteds');

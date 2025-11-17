@@ -19,6 +19,7 @@ use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TargetedController;
 use App\Http\Controllers\UnitMovementController;
+use App\Http\Controllers\AlcoholTestDetailController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -146,6 +147,8 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/tests/{test}/edit', [AlcoholTestController::class, 'edit'])->name('tests.edit');
   Route::put('/tests/{test}', [AlcoholTestController::class, 'update'])->name('tests.update');
   Route::delete('/tests/{test}', [AlcoholTestController::class, 'destroy'])->name('tests.destroy');
+  // Detalle de pruebas
+  Route::delete('/tests/details/{alcoholTestDetail}', [AlcoholTestDetailController::class, 'destroy'])->name('tests.details.destroy');
 
   Route::get('/controls', [GPSControlController::class, 'index'])->name('controls');
   Route::get('/controls/create', [GPSControlController::class, 'create'])->name('controls.create');

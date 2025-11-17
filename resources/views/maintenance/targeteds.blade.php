@@ -22,6 +22,32 @@
                                 placeholder="Logo" autofocus="autofocus" icon="bi-image" req="0"
                                 accept=".png, .jpg, .jpeg, .gif, .webp" />
                         </div>
+                        <div class="col-12">
+                            <x-select-multiple id="id_inspection_types" name="id_inspection_types"
+                                label="Tipo de Inspección" icon="bi-card-checklist"
+                                placeholder="Seleccione un Tipo de Inspección">
+                                <x-slot name="options">
+                                    @foreach ($inspectionTypes as $inspectionType)
+                                        <option value="{{ $inspectionType->id_inspection_types }}">
+                                            {{ $inspectionType->name }}
+                                        </option>
+                                    @endforeach
+                                </x-slot>
+                            </x-select-multiple>
+                        </div>
+                        <div class="col-12">
+                            <x-select id="id_load_types" name="id_load_types" label="Tipo de Carga" class="form-control"
+                                req="0" autofocus="autofocus" icon="bi-box-seam" value=""
+                                placeholder="Seleccione un Tipo de Carga">
+                                <x-slot name="options">
+                                    @foreach ($loadTypes as $loadType)
+                                        <option value="{{ $loadType->id_load_types }}">
+                                            {{ $loadType->name }}
+                                        </option>
+                                    @endforeach
+                                </x-slot>
+                            </x-select>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -46,14 +72,40 @@
                                 placeholder="Logo" autofocus="autofocus" icon="bi-image" req="0"
                                 accept=".png, .jpg, .jpeg, .gif, .webp" />
                         </div>
+                        <div class="col-12">
+                            <x-select-multiple id="id_inspection_types" name="id_inspection_types"
+                                label="Tipo de Inspección" icon="bi-card-checklist"
+                                placeholder="Seleccione un Tipo de Inspección">
+                                <x-slot name="options">
+                                    @foreach ($inspectionTypes as $inspectionType)
+                                        <option value="{{ $inspectionType->id_inspection_types }}">
+                                            {{ $inspectionType->name }}
+                                        </option>
+                                    @endforeach
+                                </x-slot>
+                            </x-select-multiple>
+                        </div>
+                        <div class="col-12">
+                            <x-select id="id_load_types" name="id_load_types" label="Tipo de Carga" class="form-control"
+                                req="0" autofocus="autofocus" icon="bi-box-seam" value=""
+                                placeholder="Seleccione un Tipo de Carga">
+                                <x-slot name="options">
+                                    @foreach ($loadTypes as $loadType)
+                                        <option value="{{ $loadType->id_load_types }}">
+                                            {{ $loadType->name }}
+                                        </option>
+                                    @endforeach
+                                </x-slot>
+                            </x-select>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <x-button id="btn-update" btn="btn-primary" title="Actualizar" position="left" text="Actualizar"
                         icon="bi-save" type="submit" />
 
-                    <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cancelar" position="left" text="Cancelar"
-                        icon="bi-x-circle" href="{{ route('targeted') }}" />
+                    <x-link-text-icon id="btn-back" btn="btn-secondary" title="Cancelar" position="left"
+                        text="Cancelar" icon="bi-x-circle" href="{{ route('targeted') }}" />
                 </div>
             </x-form>
 
@@ -65,12 +117,14 @@
                         <th colspan="1" class="text-center">ID</th>
                         <th colspan="1" class="text-center">Nombre</th>
                         <th colspan="1" class="text-center">Imagen</th>
+                        <th colspan="1" class="text-center">Tipo de Inspección</th>
+                        <th colspan="1" class="text-center">Tipo de Carga</th>
                         <th colspan="1" class="text-center">Acciones</th>
                     </x-slot>
                     <x-slot name='slot'>
                         @if ($targeteds->isEmpty())
                             <tr class="text-center fs-5">
-                                <td colspan="4">No hay registros</td>
+                                <td colspan="5">No hay registros</td>
                             </tr>
                         @else
                             @foreach ($targeteds as $key => $targeted)
@@ -86,9 +140,19 @@
                                             class="img-thumbnail" style="width: 50px; height: 50px;">
                                     </td>
                                     <td class="text-center">
+                                        @if ($targeted->targetedRelsInspections->isNotEmpty())
+                                            {{ $targeted->targetedRelsInspections->map(function ($rel) {return optional($rel->inspectionType)->name;})->filter()->implode(', ') }}
+                                        @else
+                                            {{ '-' }}
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $targeted->loadType ? $targeted->loadType->name : '-' }}
+                                    </td>
+                                    <td class="text-center">
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
-                                            onclick="Editar({{ $targeted }})" />
+                                            onclick="Editar({{ json_encode($targeted) }})" />
                                         <x-form-table id="form-delete-{{ $targeted->id_targeteds }}"
                                             action="{{ route('targeted.destroy', $targeted->id_targeteds) }}"
                                             method="POST" role="form">
@@ -127,8 +191,25 @@
             $('#form-create').hide();
             $('#form-edit').attr('action', '/targeteds/' + targeted.id_targeteds);
             $('#form-edit').find('#name').val(targeted.name);
+
+            $('#form-edit').find('#id_inspection_types').select2({
+                placeholder: "Seleccione un Tipo de Inspección",
+                width: '100%'
+            });
+
+            console.log(targeted);
+
+            let inspectionTypes = targeted.targeted_rels_inspections.map(rel => rel.id_inspection_types);
+            // $('#form-edit').find('#id_inspection_types').val(inspectionTypes).trigger('change.select2');
+            $('#form-edit').find('#id_inspection_types').val(inspectionTypes).trigger('change');
+            // $('#id_inspection_types').val(inspectionTypes).trigger('change.select2');
+
+            $('#form-edit').find('#id_load_types').val(targeted.id_load_types).trigger('change');
+
+
             $('#form-edit').find('#name').focus();
         }
+
 
         function Eliminar(id) {
             Swal.fire({

@@ -16,13 +16,12 @@
                         <th colspan="1">Fecha</th>
                         <th colspan="1">Supevisor</th>
                         <th colspan="1">Emp. Transportista</th>
-                        <th colspan="1">Personal</th>
                         <th colspan="1">Acciones</th>
                     </x-slot>
                     <x-slot name="slot">
                         @if ($tests->isEmpty())
                             <tr>
-                                <td colspan="6" class="text-center">No hay registros</td>
+                                <td colspan="5" class="text-center">No hay registros</td>
                             </tr>
                         @else
                             @foreach ($tests as $key => $test)
@@ -33,7 +32,6 @@
                                         {{ $test->user->fullname }}
                                     </td>
                                     <td>{{ $test->enterpriseTransport->name }}</td>
-                                    <td>{{ $test->employee->fullname }}</td>
                                     <td>
                                         <x-link-icon btn="btn-info" icon="bi-eye-fill" title="Ver"
                                             href="{{ route('tests.show', $test->id_alcohol_tests) }}" />

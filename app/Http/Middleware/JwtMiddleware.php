@@ -6,6 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JwtMiddleware
@@ -18,11 +20,14 @@ class JwtMiddleware
   public function handle(Request $request, Closure $next): Response
   {
     try {
-      $user = JWTAuth::parseToken()->authenticate();
+      JWTAuth::parseToken()->authenticate();
+    } catch (TokenExpiredException $e) {
+      return response()->json(['status' => false, 'error' => $e->getMessage(), 'message' => 'Token has expired'], 401);
+    } catch (TokenInvalidException $e) {
+      return response()->json(['status' => false, 'error' => $e->getMessage(), 'message' => 'Token is invalid'], 401);
     } catch (JWTException $e) {
-      return response()->json(['error' => 'Token not valid'], 401);
+      return response()->json(['status' => false, 'error' => $e->getMessage(), 'message' => 'Token not found'], 401);
     }
-
     return $next($request);
   }
 }

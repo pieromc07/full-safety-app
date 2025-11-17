@@ -21,17 +21,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
-Route::post('me', [AuthController::class, 'me']);
-Route::post('/inspection', [SyncController::class, 'inspection'])->middleware('auth:api');
-Route::post('/dialogue', [SyncController::class, 'dailyDialog'])->middleware('auth:api');
-Route::post('/pauseactive', [SyncController::class, 'activePause'])->middleware('auth:api');
-Route::post('/alcoholtest', [SyncController::class, 'alcoholTest'])->middleware('auth:api');
-Route::post('/controlgps', [SyncController::class, 'controlGps'])->middleware('auth:api');
-Route::post('/ping', function () {
-  return response()->json(['message' => 'pong']);
-})->middleware('auth:api');
-Route::post('/refresh', [AuthController::class, 'refresh']);
+Route::middleware('jwt.verify')->group(function () {
+
+  Route::post('logout', [AuthController::class, 'logout']);
+  Route::post('me', [AuthController::class, 'me']);
+
+  Route::post('/inspection', [SyncController::class, 'inspection']);
+  Route::post('/dialogue', [SyncController::class, 'dailyDialog']);
+  Route::post('/pauseactive', [SyncController::class, 'activePause']);
+  Route::post('/alcoholtest', [SyncController::class, 'alcoholTest']);
+  Route::post('/controlgps', [SyncController::class, 'controlGps']);
+
+  Route::post('/ping', function () {
+    return response()->json(['message' => 'pong']);
+  });
+
+  Route::post('/refresh', [AuthController::class, 'refresh']);
+});
 
 Route::get('/sync', [SyncController::class, 'sync']);
 Route::post('/login', [AuthController::class, 'login']);

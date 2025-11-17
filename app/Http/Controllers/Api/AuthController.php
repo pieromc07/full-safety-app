@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ErrorLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -25,12 +29,32 @@ class AuthController extends Controller
    */
   public function login()
   {
-    $credentials = request(['username', 'password']);
+    try {
+      $credentials = request(['username', 'password']);
 
-    if (!$token = JWTAuth::attempt($credentials)) {
-      return response()->json(['status' => false, 'message' => 'Datos incorrectos'], 401);
+      if (!$token = JWTAuth::attempt($credentials)) {
+        ErrorLog::create([
+          'date' => date('Y-m-d H:i:s'),
+          'type' => 'login_failed',
+          'source' => 'AuthController@login',
+          'message' => 'Login failed for user: ' . $credentials['username'],
+          'trace' => '',
+          'data' => json_encode($credentials)
+        ]);
+        return response()->json(['status' => false, 'message' => 'Datos incorrectos'], 401);
+      }
+      return $this->respondWithToken($token);
+    } catch (\Exception $e) {
+      ErrorLog::create([
+        'date' => date('Y-m-d H:i:s'),
+        'type' => 'login_error',
+        'source' => 'AuthController@login',
+        'message' => $e->getMessage(),
+        'trace' => $e->getTraceAsString(),
+        'data' => json_encode(request(['username', 'password']))
+      ]);
+      return response()->json(['status' => false, 'message' => 'Error interno del servidor'], 500);
     }
-    return $this->respondWithToken($token);
   }
 
   /**
@@ -64,13 +88,17 @@ class AuthController extends Controller
   public function refresh(Request $request)
   {
     try {
-      $user = User::find($request->id);
-      $token = JWTAuth::attempt(['username' => $user->username, 'password' => self::decryptText($user->token)]);
-      return $this->respondWithToken($token);
-    } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-      return response()->json(['error' => 'Token inválido'], 401);
-    } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-      return response()->json(['error' => 'No se encontró el token'], 401);
+      // $user = User::find($request->id);
+      // $token = JWTAuth::attempt(['username' => $user->username, 'password' => self::decryptText($user->token)]);
+      // return $this->respondWithToken($token);
+      $newToken = JWTAuth::refresh(JWTAuth::getToken());
+      return $this->respondWithToken($newToken);
+    } catch (TokenExpiredException $e) {
+      return response()->json(['status' => false, 'error' => $e->getMessage(), 'message' => 'Token has expired'], 401);
+    } catch (TokenInvalidException $e) {
+      return response()->json(['status' => false, 'error' => $e->getMessage(), 'message' => 'Token is invalid'], 401);
+    } catch (JWTException $e) {
+      return response()->json(['status' => false, 'error' => $e->getMessage(), 'message' => 'Token not found'], 401);
     }
   }
 

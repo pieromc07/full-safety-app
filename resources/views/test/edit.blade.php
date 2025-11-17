@@ -77,56 +77,59 @@
                                 </x-slot>
                             </x-select>
                         </div>
-                        <div class="col-3 col-lg-3">
-                            <x-select id="id_employees" name="id_employees" label="Personal" class="form-control"
-                                req={{ true }} autofocus="autofocus" icon="bi-building"
-                                value="{{ $test->id_employees }}" placeholder="Seleccione una Personal">
-                                <x-slot name="options">
-                                    @foreach ($employees as $employee)
-                                        <option value="{{ $employee->id_employees }}"
-                                            {{ $test->id_employees == $employee->id_employees ? 'selected' : '' }}>
-                                            {{ $employee->fullname }}</option>
-                                    @endforeach
-                                </x-slot>
-                            </x-select>
-                        </div>
-                        <div class="col-3 col-lg-3">
-                            <x-input id="result" name="result" label="Resultado %" class="form-control" min="0" step="0.01"
-                                placeholder="Resultado %" required="required" autofocus="autofocus" icon="bi-truck"
-                                value="{{ $test->result }}" type="number" />
-                        </div>
-                        <div class="col-3 col-lg-3">
-                            <x-input id="state" name="state" label="Estado" class="form-control" placeholder="Estado"
-                                required="required" autofocus="autofocus" icon="bi-truck" :value="$test->state === 1 ? 'POSITIVO' : 'CONFORME'"
-                                readonly={{ true }} />
-                        </div>
+                        <!-- Campos personales y resultado principales ya no se usan; usar detalles -->
                     </div>
-                    <div class="row justify-content-center mt-3">
-                        <div class="col-10">
+
+                    <div class="row mt-3">
+                        <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Evidencias</h3>
+                                    <h3 class="card-title">Detalles</h3>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row justify-content-center">
-                                        <div class="col-6">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <h5>Foto 1</h5>
-                                                </div>
-                                                <img src="{{ asset($test->photo_one) }}" class="img-fluid"
-                                                    id="photo_one">
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <h5>Foto 2</h5>
-                                                </div>
-                                                <img src="{{ asset($test->photo_two) }}" class="img-fluid"
-                                                    id="photo_two">
-                                            </div>
-                                        </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Empleado</th>
+                                                    <th>Resultado %</th>
+                                                    <th>Estado</th>
+                                                    <th>Eliminar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($test->details as $index => $detail)
+                                                    <tr id="detail-row-{{ $detail->id_alcohol_test_details }}"
+                                                        data-id="{{ $detail->id_alcohol_test_details }}">
+                                                        <td>{{ $detail->employee->name ?? 'N/A' }}</td>
+                                                        <td>
+                                                            <input type="hidden"
+                                                                name="details[{{ $index }}][id_alcohol_test_details]"
+                                                                value="{{ $detail->id_alcohol_test_details }}">
+                                                            <input type="number" step="0.1"
+                                                                name="details[{{ $index }}][result]"
+                                                                value="{{ $detail->result }}" class="form-control">
+                                                        </td>
+                                                        <td>
+                                                            <select name="details[{{ $index }}][state]"
+                                                                class="form-control">
+                                                                <option value="0"
+                                                                    {{ $detail->state == 0 ? 'selected' : '' }}>Normal
+                                                                </option>
+                                                                <option value="1"
+                                                                    {{ $detail->state == 1 ? 'selected' : '' }}>Positivo
+                                                                </option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-danger btn-delete-detail"
+                                                                data-id="{{ $detail->id_alcohol_test_details }}">Eliminar</button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -147,25 +150,106 @@
 
 @push('scripts')
     <script type="text/javascript">
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Manejo del select de empresas (usa jQuery existente)
+            if (window.$) {
+                $('#id_supplier_enterprises').on('change', function() {
+                    const id_supplier_enterprises = $(this).val();
+                    $.ajax({
+                        url: "{{ url('enterprises') }}/" + id_supplier_enterprises,
+                        id_supplier_enterprises,
+                        type: 'GET',
+                        success: function(data) {
+                            $('#id_transport_enterprises').empty();
+                            $('#id_transport_enterprises').append(
+                                '<option value="">Seleccione una Empresa Transportista</option>'
+                            );
+                            $.each(data, function(index, enterprise) {
+                                $('#id_transport_enterprises').append(
+                                    '<option value="' +
+                                    enterprise.id_enterprises + '">' + enterprise
+                                    .name +
+                                    '</option>');
+                            });
+                        }
+                    });
+                });
+            }
 
-            $('#id_supplier_enterprises').on('change', function() {
-                const id_supplier_enterprises = $(this).val();
-                $.ajax({
-                    url: "{{ url('enterprises') }}/" + id_supplier_enterprises,
-                    id_supplier_enterprises,
-                    type: 'GET',
-                    success: function(data) {
-                        $('#id_transport_enterprises').empty();
-                        $('#id_transport_enterprises').append(
-                            '<option value="">Seleccione una Empresa Transportista</option>'
-                        );
-                        $.each(data, function(index, enterprise) {
-                            $('#id_transport_enterprises').append('<option value="' +
-                                enterprise.id_enterprises + '">' + enterprise.name +
-                                '</option>');
-                        });
+            const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = tokenMeta ? tokenMeta.getAttribute('content') : '';
+
+            async function deleteDetail(id) {
+                // Usar SweetAlert2 para confirmación
+                const {
+                    value: confirmDelete
+                } = await Swal.fire({
+                    title: '¿Eliminar detalle?',
+                    text: 'Esta acción no se puede deshacer.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                });
+
+                if (!confirmDelete) return;
+
+                try {
+                    const resp = await fetch(`{{ url('/tests/details') }}/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!resp.ok) {
+                        const body = await resp.json().catch(() => ({}));
+                        throw new Error(body.message || 'Error al eliminar');
                     }
+
+                    const row = document.getElementById('detail-row-' + id);
+                    if (row) row.remove();
+                    const data = await resp.json().catch(() => ({}));
+
+                    // Mostrar toast usando Toastify y añadir el estado 'revisa'
+                    if (window.Toastify) {
+                        Toastify({
+                            text: (data.message || 'Detalle eliminado') + ' — Estado: revisa',
+                            duration: 3000,
+                            close: true,
+                            gravity: 'top',
+                            position: 'center',
+                            backgroundColor: '#f0ad4e'
+                        }).showToast();
+                    } else {
+                        // fallback
+                        Swal.fire('Eliminado', (data.message || 'Detalle eliminado') + ' — Estado: revisa',
+                            'success');
+                    }
+                } catch (e) {
+                    const msg = e.message || 'No se pudo eliminar';
+                    if (window.Toastify) {
+                        Toastify({
+                            text: msg + ' — Estado: revisa',
+                            duration: 4000,
+                            close: true,
+                            gravity: 'top',
+                            position: 'center',
+                            backgroundColor: '#d9534f'
+                        }).showToast();
+                    } else {
+                        Swal.fire('Error', msg + ' — Estado: revisa', 'error');
+                    }
+                }
+            }
+
+            document.querySelectorAll('.btn-delete-detail').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    deleteDetail(id);
                 });
             });
         });
