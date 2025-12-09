@@ -111,6 +111,10 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/inspections/{inspection}/edit', [InspectionController::class, 'edit'])->name('inspections.edit');
   Route::put('/inspections/{inspection}', [InspectionController::class, 'update'])->name('inspections.update');
   Route::delete('/inspections/{inspection}', [InspectionController::class, 'destroy'])->name('inspections.destroy');
+  Route::get('/inspections/{inspection}/report', [InspectionController::class, 'report'])->name('inspections.report');
+  Route::post('/inspections/store', [InspectionController::class, 'store'])->name('inspections.store');
+
+
 
 
   Route::get('/employees', [EmployeeController::class, 'index'])->name('employee');

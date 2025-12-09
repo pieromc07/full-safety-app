@@ -41,6 +41,9 @@
 
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $inspection }})" />
+
+
+
                                         <x-form-table id="form-delete-{{ $inspection->id_inspections }}"
                                             action="{{ route('inspections.destroy', $inspection->id_inspections) }}" method="POST"
                                             role="form">

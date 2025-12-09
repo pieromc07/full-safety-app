@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ReporteEmail;
 use App\Models\ActivePause;
 use App\Models\AlcoholTest;
 use App\Models\Category;
@@ -30,6 +31,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class SyncController extends Controller
 {
@@ -41,7 +43,7 @@ class SyncController extends Controller
    */
   public function __construct()
   {
-    $this->middleware('auth:api', ['except' => ['sync']]);
+    // $this->middleware('auth:api', ['except' => ['sync']]);
   }
 
   /**
@@ -164,6 +166,16 @@ class SyncController extends Controller
       }
 
       DB::commit(); // Commit transaction if everything is successful
+
+      ///ENVIO CORREO
+      try {
+        Mail::to('fgmerinoca@unitru.edu.pe')
+          ->send(new ReporteEmail($newInspection->id_inspections));
+      } catch (Exception $e) {
+        Log::error('Error al enviar el correo: ' . $e->getMessage());
+      }
+
+
       return response()->json([
         'status' => true,
         'message' => 'Inspección creada con éxito',

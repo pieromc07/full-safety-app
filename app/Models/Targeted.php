@@ -78,6 +78,12 @@ class Targeted extends Model
     return $this->cuidToDatetime($this->cuid_updated);
   }
 
+  public function categories()
+  {
+    return $this->hasMany(Category::class, 'id_targeteds', 'id_targeteds');
+  }
+
+
   public function cuidToDatetime($cuid)
   {
     return DB::selectOne('SELECT CUID_TO_DATETIME(?) AS datetime', [$cuid])->datetime;

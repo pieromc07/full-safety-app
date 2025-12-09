@@ -38,6 +38,8 @@
                                     href="{{ route('inspections.show', $inspection->id_inspections) }}" />
                                 <x-link-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                     href="{{ route('inspections.edit', $inspection->id_inspections) }}" />
+
+
                                 <x-form-table id="form-delete-{{ $inspection->id_inspections }}"
                                     action="{{ route('inspections.destroy', $inspection->id_inspections) }}" method="POST"
                                     role="form">
@@ -45,6 +47,10 @@
                                 </x-form-table>
                                 <x-button-icon btn="btn-danger" icon="bi-trash-fill" title="Eliminar"
                                     onclick="Eliminar({{ $inspection->id_inspections }})" />
+                                <x-link-icon btn="btn-info" icon="bi-clipboard-check-fill" title="levantamiento"
+                                    href="{{ route('inspections.report', $inspection->id_inspections) }}">
+
+                                </x-link-icon>
                             </td>
                         </tr>
                     @endforeach
@@ -85,3 +91,4 @@
         }
     </script>
 @endpush
+

@@ -20,6 +20,7 @@ class Inspection extends Model
     'folio',
     'date',
     'hour',
+    'email',
     'id_inspection_types',
     'id_supplier_enterprises',
     'id_transport_enterprises',

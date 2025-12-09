@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\lifReport;
 use App\Models\CheckPoint;
 use App\Models\Enterprise;
 use App\Models\EvidenceRelsInspection;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class InspectionController extends Controller
@@ -33,17 +35,51 @@ class InspectionController extends Controller
   /**
    * Show the form for creating a new resource.
    */
-  public function create()
-  {
-    //
-  }
+  public function create() {}
 
   /**
    * Store a newly created resource in storage.
    */
   public function store(Request $request)
   {
-    //
+    $validated = $request->validate([
+      // 'id_inspection_evidence' => 'required|integer',
+      'description'           => 'required|string',
+      'date'                  => 'required|date',
+      'evidence_one'          => 'required|image|mimes:jpg,jpeg,png|max:4096',
+      'evidence_two'          => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
+    ]);
+
+    try {
+      $imgOne = base64_encode(file_get_contents($request->file('evidence_one')));
+      $imgOne = 'data:image/jpeg;base64,' . $imgOne;
+
+      $imgTwo = null;
+      if ($request->hasFile('evidence_two')) {
+        $imgTwo = base64_encode(file_get_contents($request->file('evidence_two')));
+        $imgTwo = 'data:image/jpeg;base64,' . $imgTwo;
+      }
+      Mail::to('fgmerinoca@gmail.com')->send(
+        new lifReport(
+          // $validated['id_inspection_evidence'],
+          $validated['description'],
+          $validated['date'],
+          $imgOne,
+          $imgTwo
+
+        )
+      );
+
+      return response()->json([
+        'message' => 'Correo enviado correctamente'
+      ]);
+    } catch (\Exception $e) {
+
+      return response()->json([
+        'message' => 'Error al enviar el correo',
+        'error'   => $e->getMessage()
+      ], 500);
+    }
   }
 
   /**
@@ -134,5 +170,16 @@ class InspectionController extends Controller
       DB::rollBack();
       return redirect()->route('inspections')->with('error', 'Ocurrió un error al eliminar el inspeccion' . $e->getMessage());
     }
+  }
+
+  // En app/Http/Controllers/InspectionController.php
+  public function report(Inspection $inspection)
+  {
+    $checkpoints = CheckPoint::all();
+    $transports = Enterprise::where('id_enterprise_types', 2)->get();
+    $suppliers = Enterprise::where('id_enterprise_types', 1)->get();
+    $targeteds = Targeted::all();
+    $products = Product::all();
+    return view('inspections.operative.report', compact('inspection', 'checkpoints', 'transports', 'suppliers', 'targeteds', 'products'));
   }
 }
