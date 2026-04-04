@@ -69,7 +69,9 @@ return [
     |
     */
 
-  'timezone' => 'UTC',
+  'timezone' => 'America/Lima',
+
+  'report_email' => env('REPORT_EMAIL', 'admin@example.com'),
 
   /*
     |--------------------------------------------------------------------------

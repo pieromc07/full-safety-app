@@ -169,7 +169,7 @@ class SyncController extends Controller
 
       ///ENVIO CORREO
       try {
-        Mail::to('fgmerinoca@unitru.edu.pe')
+        Mail::to(config('app.report_email', 'admin@example.com'))
           ->send(new ReporteEmail($newInspection->id_inspections));
       } catch (Exception $e) {
         Log::error('Error al enviar el correo: ' . $e->getMessage());
@@ -207,15 +207,15 @@ class SyncController extends Controller
   public function dailyDialog(Request $request)
   {
     try {
+      $request->validate([
+        'dialogue' => 'required|string',
+        'user' => 'required|string',
+      ]);
+
       DB::beginTransaction();
 
       $dialogue = $request->input('dialogue');
       $user = $request->input('user');
-      if ($dialogue == null) {
-        return response()->json([
-          'message' => 'Dialogo diario es requerido',
-        ], 400);
-      }
 
       $dialogue = json_decode($dialogue, true);
       $user = json_decode($user, true);
@@ -241,12 +241,10 @@ class SyncController extends Controller
       ], 201);
     } catch (\Exception $e) {
       DB::rollBack();
+      Log::error('Error al crear Dialogo diario: ' . $e->getMessage() . ' L:' . $e->getLine() . ' F:' . $e->getFile());
       return response()->json([
         'status' => false,
         'message' => 'Error al crear el Dialogo diario',
-        'error' => $e->getMessage(),
-        'line' => $e->getLine(),
-        'file' => $e->getFile()
       ], 500);
     }
   }
@@ -261,15 +259,15 @@ class SyncController extends Controller
   public function activePause(Request $request)
   {
     try {
+      $request->validate([
+        'pauseactive' => 'required|string',
+        'user' => 'required|string',
+      ]);
+
       DB::beginTransaction();
 
       $pauseactive = $request->input('pauseactive');
       $user = $request->input('user');
-      if ($pauseactive == null) {
-        return response()->json([
-          'message' => 'Pausa Activa es requerido',
-        ], 400);
-      }
 
       $pauseactive = json_decode($pauseactive, true);
       $user = json_decode($user, true);
@@ -293,10 +291,10 @@ class SyncController extends Controller
       ], 201);
     } catch (\Exception $e) {
       DB::rollBack();
+      Log::error('Error al crear Pausa Activa: ' . $e->getMessage());
       return response()->json([
         'status' => false,
-        'message' => 'Error al crear el Pausa Activa',
-        'error' => $e->getMessage()
+        'message' => 'Error al crear la Pausa Activa',
       ], 500);
     }
   }
@@ -310,15 +308,15 @@ class SyncController extends Controller
   public function alcoholTest(Request $request)
   {
     try {
+      $request->validate([
+        'alcoholtest' => 'required|string',
+        'user' => 'required|string',
+      ]);
+
       DB::beginTransaction();
 
       $test = $request->input('alcoholtest');
       $user = $request->input('user');
-      if ($test == null) {
-        return response()->json([
-          'message' => 'Prueba de Alcohol es requerido',
-        ], 400);
-      }
 
       $test = json_decode($test, true);
       $user = json_decode($user, true);
@@ -383,8 +381,7 @@ class SyncController extends Controller
       DB::rollBack(); // Rollback transaction in case of error
       return response()->json([
         'status' => false,
-        'message' => 'Error al crear la Prueba de Alcohol ' . $e->getMessage(),
-        'error' => $e->getMessage()
+        'message' => 'Error al crear la Prueba de Alcohol',
       ], 500);
     }
   }
@@ -398,15 +395,15 @@ class SyncController extends Controller
   public function controlGps(Request $request)
   {
     try {
+      $request->validate([
+        'controlgps' => 'required|string',
+        'user' => 'required|string',
+      ]);
+
       DB::beginTransaction();
 
       $cgps = $request->input('controlgps');
       $user = $request->input('user');
-      if ($cgps == null) {
-        return response()->json([
-          'message' => 'Control GPS es requerido',
-        ], 400);
-      }
 
       $cgps = json_decode($cgps, true);
       $user = json_decode($user, true);
@@ -431,10 +428,10 @@ class SyncController extends Controller
       ], 201);
     } catch (\Exception $e) {
       DB::rollBack(); // Rollback transaction in case of error
+      Log::error('Error al crear Control GPS: ' . $e->getMessage());
       return response()->json([
         'status' => false,
         'message' => 'Error al crear el Control GPS',
-        'error' => $e->getMessage()
       ], 500);
     }
   }
@@ -455,9 +452,9 @@ class SyncController extends Controller
 
     try {
 
-      $base64Image = str_replace('data:image/png;base64,', '', $base64Image);
+      $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
       $base64Image = str_replace(' ', '+', $base64Image);
-      $imageData = base64_decode($base64Image);
+      $imageData = base64_decode($base64Image, true);
 
       if ($imageData === false) {
         return null;
@@ -468,7 +465,7 @@ class SyncController extends Controller
         mkdir($fullPath, 0755, true);
       }
 
-      $fileName = time() . "_{$type}.png";
+      $fileName = bin2hex(random_bytes(16)) . "_{$type}.png";
       $filePath = $fullPath . '/' . $fileName;
 
       if (file_put_contents($filePath, $imageData)) {

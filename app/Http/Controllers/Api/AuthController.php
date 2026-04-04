@@ -39,7 +39,7 @@ class AuthController extends Controller
           'source' => 'AuthController@login',
           'message' => 'Login failed for user: ' . $credentials['username'],
           'trace' => '',
-          'data' => json_encode($credentials)
+          'data' => json_encode(['username' => $credentials['username']])
         ]);
         return response()->json(['status' => false, 'message' => 'Datos incorrectos'], 401);
       }
@@ -51,7 +51,7 @@ class AuthController extends Controller
         'source' => 'AuthController@login',
         'message' => $e->getMessage(),
         'trace' => $e->getTraceAsString(),
-        'data' => json_encode(request(['username', 'password']))
+        'data' => json_encode(['username' => request('username')])
       ]);
       return response()->json(['status' => false, 'message' => 'Error interno del servidor'], 500);
     }
@@ -73,11 +73,16 @@ class AuthController extends Controller
    */
   public function logout(Request $request)
   {
-    User::find($request->id)->update([
-      'token' => null
-    ]);
-
-    return response()->json(['status' => true, 'message' => 'Successfully logged out']);
+    try {
+      $user = JWTAuth::user();
+      if ($user) {
+        User::find($user->id_users)->update(['token' => null]);
+        JWTAuth::invalidate(JWTAuth::getToken());
+      }
+      return response()->json(['status' => true, 'message' => 'Successfully logged out']);
+    } catch (\Exception $e) {
+      return response()->json(['status' => true, 'message' => 'Successfully logged out']);
+    }
   }
 
   /**
@@ -94,11 +99,11 @@ class AuthController extends Controller
       $newToken = JWTAuth::refresh(JWTAuth::getToken());
       return $this->respondWithToken($newToken);
     } catch (TokenExpiredException $e) {
-      return response()->json(['status' => false, 'error' => $e->getMessage(), 'message' => 'Token has expired'], 401);
+      return response()->json(['status' => false, 'message' => 'Token has expired'], 401);
     } catch (TokenInvalidException $e) {
-      return response()->json(['status' => false, 'error' => $e->getMessage(), 'message' => 'Token is invalid'], 401);
+      return response()->json(['status' => false, 'message' => 'Token is invalid'], 401);
     } catch (JWTException $e) {
-      return response()->json(['status' => false, 'error' => $e->getMessage(), 'message' => 'Token not found'], 401);
+      return response()->json(['status' => false, 'message' => 'Token not found'], 401);
     }
   }
 

@@ -59,7 +59,7 @@ class InspectionController extends Controller
         $imgTwo = base64_encode(file_get_contents($request->file('evidence_two')));
         $imgTwo = 'data:image/jpeg;base64,' . $imgTwo;
       }
-      Mail::to('fgmerinoca@gmail.com')->send(
+      Mail::to(config('app.report_email', 'admin@example.com'))->send(
         new lifReport(
           // $validated['id_inspection_evidence'],
           $validated['description'],

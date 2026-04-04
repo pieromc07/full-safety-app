@@ -13,6 +13,7 @@ use App\Models\InspectionType;
 use App\Models\Product;
 use App\Models\ProductEnterprise;
 use App\Models\ProductType;
+use App\Models\LoadType;
 use App\Models\Targeted;
 use App\Models\Unit;
 use App\Models\UnitType;
@@ -680,61 +681,80 @@ class DatabaseSeeder extends Seeder
       'name' => 'Documentaria',
     ]);
 
-    ## Targetds
+    ## Load Types (tipos de carga)
+    $peligroso = LoadType::create(['name' => 'Peligroso']);
+    $ancha = LoadType::create(['name' => 'Ancha']);
+    $regular = LoadType::create(['name' => 'Regular']);
+
+    ## Targeteds (dirigidos)
     Targeted::create([
       'name' => 'Persona',
+      'id_load_types' => $peligroso->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Vehículo',
+      'id_load_types' => $peligroso->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Contenedor',
+      'id_load_types' => $ancha->id_load_types,
     ]);
 
-    ## Targeteds children
+    ## Targeteds children con tipo de carga
     Targeted::create([
       'name' => 'Supervisor',
       'targeted_id' => 1,
+      'id_load_types' => $regular->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Conductor',
       'targeted_id' => 1,
+      'id_load_types' => $peligroso->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Mecanico',
       'targeted_id' => 1,
+      'id_load_types' => $regular->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Otro',
       'targeted_id' => 1,
+      'id_load_types' => $regular->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Tracto',
       'targeted_id' => 2,
+      'id_load_types' => $peligroso->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Carreta / Acoplado',
       'targeted_id' => 2,
+      'id_load_types' => $peligroso->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Camioneta',
       'targeted_id' => 2,
+      'id_load_types' => $regular->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Camión',
       'targeted_id' => 2,
+      'id_load_types' => $ancha->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Hoover',
       'targeted_id' => 3,
+      'id_load_types' => $peligroso->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Bolsa Gigante',
       'targeted_id' => 3,
+      'id_load_types' => $ancha->id_load_types,
     ]);
     Targeted::create([
       'name' => 'Isotanque',
       'targeted_id' => 3,
+      'id_load_types' => $peligroso->id_load_types,
     ]);
 
     ## Product
@@ -1122,5 +1142,7 @@ class DatabaseSeeder extends Seeder
       'id_supplier_enterprises' => Enterprise::where('name', 'NUMAY S.A.')->where('id_enterprise_types', 1)->first()->id_enterprises,
       'id_transport_enterprises' => Enterprise::where('name', 'FULL SAFETY S.A.C.')->where('id_enterprise_types', 2)->first()->id_enterprises,
     ]);
+
+    $this->call(TestDataSeeder::class);
   }
 }
