@@ -51,16 +51,16 @@ class Evidence extends Model
   }
 
   /**
-   * Categoría padre derivada de la subcategoría (no es una columna en DB).
+   * Categoría padre derivada de la subcategoría (accessor, no es relación ni columna).
    */
-  public function category()
+  public function getCategoryAttribute()
   {
     return $this->subcategory ? $this->subcategory->parent : null;
   }
 
   public function categoryName()
   {
-    return optional($this->category())->name;
+    return optional($this->category)->name;
   }
 
   public function subcategoryName()
