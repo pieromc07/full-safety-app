@@ -18,6 +18,7 @@ return new class extends Migration
       $table->string('username', 16)->unique()->index('users_username_IDX');
       $table->string('password', 256)->index('users_password_IDX');
       $table->text('token')->nullable();
+      $table->unsignedBigInteger('id_enterprises')->nullable();
       $table->tinyInteger('status')->default(1)->index('users_status_IDX');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();

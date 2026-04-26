@@ -37,11 +37,9 @@ class EvidenceController extends Controller
     $validated = $request->validate(Evidence::$rules, Evidence::$rulesMessages);
     try {
       DB::beginTransaction();
-      $subcategory = Category::find($validated['id_subcategories']) ?? null;
       $evidence = new Evidence();
       $evidence->name = $validated['name'];
       $evidence->description = $validated['description'] ?? null;
-      $evidence->id_categories = $subcategory->parent_id ?? null;
       $evidence->id_subcategories = $validated['id_subcategories'];
       $evidence->save();
       DB::commit();
@@ -76,10 +74,8 @@ class EvidenceController extends Controller
     $validated = $request->validate(Evidence::$rules, Evidence::$rulesMessages);
     try {
       DB::beginTransaction();
-      $subcategory = Category::find($validated['id_subcategories']) ?? null;
       $evidence->name = $validated['name'];
       $evidence->description = $validated['description'] ?? null;
-      $evidence->id_categories = $subcategory->parent_id ?? null;
       $evidence->id_subcategories = $validated['id_subcategories'];
       $evidence->save();
       DB::commit();
@@ -97,7 +93,11 @@ class EvidenceController extends Controller
   {
     try {
       DB::beginTransaction();
-      $evidence->delete();
+      $relCount = \App\Models\EvidenceRelsInspection::where('id_evidences', $evidence->id_evidences)->count();
+      if ($relCount > 0) {
+        return redirect()->route('evidences')->with('error', 'No se puede eliminar la evidencia porque tiene inspecciones asociadas.');
+      }
+      $this::softDelete($evidence);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();

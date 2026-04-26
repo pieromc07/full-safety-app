@@ -18,9 +18,19 @@ return new class extends Migration
       $table->unsignedBigInteger('id_inspection_types');
       $table->foreign('id_targeteds')->references('id_targeteds')->on('targeteds');
       $table->foreign('id_inspection_types')->references('id_inspection_types')->on('inspection_types');
+      // Garantiza que cada par (dirigido, tipo de inspección) sea único.
+      $table->unique(['id_targeteds', 'id_inspection_types'], 'targeted_rels_inspections_pair_UK');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
       $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();
+    });
+
+    // Ahora que existe la pivot, agregar la FK pendiente desde categories.
+    Schema::table('categories', function (Blueprint $table) {
+      $table->foreign('id_targeted_rels_inspections')
+        ->references('id_targeted_rels_inspections')
+        ->on('targeted_rels_inspections')
+        ->nullOnDelete();
     });
 
     // CREATE TRIGGER FOR targeted_rels_inspections
@@ -47,6 +57,9 @@ return new class extends Migration
    */
   public function down(): void
   {
+    Schema::table('categories', function (Blueprint $table) {
+      $table->dropForeign(['id_targeted_rels_inspections']);
+    });
     Schema::dropIfExists('targeted_rels_inspections');
   }
 };

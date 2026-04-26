@@ -16,9 +16,7 @@ return new class extends Migration
       $table->id('id_evidences');
       $table->string('name', 128)->index('evidence_name_IDX');
       $table->text('description')->nullable();
-      $table->unsignedBigInteger('id_categories');
       $table->unsignedBigInteger('id_subcategories');
-      $table->foreign('id_categories')->references('id_categories')->on('categories');
       $table->foreign('id_subcategories')->references('id_categories')->on('categories');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();

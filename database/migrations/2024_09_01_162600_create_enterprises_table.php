@@ -16,6 +16,11 @@ return new class extends Migration
       $table->id('id_enterprises');
       $table->string('name', 128)->index('enterprises_name_IDX');
       $table->string('ruc', 11)->index('enterprises_ruc_IDX');
+      $table->string('email', 128)->nullable();
+      $table->string('phone', 20)->nullable();
+      $table->string('address', 256)->nullable();
+      $table->string('contact_name', 128)->nullable();
+      $table->string('website', 256)->nullable();
       $table->text('image')->nullable();
       $table->unsignedBigInteger('id_enterprise_types');
       $table->foreign('id_enterprise_types')->references('id_enterprise_types')->on('enterprise_types');
@@ -42,6 +47,11 @@ return new class extends Migration
         SET NEW.cuid_updated = CUID_19D_B10();
       END
     ');
+
+    // Ahora que enterprises existe, agregar la FK pendiente en users.id_enterprises
+    Schema::table('users', function (Blueprint $table) {
+      $table->foreign('id_enterprises')->references('id_enterprises')->on('enterprises')->nullOnDelete();
+    });
   }
 
   /**
@@ -49,6 +59,9 @@ return new class extends Migration
    */
   public function down(): void
   {
+    Schema::table('users', function (Blueprint $table) {
+      $table->dropForeign(['id_enterprises']);
+    });
     Schema::dropIfExists('enterprises');
   }
 };

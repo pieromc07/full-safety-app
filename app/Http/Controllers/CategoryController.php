@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\InspectionType;
-use App\Models\Targeted;
+use App\Models\Evidence;
+use App\Models\TargetedRelsInspection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,11 +17,11 @@ class CategoryController extends Controller
    */
   public function index()
   {
-    //
-    $categories = Category::where('parent_id', null)->paginate(self::MEDIUMTAKE);
-    $inspectionTypes = InspectionType::all();
-    $targeteds = Targeted::where('targeted_id', null)->get();
-    return view($this::$viewDir . '.categories', compact('categories', 'inspectionTypes', 'targeteds'));
+    $categories = Category::with('targetedRelsInspection.targeted', 'targetedRelsInspection.inspectionType')
+      ->whereNull('parent_id')
+      ->paginate(self::MEDIUMTAKE);
+    $targetedRelsInspections = TargetedRelsInspection::with('targeted', 'inspectionType')->get();
+    return view($this::$viewDir . '.categories', compact('categories', 'targetedRelsInspections'));
   }
 
   public function index1()
@@ -51,8 +51,10 @@ class CategoryController extends Controller
       $category = new Category();
       $category->name = $validated['name'];
       $category->parent_id = $validated['parent_id'] ?? null;
-      $category->id_targeteds = $validated['id_targeteds'] ?? null;
-      $category->id_inspection_types = $validated['id_inspection_types'] ?? null;
+      // Solo categorías raíz llevan el par; las subcategorías heredan del padre.
+      $category->id_targeted_rels_inspections = $category->parent_id
+        ? null
+        : ($validated['id_targeted_rels_inspections'] ?? null);
       $category->save();
       DB::commit();
     } catch (\Exception $e) {
@@ -94,8 +96,9 @@ class CategoryController extends Controller
       DB::beginTransaction();
       $category->name = $validated['name'];
       $category->parent_id = $validated['parent_id'] ?? null;
-      $category->id_targeteds = $validated['id_targeteds'] ?? null;
-      $category->id_inspection_types = $validated['id_inspection_types'] ?? null;
+      $category->id_targeted_rels_inspections = $category->parent_id
+        ? null
+        : ($validated['id_targeted_rels_inspections'] ?? null);
       $category->save();
       DB::commit();
     } catch (\Exception $e) {
@@ -118,7 +121,17 @@ class CategoryController extends Controller
   {
     try {
       DB::beginTransaction();
-      $category->delete();
+      $childCount = Category::where('parent_id', $category->id_categories)->whereNull('cuid_deleted')->count();
+      if ($childCount > 0) {
+        $route = $category->parent_id ? 'category1' : 'category';
+        return redirect()->route($route)->with('error', 'No se puede eliminar porque tiene subcategorías asociadas.');
+      }
+      $evidenceCount = Evidence::where('id_subcategories', $category->id_categories)->whereNull('cuid_deleted')->count();
+      if ($evidenceCount > 0) {
+        $route = $category->parent_id ? 'category1' : 'category';
+        return redirect()->route($route)->with('error', 'No se puede eliminar porque tiene evidencias asociadas.');
+      }
+      $this::softDelete($category);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();

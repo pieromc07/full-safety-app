@@ -17,8 +17,7 @@ class Category extends Model
   protected $fillable = [
     'name',
     'parent_id',
-    'id_targeteds',
-    'id_inspection_types',
+    'id_targeted_rels_inspections',
     'cuid_inserted',
     'cuid_updated',
     'cuid_deleted',
@@ -27,16 +26,14 @@ class Category extends Model
   public static $rules = [
     'name' => 'required|max:64',
     'parent_id' => 'nullable|exists:categories,id_categories',
-    'id_targeteds' => 'nullable|exists:targeteds,id_targeteds',
-    'id_inspection_types' => 'nullable|exists:inspection_types,id_inspection_types',
+    'id_targeted_rels_inspections' => 'nullable|exists:targeted_rels_inspections,id_targeted_rels_inspections',
   ];
 
   public static $rulesMessages = [
     'name.required' => 'El nombre es obligatorio.',
     'name.max' => 'El nombre no puede tener más de 64 caracteres.',
     'parent_id.exists' => 'La categoría padre no existe.',
-    'id_targeteds.exists' => 'El público objetivo no existe.',
-    'id_inspection_types.exists' => 'El tipo de inspección no existe.',
+    'id_targeted_rels_inspections.exists' => 'La combinación dirigido / tipo de inspección no existe.',
   ];
 
   protected $hidden = [
@@ -52,14 +49,34 @@ class Category extends Model
     return $this->belongsTo(Category::class, 'parent_id', 'id_categories');
   }
 
-  public function targeted()
+  public function targetedRelsInspection()
   {
-    return $this->belongsTo(Targeted::class, 'id_targeteds', 'id_targeteds');
+    return $this->belongsTo(TargetedRelsInspection::class, 'id_targeted_rels_inspections', 'id_targeted_rels_inspections');
   }
 
-  public function inspectionType()
+  /**
+   * Devuelve la fila pivot efectiva: la propia si está seteada,
+   * o la heredada del padre (caso subcategoría).
+   */
+  public function effectivePair()
   {
-    return $this->belongsTo(InspectionType::class, 'id_inspection_types', 'id_inspection_types');
+    return $this->targetedRelsInspection ?? optional($this->parent)->effectivePair();
+  }
+
+  /**
+   * Targeted derivado del par (propio o heredado del padre).
+   */
+  public function getTargetedAttribute()
+  {
+    return optional($this->effectivePair())->targeted;
+  }
+
+  /**
+   * InspectionType derivado del par (propio o heredado del padre).
+   */
+  public function getInspectionTypeAttribute()
+  {
+    return optional($this->effectivePair())->inspectionType;
   }
 
   public function cuidInsertedToDatetime()

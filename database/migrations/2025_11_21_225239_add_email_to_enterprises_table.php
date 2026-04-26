@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasColumn('enterprises', 'email')) {
+            return;
+        }
         Schema::table('enterprises', function (Blueprint $table) {
-            //
-             $table->string('email')->nullable()->after('image');
+            $table->string('email')->nullable()->after('image');
         });
     }
 
@@ -22,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('enterprises', function (Blueprint $table) {
-                $table->dropColumn('email');
-        });
+        // No-op: la columna `email` se crea en la migración base de enterprises.
     }
 };

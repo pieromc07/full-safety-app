@@ -38,6 +38,11 @@ class TargetedRelsInspection extends Model
     return $this->belongsTo(InspectionType::class, 'id_inspection_types', 'id_inspection_types');
   }
 
+  public function categories()
+  {
+    return $this->hasMany(Category::class, 'id_targeted_rels_inspections', 'id_targeted_rels_inspections');
+  }
+
   public function cuidInsertedToDatetime()
   {
     return $this->cuidToDatetime($this->cuid_inserted);

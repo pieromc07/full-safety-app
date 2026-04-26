@@ -17,7 +17,6 @@ class Evidence extends Model
   protected $fillable = [
     'name',
     'description',
-    'id_categories',
     'id_subcategories',
     'cuid_inserted',
     'cuid_updated',
@@ -27,7 +26,6 @@ class Evidence extends Model
   public static $rules = [
     'name' => 'required|max:128',
     'description' => 'nullable',
-    'id_categories' => 'nullable|exists:categories,id_categories',
     'id_subcategories' => 'required|exists:categories,id_categories',
   ];
 
@@ -35,8 +33,6 @@ class Evidence extends Model
     'name.required' => 'El nombre es requerido.',
     'name.max' => 'El nombre no puede tener más de 128 caracteres.',
     'description.nullable' => 'La descripción debe ser nula.',
-    'id_categories.nullable' => 'La categoría debe ser nula.',
-    'id_categories.exists' => 'La categoría no existe.',
     'id_subcategories.required' => 'La subcategoría es requerida.',
     'id_subcategories.exists' => 'La subcategoría no existe.',
   ];
@@ -49,33 +45,27 @@ class Evidence extends Model
 
   public $timestamps = false;
 
-  public function category()
-  {
-    return $this->belongsTo(Category::class, 'id_categories');
-  }
-
   public function subcategory()
   {
-    return $this->belongsTo(Category::class, 'id_subcategories');
+    return $this->belongsTo(Category::class, 'id_subcategories', 'id_categories');
+  }
+
+  /**
+   * Categoría padre derivada de la subcategoría (no es una columna en DB).
+   */
+  public function category()
+  {
+    return $this->subcategory ? $this->subcategory->parent : null;
   }
 
   public function categoryName()
   {
-    if ($this->category) {
-      return $this->category->name;
-    } else if ($this->subcategory) {
-      return $this->subcategory->name;
-    }
-    return null;
+    return optional($this->category())->name;
   }
+
   public function subcategoryName()
   {
-    if ($this->subcategory) {
-      return $this->subcategory->name;
-    } else if ($this->category) {
-      return $this->category->name;
-    }
-    return null;
+    return optional($this->subcategory)->name;
   }
 
   public function cuidInsertedToDatetime()

@@ -17,10 +17,10 @@ return new class extends Migration
       $table->string('name', 64)->index('categories_name_IDX');
       $table->unsignedBigInteger('parent_id')->nullable();
       $table->foreign('parent_id')->references('id_categories')->on('categories');
-      $table->unsignedBigInteger('id_targeteds')->nullable();
-      $table->unsignedBigInteger('id_inspection_types')->nullable();
-      $table->foreign('id_targeteds')->references('id_targeteds')->on('targeteds');
-      $table->foreign('id_inspection_types')->references('id_inspection_types')->on('inspection_types');
+      // Solo categorías raíz (parent_id = null) llevan el par dirigido↔tipo de inspección.
+      // Las subcategorías heredan el par de su padre.
+      // FK se agrega en la migración de targeted_rels_inspections (esa tabla aún no existe).
+      $table->unsignedBigInteger('id_targeted_rels_inspections')->nullable();
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
       $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();

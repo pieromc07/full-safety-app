@@ -18,24 +18,13 @@
                         </div>
                         <input type="hidden" name="parent_id">
                         <div class="col-12">
-                            <x-select id="id_targeteds" name="id_targeteds" icon="bi-building" label="Dirigido"
-                                placeholder="Seleccione un Dirigido">
+                            <x-select id="id_targeted_rels_inspections" name="id_targeted_rels_inspections"
+                                icon="bi-building" label="Dirigido / Tipo de Inspección"
+                                placeholder="Seleccione una combinación">
                                 <x-slot name="options">
-                                    @foreach ($targeteds as $targeted)
-                                        <option value="{{ $targeted->id_targeteds }}">
-                                            {{ $targeted->name }}
-                                        </option>
-                                    @endforeach
-                                </x-slot>
-                            </x-select>
-                        </div>
-                        <div class="col-12">
-                            <x-select id="id_inspection_types" name="id_inspection_types" icon="bi-building"
-                                label="Tipo de Inspección" placeholder="Seleccione un Tipo de Inspección">
-                                <x-slot name="options">
-                                    @foreach ($inspectionTypes as $inspectionType)
-                                        <option value="{{ $inspectionType->id_inspection_types }}">
-                                            {{ $inspectionType->name }}
+                                    @foreach ($targetedRelsInspections as $rel)
+                                        <option value="{{ $rel->id_targeted_rels_inspections }}">
+                                            {{ optional($rel->targeted)->name }} / {{ optional($rel->inspectionType)->name }}
                                         </option>
                                     @endforeach
                                 </x-slot>
@@ -61,24 +50,13 @@
                         </div>
                         <input type="hidden" name="parent_id">
                         <div class="col-12">
-                            <x-select id="id_targeteds" name="id_targeteds" icon="bi-building" label="Dirigido"
-                                placeholder="Seleccione un Dirigido">
+                            <x-select id="id_targeted_rels_inspections" name="id_targeted_rels_inspections"
+                                icon="bi-building" label="Dirigido / Tipo de Inspección"
+                                placeholder="Seleccione una combinación">
                                 <x-slot name="options">
-                                    @foreach ($targeteds as $targeted)
-                                        <option value="{{ $targeted->id_targeteds }}">
-                                            {{ $targeted->name }}
-                                        </option>
-                                    @endforeach
-                                </x-slot>
-                            </x-select>
-                        </div>
-                        <div class="col-12">
-                            <x-select id="id_inspection_types" name="id_inspection_types" icon="bi-building"
-                                label="Tipo de Inspección" placeholder="Seleccione un Tipo de Inspección">
-                                <x-slot name="options">
-                                    @foreach ($inspectionTypes as $inspectionType)
-                                        <option value="{{ $inspectionType->id_inspection_types }}">
-                                            {{ $inspectionType->name }}
+                                    @foreach ($targetedRelsInspections as $rel)
+                                        <option value="{{ $rel->id_targeted_rels_inspections }}">
+                                            {{ optional($rel->targeted)->name }} / {{ optional($rel->inspectionType)->name }}
                                         </option>
                                     @endforeach
                                 </x-slot>
@@ -123,10 +101,10 @@
                                         {{ $category->name }}
                                     </td>
                                     <td class="text-center">
-                                        {{ $category->targeted->name }}
+                                        {{ optional($category->targeted)->name ?? '-' }}
                                     </td>
                                     <td class="text-center">
-                                        {{ $category->inspectionType->name }}
+                                        {{ optional($category->inspectionType)->name ?? '-' }}
                                     </td>
                                     <td class="text-center">
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
@@ -170,8 +148,9 @@
             $('#form-create').hide();
             $('#form-edit').attr('action', '/categories/' + category.id_categories);
             $('#form-edit').find('#name').val(category.name);
-            $('#form-edit').find('#id_targeteds').val(category.id_targeteds);
-            $('#form-edit').find('#id_inspection_types').val(category.id_inspection_types);
+            $('#form-edit').find('#id_targeted_rels_inspections')
+                .val(category.id_targeted_rels_inspections)
+                .trigger('change');
             $('#form-edit').find('#name').focus();
         }
 
