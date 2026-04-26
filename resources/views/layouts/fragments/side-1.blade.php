@@ -90,7 +90,7 @@
             </div>
 
             {{-- Maestro --}}
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ $groupOpen('enterprise','targeted','target','category','category1','evidences','employee','targetedrelsinspe') }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ $groupOpen('enterprise','targeted','target','category','category1','evidences','employee') }}">
                 <span class="menu-link">
                     <span class="menu-icon">
                         <i class="ki-duotone ki-book-open fs-2">
@@ -141,12 +141,6 @@
                         <a class="menu-link {{ $isActive('employee') }}" href="{{ route('employee') }}">
                             <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                             <span class="menu-title">Personal</span>
-                        </a>
-                    </div>
-                    <div class="menu-item">
-                        <a class="menu-link {{ $isActive('targetedrelsinspe') }}" href="{{ route('targetedrelsinspe') }}">
-                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                            <span class="menu-title">Dirigido x Inspección</span>
                         </a>
                     </div>
                 </div>
