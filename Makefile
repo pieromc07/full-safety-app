@@ -1,7 +1,7 @@
 DC := docker compose
 APP := $(DC) exec app
 
-.PHONY: help build up down restart logs shell mysql composer artisan migrate fresh seed test cache-clear permissions hosts
+.PHONY: help build up down restart logs shell mysql composer artisan migrate fresh seed test test-setup test-fresh cache-clear permissions hosts
 
 help:
 	@echo "Comandos disponibles:"
@@ -18,6 +18,8 @@ help:
 	@echo "  make fresh          migrate:fresh --seed"
 	@echo "  make seed           db:seed"
 	@echo "  make test           Corre PHPUnit"
+	@echo "  make test-setup     Crea la base fullsafety_test_db si no existe"
+	@echo "  make test-fresh     migrate:fresh --seed sobre la base de prueba (resetea data)"
 	@echo "  make cache-clear    Limpia caches de Laravel"
 	@echo "  make permissions    Corrige permisos de storage y bootstrap/cache"
 	@echo "  make hosts          Muestra como anadir fullsafety.test al hosts"
@@ -60,6 +62,12 @@ seed:
 
 test:
 	$(APP) php artisan test
+
+test-setup:
+	$(DC) exec mysql sh -c 'mysql -uroot -p"$$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS fullsafety_test_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON fullsafety_test_db.* TO \"$$MYSQL_USER\"@\"%\"; FLUSH PRIVILEGES;"'
+
+test-fresh: test-setup
+	$(APP) php artisan migrate:fresh --seed --database=mysql_testing --force
 
 cache-clear:
 	$(APP) php artisan optimize:clear

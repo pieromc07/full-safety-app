@@ -2,26 +2,31 @@
 
 namespace Database\Factories;
 
+use App\Models\Enterprise;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
 class UserFactory extends Factory
 {
-  /**
-   * Define the model's default state.
-   *
-   * @return array<string, mixed>
-   */
   public function definition(): array
   {
     return [
-      'name' => fake()->name(),
-      // username is unique max 16 characters
-      'username' => fake()->unique()->userName(),
-      'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+      'fullname' => fake()->name(),
+      'username' => substr(fake()->unique()->userName(), 0, 16),
+      'password' => bcrypt('password'),
+      'status' => 1,
+      'id_enterprises' => Enterprise::factory(),
+      'cuid_inserted' => DB::raw('CUID_19D_B10()'),
     ];
+  }
+
+  public function inactive(): static
+  {
+    return $this->state(fn () => [
+      'cuid_deleted' => DB::raw('CUID_19D_B10()'),
+    ]);
   }
 }
