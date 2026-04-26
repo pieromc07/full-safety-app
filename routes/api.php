@@ -16,14 +16,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/sync', [SyncController::class, 'sync']);
-
 Route::middleware('jwt.verify')->group(function () {
+
+  Route::get('/sync', [SyncController::class, 'sync']);
 
   Route::post('logout', [AuthController::class, 'logout']);
   Route::post('me', [AuthController::class, 'me']);
 
   Route::post('/inspection', [SyncController::class, 'inspection']);
+  Route::post('/inspections/massive', [SyncController::class, 'inspectionMassive']);
   Route::post('/dialogue', [SyncController::class, 'dailyDialog']);
   Route::post('/pauseactive', [SyncController::class, 'activePause']);
   Route::post('/alcoholtest', [SyncController::class, 'alcoholTest']);

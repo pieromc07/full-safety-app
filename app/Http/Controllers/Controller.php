@@ -2,43 +2,83 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Client\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\DB;
 
 
 class Controller extends BaseController
 {
   use AuthorizesRequests, ValidatesRequests;
 
+  /**
+   * Soft delete usando CUID - marca cuid_deleted en vez de eliminar fisicamente.
+   */
+  public static function softDelete(Model $model): void
+  {
+    $table = $model->getTable();
+    $pk = $model->getKeyName();
+    DB::table($table)
+      ->where($pk, $model->getKey())
+      ->update(['cuid_deleted' => DB::raw('CUID_19D_B10()')]);
+  }
+
+  /**
+   * Soft delete por query (para eliminación en cascada por FK).
+   */
+  public static function softDeleteWhere(string $table, string $column, $value): void
+  {
+    DB::table($table)
+      ->where($column, $value)
+      ->whereNull('cuid_deleted')
+      ->update(['cuid_deleted' => DB::raw('CUID_19D_B10()')]);
+  }
+
   public static function saveImage($image, $folder)
   {
+    static $allowedMimes = [
+      'image/jpeg' => 'jpg',
+      'image/png'  => 'png',
+      'image/webp' => 'webp',
+      'image/gif'  => 'gif',
+    ];
+    static $allowedFolders = ['targeteds', 'companies', 'enterprises', 'employees', 'products'];
+
     try {
-      // Verifica si el archivo es válido
-      if (!$image->isValid()) {
+      if (!$image || !$image->isValid()) {
         return null;
       }
 
-      // Genera un nombre único para la imagen
-      $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+      if (!in_array($folder, $allowedFolders, true)) {
+        return null;
+      }
 
-      // Define la ruta completa donde se guardará la imagen
-      $path =  'uploads/' . $folder;
+      $mime = $image->getMimeType();
+      if (!isset($allowedMimes[$mime])) {
+        return null;
+      }
+
+      $info = @getimagesizefromstring(file_get_contents($image->getRealPath()));
+      if ($info === false) {
+        return null;
+      }
+
+      $extension = $allowedMimes[$mime];
+      $fileName = bin2hex(random_bytes(16)) . '.' . $extension;
+
+      $path = 'uploads/' . $folder;
       $fullPath = public_path($path);
 
-      // Crea la carpeta si no existe
       if (!file_exists($fullPath)) {
         mkdir($fullPath, 0755, true);
       }
 
-      // Mueve la imagen a la carpeta especificada
       $image->move($fullPath, $fileName);
 
-      // Retorna la ruta relativa de la imagen guardada
       return $path . '/' . $fileName;
     } catch (\Exception $e) {
-      // Manejo de errores
       return null;
     }
   }
@@ -75,43 +115,4 @@ class Controller extends BaseController
   public const BIGTAKE = 50;
 
   public const HUGETAKE = 100;
-
-  /**
-   * Access to the master role
-   */
-  public function AccessMaster()
-  {
-    return session('role') === 'master';
-  }
-
-  /**
-   * replace or verify the enterprise if it is different from the session or the role is master
-   */
-  public function replaceOrVerifyEnterprise()
-  {
-    if (!Request::has('id_enterprises')) {
-      Request::merge(['id_enterprises' => Request::get('enterpriseId')]);
-    }
-  }
-
-
-  /**
-   * Encrypt text using Laravel's built-in encryption (AES-256-CBC).
-   * @param string $text
-   * @return string
-   */
-  public static function encryptText($text)
-  {
-    return encrypt($text);
-  }
-
-  /**
-   * Decrypt text using Laravel's built-in encryption (AES-256-CBC).
-   * @param string $text
-   * @return string
-   */
-  public static function decryptText($text)
-  {
-    return decrypt($text);
-  }
 }

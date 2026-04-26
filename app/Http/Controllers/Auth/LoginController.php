@@ -106,25 +106,4 @@ class LoginController extends Controller
     $request->validate(User::$rulesLogin, User::$messagesLogin);
   }
 
-  /**
-   * Authenticate master user
-   * @param  \Illuminate\Http\Request  $request
-   * @return boolean
-   *
-   * @throws \Illuminate\Validation\ValidationException
-   */
-  private function authenticateMasterUser(Request $request)
-  {
-    $user = User::where('username', $request->username)->first();
-    $IsUserMaster = User::find($user->id_users)->hasRole('master');
-    if ($user && password_verify($request->password, $user->password) && $IsUserMaster) {
-      $request->session()->put('user', $user);
-      $request->session()->put('userId', $user->id_users);
-      $request->session()->put('role', 'master');
-      $request->session()->put('branchId', null);
-      Auth::login($user);
-      return true;
-    }
-    return false;
-  }
 }

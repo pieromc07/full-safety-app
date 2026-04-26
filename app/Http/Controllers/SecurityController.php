@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Enterprise;
 use App\Models\User;
 use App\Repository\EmployeeRepository;
 use App\Repository\UserRepository;
@@ -90,11 +91,11 @@ class SecurityController extends Controller
     $request->validate($this->rulesPermission, $this->messagesPermission);
     try {
       DB::beginTransaction();
-      Permission::create($request->all());
+      Permission::create($request->only(['name', 'description', 'group', 'subname', 'guard_name']));
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('permissions')->with('error', 'Error al crear el permiso' . $e->getMessage());
+      return redirect()->route('permissions')->with('error', 'Error al crear el permiso: ' . $e->getMessage());
     }
 
     return redirect()->route('permissions')->with('success', 'Permiso creado correctamente');
@@ -115,13 +116,19 @@ class SecurityController extends Controller
    */
   public function updatePermission(Request $request, Permission $permission)
   {
+    $request->validate([
+      'description' => 'required',
+      'name' => 'required|unique:permissions,name,' . $permission->id,
+      'group' => 'required',
+    ], $this->messagesPermission);
+
     try {
       DB::beginTransaction();
-      $permission->update($request->all());
+      $permission->update($request->only(['name', 'description', 'group', 'subname', 'guard_name']));
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('permissions')->with('error', 'Error al actualizar el permiso' . $e->getMessage());
+      return redirect()->route('permissions')->with('error', 'Error al actualizar el permiso: ' . $e->getMessage());
     }
 
     return redirect()->route('permissions')->with('success', 'Permiso actualizado correctamente');
@@ -143,7 +150,7 @@ class SecurityController extends Controller
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('permissions')->with('error', 'Error al eliminar el permiso' . $e->getMessage());
+      return redirect()->route('permissions')->with('error', 'Error al eliminar el permiso: ' . $e->getMessage());
     }
     return redirect()->route('permissions')->with('success', 'Permiso eliminado correctamente');
   }
@@ -186,18 +193,14 @@ class SecurityController extends Controller
       $role = Role::create([
         'name' => $request->name,
         'description' => $request->description,
-        'guard_name' => $request->guard_name,
-        'id_enterprises' => $request->enterpriseId
+        'guard_name' => $request->guard_name ?? 'web',
       ]);
-      $permissions = $request->permissions ?? [];
-      for ($i = 0; $i < count($permissions); $i++) {
-        $permission = Permission::find($permissions[$i]);
-        $role->givePermissionTo($permission);
-      }
+      $permissionIds = $request->permissions ?? [];
+      $role->syncPermissions(Permission::whereIn('id', $permissionIds)->get());
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('roles')->with('error', 'Error al crear el rol' . $e->getMessage());
+      return redirect()->route('roles')->with('error', 'Error al crear el rol: ' . $e->getMessage());
     }
 
     return redirect()->route('roles')->with('success', 'Rol creado correctamente');
@@ -221,19 +224,24 @@ class SecurityController extends Controller
    */
   public function updateRole(Request $request, Role $role)
   {
+    $request->validate([
+      'description' => 'required',
+      'name' => 'required|unique:roles,name,' . $role->id,
+    ], $this->messagesRole);
+
+    if ($role->name === 'master') {
+      return redirect()->route('roles')->with('error', 'El rol master no puede modificarse.');
+    }
+
     try {
       DB::beginTransaction();
-      $role->update($request->all());
-      $role->permissions()->detach();
-      $permissions = $request->permissions ?? [];
-      for ($i = 0; $i < count($permissions); $i++) {
-        $permission = Permission::find($permissions[$i]);
-        $role->givePermissionTo($permission);
-      }
+      $role->update($request->only(['name', 'description', 'guard_name']));
+      $permissionIds = $request->permissions ?? [];
+      $role->syncPermissions(Permission::whereIn('id', $permissionIds)->get());
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('roles')->with('error', 'Error al actualizar el rol' . $e->getMessage());
+      return redirect()->route('roles')->with('error', 'Error al actualizar el rol: ' . $e->getMessage());
     }
 
     return redirect()->route('roles')->with('success', 'Rol actualizado correctamente');
@@ -245,6 +253,10 @@ class SecurityController extends Controller
    */
   public function destroyRole(Role $role)
   {
+    if ($role->name === 'master') {
+      return redirect()->route('roles')->with('error', 'El rol master no puede eliminarse.');
+    }
+
     try {
       DB::beginTransaction();
       if ($role->users->count() > 0) {
@@ -254,7 +266,7 @@ class SecurityController extends Controller
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('roles')->with('error', 'Error al eliminar el rol' . $e->getMessage());
+      return redirect()->route('roles')->with('error', 'Error al eliminar el rol: ' . $e->getMessage());
     }
     return redirect()->route('roles')->with('success', 'Rol eliminado correctamente');
   }
@@ -266,7 +278,14 @@ class SecurityController extends Controller
   public function users(Request $request)
   {
     $search = $request->search ?? '';
-    $users = $this->userRepository->customSearchMultipleByEnterprise(['users.username', 'employees.fullname', 'employees.document_number'], $search, self::TAKE, $request->session()->get('enterpriseId'));
+    $users = User::whereNull('cuid_deleted')
+      ->where(function ($q) use ($search) {
+        if ($search) {
+          $q->where('username', 'like', "%{$search}%")
+            ->orWhere('fullname', 'like', "%{$search}%");
+        }
+      })
+      ->paginate(self::TAKE);
     $roles = Role::all();
     return view('security.users.index', compact('users', 'roles'));
   }
@@ -287,11 +306,10 @@ class SecurityController extends Controller
    */
   public function createUser()
   {
-
-    $employees = $this->employeeRepository->allByEnterpriseNotUsers(request()->session()->get('enterpriseId'));
     $user = new User();
     $roles = Role::all();
-    return view('security.users.create', compact('user', 'roles', 'employees'));
+    $enterprises = Enterprise::whereNull('cuid_deleted')->get();
+    return view('security.users.create', compact('user', 'roles', 'enterprises'));
   }
 
   /**
@@ -300,35 +318,43 @@ class SecurityController extends Controller
    */
   public function storeUser(Request $request)
   {
-    $this->employeeRepository->setEnterpriseId(request());
-    $this->employeeRepository->setBranchId(request());
-    if ($this->employeeRepository->existUser($request->employee_id)) {
-      return redirect()->route('users.create')->with('info', 'El empleado ya tiene un usuario asignado')->withInput();
-    }
-    $employee = $this->employeeRepository->find($request->employee_id);
-    $request->merge([
-      'branch_id' => $employee->branch_id,
-      'id_enterprises' => $employee->id_enterprises
+    $request->validate([
+      'username' => 'required|string|max:16',
+      'password' => 'required|string|min:8|max:255',
+      'fullname' => 'required|string|max:128',
+      'id_enterprises' => 'nullable|exists:enterprises,id_enterprises',
+      'role_id' => 'required|array|min:1',
+      'role_id.*' => 'exists:roles,id',
+    ], [
+      'username.required' => 'El nombre de usuario es requerido.',
+      'username.max' => 'El nombre de usuario no debe exceder los 16 caracteres.',
+      'password.required' => 'La contraseña es requerida.',
+      'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+      'fullname.required' => 'El nombre completo es requerido.',
+      'role_id.required' => 'Debe seleccionar al menos un rol.',
     ]);
-    $this->validate($request, User::$rules, User::$messages);
+
+    $exists = User::where('username', $request->username)->whereNull('cuid_deleted')->first();
+    if ($exists) {
+      return redirect()->route('users.create')->with('error', 'El nombre de usuario ya existe.')->withInput();
+    }
+
     try {
       DB::beginTransaction();
       $user = User::create([
+        'fullname' => $request->fullname,
         'username' => $request->username,
         'password' => Hash::make($request->password),
-        'branch_id' => $request->branch_id,
-        'id_enterprises' => $request->id_enterprises
+        'id_enterprises' => $request->id_enterprises,
+        'status' => 1,
       ]);
-      $roles = $request->role_id;
-      foreach ($roles as $role) {
-        $user->assignRole(Role::find($role));
-      }
-      $employee->user_id = $user->id;
-      $employee->save();
+
+      $user->syncRoles(Role::whereIn('id', $request->role_id)->get());
+
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('users.create')->with('error', 'Error al crear el usuario' . $e->getMessage())->withInput();
+      return redirect()->route('users.create')->with('error', 'Error al crear el usuario: ' . $e->getMessage())->withInput();
     }
 
     return redirect()->route('users')->with('success', 'Usuario creado correctamente');
@@ -341,7 +367,8 @@ class SecurityController extends Controller
   public function editUser(User $user)
   {
     $roles = Role::all();
-    return view('security.users.edit', compact('user', 'roles'));
+    $enterprises = Enterprise::whereNull('cuid_deleted')->get();
+    return view('security.users.edit', compact('user', 'roles', 'enterprises'));
   }
 
   /**
@@ -350,27 +377,37 @@ class SecurityController extends Controller
    */
   public function updateUser(Request $request, User $user)
   {
+    $request->validate([
+      'fullname' => 'required|string|max:128',
+      'id_enterprises' => 'nullable|exists:enterprises,id_enterprises',
+      'role_id' => 'required|array|min:1',
+      'role_id.*' => 'exists:roles,id',
+      'password' => 'nullable|string|min:8|max:255|confirmed',
+    ], [
+      'fullname.required' => 'El nombre completo es requerido.',
+      'role_id.required' => 'Debe seleccionar al menos un rol.',
+      'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+      'password.confirmed' => 'Las contraseñas no coinciden.',
+    ]);
+
     try {
       DB::beginTransaction();
-      if ($request->password == NULL) {
-        $request->merge(['password' => $user->password]);
-        $request->merge(['password_confirmation' => $user->password]);
+
+      $user->fullname = $request->fullname;
+      $user->id_enterprises = $request->id_enterprises;
+
+      if ($request->password) {
+        $user->password = Hash::make($request->password);
       }
-      $request->merge(['id_branches' => $user->id_branches]);
-      $request->validate(User::$rules, User::$messages);
-      if ($request->password != $request->password_confirmation) {
-        return redirect()->route('users.edit', $user->id_users)->with('error', 'Las contraseñas no coinciden')->withInput();
-      }
-      $user->update($request->all());
-      $roles = $request->id_roles;
-      $user->roles()->detach();
-      foreach ($roles as $role) {
-        $user->assignRole(Role::find($role));
-      }
+
+      $user->save();
+
+      $user->syncRoles(Role::whereIn('id', $request->role_id)->get());
+
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('users')->with('error', 'Error al actualizar el usuario' . $e->getMessage());
+      return redirect()->route('users')->with('error', 'Error al actualizar el usuario: ' . $e->getMessage());
     }
 
     return redirect()->route('users')->with('success', 'Usuario actualizado correctamente');
@@ -382,6 +419,31 @@ class SecurityController extends Controller
    */
   public function destroyUser(User $user)
   {
+    if ($user->id_users == auth()->id()) {
+      return redirect()->route('users')->with('error', 'No puedes eliminar tu propio usuario.');
+    }
+    if ($user->hasRole('master')) {
+      return redirect()->route('users')->with('error', 'No se puede eliminar a un usuario con rol master.');
+    }
+
+    try {
+      DB::beginTransaction();
+
+      $employee = Employee::where('id_users', $user->id_users)->first();
+      if ($employee) {
+        $employee->id_users = null;
+        $employee->save();
+      }
+
+      $user->roles()->detach();
+      $user->permissions()->detach();
+      $this::softDelete($user);
+
+      DB::commit();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return redirect()->route('users')->with('error', 'Error al eliminar el usuario: ' . $e->getMessage());
+    }
     return redirect()->route('users')->with('success', 'Usuario eliminado correctamente');
   }
 }

@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ErrorLog;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -43,6 +40,12 @@ class AuthController extends Controller
         ]);
         return response()->json(['status' => false, 'message' => 'Datos incorrectos'], 401);
       }
+
+      if (!JWTAuth::user()->isActive()) {
+        JWTAuth::invalidate(JWTAuth::getToken());
+        return response()->json(['status' => false, 'message' => 'Usuario inactivo'], 401);
+      }
+
       return $this->respondWithToken($token);
     } catch (\Exception $e) {
       ErrorLog::create([
@@ -74,9 +77,7 @@ class AuthController extends Controller
   public function logout(Request $request)
   {
     try {
-      $user = JWTAuth::user();
-      if ($user) {
-        User::find($user->id_users)->update(['token' => null]);
+      if (JWTAuth::user()) {
         JWTAuth::invalidate(JWTAuth::getToken());
       }
       return response()->json(['status' => true, 'message' => 'Successfully logged out']);
@@ -93,9 +94,6 @@ class AuthController extends Controller
   public function refresh(Request $request)
   {
     try {
-      // $user = User::find($request->id);
-      // $token = JWTAuth::attempt(['username' => $user->username, 'password' => self::decryptText($user->token)]);
-      // return $this->respondWithToken($token);
       $newToken = JWTAuth::refresh(JWTAuth::getToken());
       return $this->respondWithToken($newToken);
     } catch (TokenExpiredException $e) {
@@ -116,15 +114,15 @@ class AuthController extends Controller
    */
   protected function respondWithToken($token)
   {
+    $user = JWTAuth::user();
     return response()->json([
       'status' => true,
       'message' => 'Successfully',
       'user' => [
-        'id' => JWTAuth::user()->id_users,
-        'fullname' => JWTAuth::user()->fullname,
-        'username' => JWTAuth::user()->username,
-        'status' => JWTAuth::user()->status,
-        'token' => JWTAuth::user()->token
+        'id' => $user->id_users,
+        'fullname' => $user->fullname,
+        'username' => $user->username,
+        'status' => $user->status,
       ],
       'access_token' => $token,
       'token_type' => 'bearer',

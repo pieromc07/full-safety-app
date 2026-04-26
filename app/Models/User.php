@@ -38,8 +38,8 @@ class User extends Authenticatable implements JWTSubject
     'fullname',
     'username',
     'password',
-    'token',
     'status',
+    'id_enterprises',
     'cuid_inserted',
     'cuid_updated',
     'cuid_deleted',
@@ -77,12 +77,12 @@ class User extends Authenticatable implements JWTSubject
     * Rules
    */
   public static $rules = [
-    'username' => 'required|string|max:255',
+    'username' => 'required|string|max:16',
     'password' => 'required|string|min:8|max:255',
   ];
 
   public static $rulesLogin = [
-    'username' => 'required|string|max:255',
+    'username' => 'required|string|max:16',
     'password' => 'required|string|min:8|max:255',
   ];
   /*
@@ -91,7 +91,7 @@ class User extends Authenticatable implements JWTSubject
   public static $messages = [
     'username.required' => 'El nombre de usuario es requerido',
     'username.string' => 'El nombre de usuario debe ser una cadena de caracteres',
-    'username.max' => 'El nombre de usuario no debe exceder los 255 caracteres',
+    'username.max' => 'El nombre de usuario no debe exceder los 16 caracteres',
     'password.required' => 'La contraseña es requerida',
     'password.string' => 'La contraseña debe ser una cadena de caracteres',
     'password.min' => 'La contraseña debe tener al menos 8 caracteres',
@@ -101,7 +101,7 @@ class User extends Authenticatable implements JWTSubject
   public static $messagesLogin = [
     'username.required' => 'El nombre de usuario es requerido',
     'username.string' => 'El nombre de usuario debe ser una cadena de caracteres',
-    'username.max' => 'El nombre de usuario no debe exceder los 255 caracteres',
+    'username.max' => 'El nombre de usuario no debe exceder los 16 caracteres',
     'password.required' => 'La contraseña es requerida',
     'password.string' => 'La contraseña debe ser una cadena de caracteres',
   ];
@@ -130,18 +130,9 @@ class User extends Authenticatable implements JWTSubject
   /**
    * Get the enterprise that owns the user.
    */
-
   public function enterprise()
   {
     return $this->belongsTo(Enterprise::class, 'id_enterprises');
-  }
-
-  /**
-   * Get the branch that owns the user.
-   */
-  public function branch()
-  {
-    return $this->belongsTo(Branch::class, 'id_branches');
   }
 
   /**
