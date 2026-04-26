@@ -1,0 +1,110 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: fullsafety_mysql
+    restart: unless-stopped
+    command: --log-bin-trust-function-creators=1 --sql-mode="" --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
+      MYSQL_DATABASE: ${DB_DATABASE:-fullsafety_db}
+      MYSQL_USER: ${DB_USERNAME:-fullsafety}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-fullsafety_secret}
+    ports:
+      - "${DB_FORWARD_PORT:-3309}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+    healthcheck:
+      test: mysqladmin ping -h localhost -u root -p${DB_ROOT_PASSWORD:-rootsecret}
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    networks:
+      - default
+
+  app:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: fullsafety/app:local
+    container_name: fullsafety_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./:/var/www/html:cached
+      - /var/www/html/node_modules
+      - ./docker/scripts/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
+    entrypoint: ["/usr/local/bin/entrypoint.sh"]
+    command: ["php-fpm"]
+    networks:
+      - default
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: fullsafety_nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./storage/app/public:/var/www/html/storage/app/public:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.fullsafety.rule=Host(`fullsafety.test`) || Host(`www.fullsafety.test`)"
+      - "traefik.http.routers.fullsafety.entrypoints=web"
+      - "traefik.http.services.fullsafety.loadbalancer.server.port=80"
+    networks:
+      - proxy
+      - default
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: fullsafety_mailpit
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.fullsafety-mail.rule=Host(`mail.fullsafety.test`)"
+      - "traefik.http.routers.fullsafety-mail.entrypoints=web"
+      - "traefik.http.services.fullsafety-mail.loadbalancer.server.port=8025"
+    networks:
+      - proxy
+      - default
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: fullsafety_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 100M
+    depends_on:
+      - mysql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.fullsafety-pma.rule=Host(`pma.fullsafety.test`)"
+      - "traefik.http.routers.fullsafety-pma.entrypoints=web"
+      - "traefik.http.services.fullsafety-pma.loadbalancer.server.port=80"
+    networks:
+      - proxy
+      - default
+
+volumes:
+  mysql_data:
+
+networks:
+  proxy:
+    external: true
+  default:
+    driver: bridge
