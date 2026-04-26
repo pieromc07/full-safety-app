@@ -42,7 +42,7 @@ class AuthController extends Controller
       }
 
       if (!JWTAuth::user()->isActive()) {
-        JWTAuth::invalidate(JWTAuth::getToken());
+        JWTAuth::setToken($token)->invalidate();
         return response()->json(['status' => false, 'message' => 'Usuario inactivo'], 401);
       }
 

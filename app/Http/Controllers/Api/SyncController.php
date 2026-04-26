@@ -299,12 +299,12 @@ class SyncController extends Controller
    */
   public function dailyDialog(Request $request)
   {
-    try {
-      $request->validate([
-        'dialogue' => 'required|string',
-        'user' => 'required|string',
-      ]);
+    $request->validate([
+      'dialogue' => 'required|string',
+      'user' => 'required|string',
+    ]);
 
+    try {
       DB::beginTransaction();
 
       $dialogue = json_decode($request->input('dialogue'), true);
@@ -362,12 +362,12 @@ class SyncController extends Controller
    */
   public function activePause(Request $request)
   {
-    try {
-      $request->validate([
-        'pauseactive' => 'required|string',
-        'user' => 'required|string',
-      ]);
+    $request->validate([
+      'pauseactive' => 'required|string',
+      'user' => 'required|string',
+    ]);
 
+    try {
       DB::beginTransaction();
 
       $pauseactive = json_decode($request->input('pauseactive'), true);
@@ -424,12 +424,12 @@ class SyncController extends Controller
    */
   public function alcoholTest(Request $request)
   {
-    try {
-      $request->validate([
-        'alcoholtest' => 'required|string',
-        'user' => 'required|string',
-      ]);
+    $request->validate([
+      'alcoholtest' => 'required|string',
+      'user' => 'required|string',
+    ]);
 
+    try {
       DB::beginTransaction();
 
       $test = json_decode($request->input('alcoholtest'), true);
@@ -523,12 +523,12 @@ class SyncController extends Controller
    */
   public function controlGps(Request $request)
   {
-    try {
-      $request->validate([
-        'controlgps' => 'required|string',
-        'user' => 'required|string',
-      ]);
+    $request->validate([
+      'controlgps' => 'required|string',
+      'user' => 'required|string',
+    ]);
 
+    try {
       DB::beginTransaction();
 
       $cgps = json_decode($request->input('controlgps'), true);
