@@ -36,8 +36,8 @@
                             </x-select-multiple>
                         </div>
                         <div class="col-12">
-                            <x-select id="id_load_types" name="id_load_types" label="Tipo de Carga" class="form-control"
-                                req="0" autofocus="autofocus" icon="bi-box-seam" value=""
+                            <x-select-multiple id="id_load_types" name="id_load_types"
+                                label="Tipo de Carga" icon="bi-box-seam"
                                 placeholder="Seleccione un Tipo de Carga">
                                 <x-slot name="options">
                                     @foreach ($loadTypes as $loadType)
@@ -46,7 +46,7 @@
                                         </option>
                                     @endforeach
                                 </x-slot>
-                            </x-select>
+                            </x-select-multiple>
                         </div>
                     </div>
                 </div>
@@ -86,8 +86,8 @@
                             </x-select-multiple>
                         </div>
                         <div class="col-12">
-                            <x-select id="id_load_types" name="id_load_types" label="Tipo de Carga" class="form-control"
-                                req="0" autofocus="autofocus" icon="bi-box-seam" value=""
+                            <x-select-multiple id="id_load_types" name="id_load_types"
+                                label="Tipo de Carga" icon="bi-box-seam"
                                 placeholder="Seleccione un Tipo de Carga">
                                 <x-slot name="options">
                                     @foreach ($loadTypes as $loadType)
@@ -96,7 +96,7 @@
                                         </option>
                                     @endforeach
                                 </x-slot>
-                            </x-select>
+                            </x-select-multiple>
                         </div>
                     </div>
                 </div>
@@ -147,7 +147,11 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        {{ $targeted->loadType ? $targeted->loadType->name : '-' }}
+                                        @if ($targeted->targetedRelsLoadTypes->isNotEmpty())
+                                            {{ $targeted->targetedRelsLoadTypes->map(function ($rel) {return optional($rel->loadType)->name;})->filter()->implode(', ') }}
+                                        @else
+                                            {{ '-' }}
+                                        @endif
                                     </td>
                                     <td class="text-center">
                                         {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
@@ -197,15 +201,16 @@
                 width: '100%'
             });
 
-            console.log(targeted);
+            $('#form-edit').find('#id_load_types').select2({
+                placeholder: "Seleccione un Tipo de Carga",
+                width: '100%'
+            });
 
-            let inspectionTypes = targeted.targeted_rels_inspections.map(rel => rel.id_inspection_types);
-            // $('#form-edit').find('#id_inspection_types').val(inspectionTypes).trigger('change.select2');
+            let inspectionTypes = (targeted.targeted_rels_inspections || []).map(rel => rel.id_inspection_types);
             $('#form-edit').find('#id_inspection_types').val(inspectionTypes).trigger('change');
-            // $('#id_inspection_types').val(inspectionTypes).trigger('change.select2');
 
-            $('#form-edit').find('#id_load_types').val(targeted.id_load_types).trigger('change');
-
+            let loadTypes = (targeted.targeted_rels_load_types || []).map(rel => rel.id_load_types);
+            $('#form-edit').find('#id_load_types').val(loadTypes).trigger('change');
 
             $('#form-edit').find('#name').focus();
         }

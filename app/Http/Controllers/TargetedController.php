@@ -6,6 +6,7 @@ use App\Models\InspectionType;
 use App\Models\LoadType;
 use App\Models\Targeted;
 use App\Models\TargetedRelsInspection;
+use App\Models\TargetedRelsLoadType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,11 +19,11 @@ class TargetedController extends Controller
    */
   public function index()
   {
-    //
-    $targeteds = Targeted::where('targeted_id', null)->paginate(5);
+    $targeteds = Targeted::with(['targetedRelsInspections.inspectionType', 'targetedRelsLoadTypes.loadType'])
+      ->whereNull('targeted_id')
+      ->paginate(5);
     $inspectionTypes = InspectionType::all();
-    $loadTypes = LoadType::all();
-    // dd($targeteds[0]->targetedRelsInspections);
+    $loadTypes = LoadType::whereNull('cuid_deleted')->get();
     return view($this::$viewDir . '.targeteds', compact('targeteds', 'inspectionTypes', 'loadTypes'));
   }
 
@@ -52,12 +53,26 @@ class TargetedController extends Controller
       DB::beginTransaction();
       $targeted = new Targeted();
       $targeted->name = $validated['name'];
-      $targeted->id_load_types = $validated['id_load_types'] ?? null;
       if ($request->hasFile('image')) {
         $targeted->image = $this::saveImage($request->file('image'), 'targeteds');
       }
       $targeted->targeted_id = $validated['targeted_id'] ?? null;
       $targeted->save();
+
+      foreach ($validated['id_inspection_types'] ?? [] as $typeId) {
+        TargetedRelsInspection::create([
+          'id_targeteds' => $targeted->id_targeteds,
+          'id_inspection_types' => $typeId,
+        ]);
+      }
+
+      foreach ($validated['id_load_types'] ?? [] as $loadTypeId) {
+        TargetedRelsLoadType::create([
+          'id_targeteds' => $targeted->id_targeteds,
+          'id_load_types' => $loadTypeId,
+        ]);
+      }
+
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
@@ -98,7 +113,6 @@ class TargetedController extends Controller
     try {
       DB::beginTransaction();
       $targeted->name = $validated['name'];
-      $targeted->id_load_types = $validated['id_load_types'] ?? null;
       if ($request->hasFile('image')) {
         if ($this::dropImage($targeted->image)) {
           $targeted->image = $this::saveImage($request->file('image'), 'targeteds');
@@ -107,17 +121,21 @@ class TargetedController extends Controller
       $targeted->targeted_id = $validated['targeted_id'] ?? null;
       $targeted->save();
 
-      // Eliminar relaciones anteriores
+      // Recrear relaciones (físico porque se recrean inmediatamente)
       TargetedRelsInspection::where('id_targeteds', $targeted->id_targeteds)->delete();
+      foreach ($validated['id_inspection_types'] ?? [] as $typeId) {
+        TargetedRelsInspection::create([
+          'id_targeteds' => $targeted->id_targeteds,
+          'id_inspection_types' => $typeId,
+        ]);
+      }
 
-      // Crear nuevas relaciones
-      if (!empty($validated['id_inspection_types'])) {
-        foreach ($validated['id_inspection_types'] as $typeId) {
-          TargetedRelsInspection::create([
-            'id_targeteds' => $targeted->id_targeteds,
-            'id_inspection_types' => $typeId,
-          ]);
-        }
+      TargetedRelsLoadType::where('id_targeteds', $targeted->id_targeteds)->delete();
+      foreach ($validated['id_load_types'] ?? [] as $loadTypeId) {
+        TargetedRelsLoadType::create([
+          'id_targeteds' => $targeted->id_targeteds,
+          'id_load_types' => $loadTypeId,
+        ]);
       }
 
       DB::commit();
@@ -141,7 +159,23 @@ class TargetedController extends Controller
   {
     try {
       DB::beginTransaction();
-      $targeted->delete();
+      $childCount = Targeted::where('targeted_id', $targeted->id_targeteds)->whereNull('cuid_deleted')->count();
+      if ($childCount > 0) {
+        return redirect()->route('targeted')->with('error', 'No se puede eliminar el dirigido porque tiene sub-dirigidos asociados.');
+      }
+      $relCount = TargetedRelsInspection::where('id_targeteds', $targeted->id_targeteds)->count();
+      if ($relCount > 0) {
+        return redirect()->route('targeted')->with('error', 'No se puede eliminar el dirigido porque tiene tipos de inspección asociados.');
+      }
+      $loadRelCount = TargetedRelsLoadType::where('id_targeteds', $targeted->id_targeteds)->count();
+      if ($loadRelCount > 0) {
+        return redirect()->route('targeted')->with('error', 'No se puede eliminar el dirigido porque tiene tipos de carga asociados.');
+      }
+      $categoryCount = \App\Models\Category::where('id_targeteds', $targeted->id_targeteds)->whereNull('cuid_deleted')->count();
+      if ($categoryCount > 0) {
+        return redirect()->route('targeted')->with('error', 'No se puede eliminar el dirigido porque tiene categorías asociadas.');
+      }
+      $this::softDelete($targeted);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();

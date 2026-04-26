@@ -17,7 +17,6 @@ class Targeted extends Model
   protected $fillable = [
     'name',
     'image',
-    'id_load_types',
     'targeted_id',
     'cuid_inserted',
     'cuid_updated',
@@ -27,17 +26,19 @@ class Targeted extends Model
   public static $rules = [
     'name' => 'required|max:128',
     'image' => 'nullable',
-    'id_load_types' => 'nullable|exists:load_types,id_load_types',
     'targeted_id' => 'nullable|exists:targeteds,id_targeteds',
     'id_inspection_types' => 'nullable|array',
     'id_inspection_types.*' => 'exists:inspection_types,id_inspection_types',
+    'id_load_types' => 'nullable|array',
+    'id_load_types.*' => 'exists:load_types,id_load_types',
   ];
 
   public static $rulesMessages = [
     'name.required' => 'El nombre es obligatorio.',
     'name.max' => 'El nombre no puede tener más de 128 caracteres.',
     'targeted_id.exists' => 'El target no existe.',
-    'id_inspection_types.exists' => 'El tipo de inspección no existe.',
+    'id_inspection_types.*.exists' => 'El tipo de inspección no existe.',
+    'id_load_types.*.exists' => 'El tipo de carga no existe.',
   ];
 
   protected $hidden = [
@@ -53,11 +54,6 @@ class Targeted extends Model
     return $this->hasMany(Targeted::class, 'targeted_id', 'id_targeteds');
   }
 
-  public function loadType()
-  {
-    return $this->belongsTo(LoadType::class, 'id_load_types', 'id_load_types');
-  }
-
   public function targeted()
   {
     return $this->belongsTo(Targeted::class, 'targeted_id', 'id_targeteds');
@@ -66,6 +62,11 @@ class Targeted extends Model
   public function targetedRelsInspections()
   {
     return $this->hasMany(TargetedRelsInspection::class, 'id_targeteds', 'id_targeteds');
+  }
+
+  public function targetedRelsLoadTypes()
+  {
+    return $this->hasMany(TargetedRelsLoadType::class, 'id_targeteds', 'id_targeteds');
   }
 
   public function cuidInsertedToDatetime()
@@ -80,7 +81,14 @@ class Targeted extends Model
 
   public function categories()
   {
-    return $this->hasMany(Category::class, 'id_targeteds', 'id_targeteds');
+    return $this->hasManyThrough(
+      Category::class,
+      TargetedRelsInspection::class,
+      'id_targeteds',                  // FK en pivot que apunta a Targeted
+      'id_targeted_rels_inspections',  // FK en categories que apunta a pivot
+      'id_targeteds',                  // PK local en Targeted
+      'id_targeted_rels_inspections'   // PK local en pivot
+    );
   }
 
 
