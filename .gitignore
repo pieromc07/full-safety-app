@@ -21,3 +21,19 @@ yarn-error.log
 /storage/logs
 /storage/framework
 /.env
+
+# Archivos subidos por usuarios (runtime artifacts)
+/public/activePause/*
+/public/alcoholTest/*
+/public/controlGps/*
+/public/dailyDialog/*
+/public/inspection/*
+/public/uploads/**/*
+
+# Mantiene las carpetas vacías rastreadas via .gitkeep
+!/public/activePause/.gitkeep
+!/public/alcoholTest/.gitkeep
+!/public/controlGps/.gitkeep
+!/public/dailyDialog/.gitkeep
+!/public/inspection/.gitkeep
+!/public/uploads/.gitkeep
