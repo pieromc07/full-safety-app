@@ -3,44 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
-use App\Repository\UnitRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class UnitController extends Controller
 {
-
-  protected UnitRepository $unitRepository;
-
-  /**
-   * Constructor
-   *
-   * @param UnitRepository $unitRepository
-   * @param EnterpriseRepository $enterpriseRepository
-   */
-  public function __construct(UnitRepository $unitRepository)
-  {
-    $this->unitRepository = $unitRepository; // Dependency Injection
-  }
+  static $viewDir = 'maintenance';
 
   /**
    * Display a listing of the resource.
    */
-  public function index(Request $request)
+  public function index()
   {
-    $search = $request->search ?? '';
-    $units = $this->unitRepository->searchNotDeleted('name', $search, self::TAKE);
-    return view('products.units.index', compact('units'));
-  }
-
-
-  /**
-   * Show the form for creating a new resource.
-   */
-  public function create()
-  {
-    $unit = new Unit();
-    return view('products.units.create', compact('unit'));
+    $units = Unit::whereNull('cuid_deleted')->paginate(self::MEDIUMTAKE);
+    return view($this::$viewDir . '.unit', compact('units'));
   }
 
   /**
@@ -48,33 +24,18 @@ class UnitController extends Controller
    */
   public function store(Request $request)
   {
-
-    $request->validate(Unit::$rules, Unit::$messages);
+    $validated = $request->validate(Unit::$rules, Unit::$rulesMessages);
     try {
       DB::beginTransaction();
-      $this->unitRepository->create($request->all());
+      $unit = new Unit();
+      $unit->fill($validated);
+      $unit->save();
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('units.create')->with('error', 'Error al crear la unidad ' . $e->getMessage())->withInput();
+      return redirect()->route('unit')->with('error', 'Ha ocurrido un error al intentar crear la unidad de medida.');
     }
-    return redirect()->route('units')->with('success', 'Unidad creada con éxito');
-  }
-
-  /**
-   * Display the specified resource.
-   */
-  public function show(Unit $unit)
-  {
-    return view('products.units.show', compact('unit'));
-  }
-
-  /**
-   * Show the form for editing the specified resource.
-   */
-  public function edit(Unit $unit)
-  {
-    return view('products.units.edit', compact('unit'));
+    return redirect()->route('unit')->with('success', 'La unidad de medida se ha creado correctamente.');
   }
 
   /**
@@ -82,17 +43,17 @@ class UnitController extends Controller
    */
   public function update(Request $request, Unit $unit)
   {
-    $request->validate(Unit::$rules, Unit::$messages);
+    $validated = $request->validate(Unit::$rules, Unit::$rulesMessages);
     try {
       DB::beginTransaction();
-      $request->request->remove('id_users_inserted');
-      $this->unitRepository->update($unit->id_units, $request->all());
+      $unit->fill($validated);
+      $unit->save();
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('units.edit', $unit)->with('error', 'Error al actualizar la unidad ' . $e->getMessage())->withInput();
+      return redirect()->route('unit')->with('error', 'Ha ocurrido un error al intentar actualizar la unidad de medida.');
     }
-    return redirect()->route('units')->with('success', 'Unidad actualizada con éxito');
+    return redirect()->route('unit')->with('success', 'La unidad de medida se ha actualizado correctamente.');
   }
 
   /**
@@ -102,15 +63,15 @@ class UnitController extends Controller
   {
     try {
       DB::beginTransaction();
-      if ($unit->products->count() > 0) {
-        return redirect()->route('units')->with('error', 'No se puede eliminar la unidad porque tiene productos asociados');
+      if ($unit->products()->whereNull('cuid_deleted')->count() > 0) {
+        return redirect()->route('unit')->with('error', 'No se puede eliminar la unidad porque tiene productos asociados.');
       }
-      $this->unitRepository->cuid_delete($unit->id_units);
+      $this::softDelete($unit);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('units')->with('error', 'Error al eliminar la unidad' . $e->getMessage());
+      return redirect()->route('unit')->with('error', 'Ha ocurrido un error al intentar eliminar la unidad de medida.');
     }
-    return redirect()->route('units')->with('success', 'Unidad eliminada correctamente');
+    return redirect()->route('unit')->with('success', 'La unidad de medida se ha eliminado correctamente.');
   }
 }

@@ -50,16 +50,15 @@ class Unit extends Model
    * Rules for validation
    */
   public static $rules = [
-    'name' => 'required',
-    'abbreviation' => 'required',
+    'name' => 'required|max:128',
+    'abbreviation' => 'required|max:16',
   ];
 
-  /**
-   * Error messages
-   */
-  public static $messages = [
-    'name.required' => 'El nombre es obligatorio',
-    'abbreviation.required' => 'La empresa es obligatoria',
+  public static $rulesMessages = [
+    'name.required' => 'El nombre es obligatorio.',
+    'name.max' => 'El nombre no puede tener más de 128 caracteres.',
+    'abbreviation.required' => 'La abreviatura es obligatoria.',
+    'abbreviation.max' => 'La abreviatura no puede tener más de 16 caracteres.',
   ];
 
   /**
@@ -72,6 +71,6 @@ class Unit extends Model
    */
   public function products()
   {
-    return $this->hasMany(Product::class);
+    return $this->hasMany(Product::class, 'id_units', 'id_units');
   }
 }

@@ -42,6 +42,6 @@ class CheckPoint extends Model
 
   public function inspections()
   {
-    return $this->hasMany(Inspection::class, 'checkpoint_id');
+    return $this->hasMany(Inspection::class, 'id_checkpoints');
   }
 }

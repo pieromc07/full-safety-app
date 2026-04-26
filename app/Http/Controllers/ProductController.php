@@ -114,7 +114,11 @@ class ProductController extends Controller
   {
     try {
       DB::beginTransaction();
-      $product->delete();
+      $peCount = \App\Models\ProductEnterprise::where('id_products', $product->id_products)->whereNull('cuid_deleted')->count();
+      if ($peCount > 0) {
+        return redirect()->route('products')->with('error', 'No se puede eliminar el producto porque tiene asignaciones a empresas.');
+      }
+      $this::softDelete($product);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();

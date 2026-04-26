@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\lifReport;
+use App\Mail\LifReport;
 use App\Models\CheckPoint;
 use App\Models\Enterprise;
 use App\Models\EvidenceRelsInspection;
@@ -60,7 +60,7 @@ class InspectionController extends Controller
         $imgTwo = 'data:image/jpeg;base64,' . $imgTwo;
       }
       Mail::to(config('app.report_email', 'admin@example.com'))->send(
-        new lifReport(
+        new LifReport(
           // $validated['id_inspection_evidence'],
           $validated['description'],
           $validated['date'],
@@ -156,14 +156,9 @@ class InspectionController extends Controller
   {
     try {
       DB::beginTransaction();
-      $evidences = EvidenceRelsInspection::where('id_inspections', $inspection->id_inspections)->get();
-      foreach ($evidences as $evidence) {
-        self::dropImage($evidence->evidence_one);
-        self::dropImage($evidence->evidence_two);
-        $evidence->delete();
-      }
-      InspectionConvoy::where('id_inspections', $inspection->id_inspections)->delete();
-      Inspection::where('id_inspections', $inspection->id_inspections)->delete();
+      $this::softDeleteWhere('evidence_rels_inspections', 'id_inspections', $inspection->id_inspections);
+      $this::softDeleteWhere('inspection_convoys', 'id_inspections', $inspection->id_inspections);
+      $this::softDelete($inspection);
       DB::commit();
       return redirect()->route('inspections')->with('success', 'Inspeccion Eliminada');
     } catch (\Exception $e) {

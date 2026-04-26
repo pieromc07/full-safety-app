@@ -49,7 +49,7 @@ class CheckPointController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(checkpoint $checkpoint)
+  public function show(CheckPoint $checkpoint)
   {
     return view($this::$viewDir . '.checkpoint', compact('checkpoint'));
   }
@@ -57,7 +57,7 @@ class CheckPointController extends Controller
   /**
    * Show the form for editing the specified resource.
    */
-  public function edit(checkpoint $checkpoint)
+  public function edit(CheckPoint $checkpoint)
   {
     return view($this::$viewDir . '.checkpoint', compact('checkpoint'));
   }
@@ -65,7 +65,7 @@ class CheckPointController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, checkpoint $checkpoint)
+  public function update(Request $request, CheckPoint $checkpoint)
   {
     $validated = $request->validate(CheckPoint::$rules, CheckPoint::$rulesMessages);
     try {
@@ -83,11 +83,20 @@ class CheckPointController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(checkpoint $checkpoint)
+  public function destroy(CheckPoint $checkpoint)
   {
     try {
       DB::beginTransaction();
-      $checkpoint->delete();
+      $inspCount = \App\Models\Inspection::where('id_checkpoints', $checkpoint->id_checkpoints)->count();
+      $dialogCount = \App\Models\DailyDialog::where('id_checkpoints', $checkpoint->id_checkpoints)->count();
+      $pauseCount = \App\Models\ActivePause::where('id_checkpoints', $checkpoint->id_checkpoints)->count();
+      $testCount = \App\Models\AlcoholTest::where('id_checkpoints', $checkpoint->id_checkpoints)->count();
+      $gpsCount = \App\Models\GPSControl::where('id_checkpoints', $checkpoint->id_checkpoints)->count();
+      $total = $inspCount + $dialogCount + $pauseCount + $testCount + $gpsCount;
+      if ($total > 0) {
+        return redirect()->route('checkpoint')->with('error', 'No se puede eliminar el punto de control porque tiene registros asociados (' . $total . ').');
+      }
+      $this::softDelete($checkpoint);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();

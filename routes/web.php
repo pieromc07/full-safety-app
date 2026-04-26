@@ -15,10 +15,16 @@ use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionTypeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductEnterpriseController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\LoadTypeController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\TargetedController;
+use App\Http\Controllers\TargetedRelsInspectionController;
 use App\Http\Controllers\UnitMovementController;
+use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\AlcoholTestDetailController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +40,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Auth::routes();
+Auth::routes(['register' => false, 'reset' => false]);
 
 
 Route::group(['middleware' => 'auth'], function () {
@@ -112,10 +118,6 @@ Route::group(['middleware' => 'auth'], function () {
   Route::put('/inspections/{inspection}', [InspectionController::class, 'update'])->name('inspections.update');
   Route::delete('/inspections/{inspection}', [InspectionController::class, 'destroy'])->name('inspections.destroy');
   Route::get('/inspections/{inspection}/report', [InspectionController::class, 'report'])->name('inspections.report');
-  Route::post('/inspections/store', [InspectionController::class, 'store'])->name('inspections.store');
-
-
-
 
   Route::get('/employees', [EmployeeController::class, 'index'])->name('employee');
   Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employee.create');
@@ -123,7 +125,7 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/employees/{employee}', [EmployeeController::class, 'show'])->name('employee.show');
   Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employee.edit');
   Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employee.update');
-  Route::delete('/employees/{employee}', [employeeController::class, 'destroy'])->name('employee.destroy');
+  Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employee.destroy');
 
   Route::get('/dialogues', [DailyDialogController::class, 'index'])->name('dialogues');
   Route::get('/dialogues/create', [DailyDialogController::class, 'create'])->name('dialogues.create');
@@ -182,6 +184,66 @@ Route::group(['middleware' => 'auth'], function () {
 
   Route::get('/productstypes/parent/{parent_id}', [ProductTypeController::class, 'findByParentId'])->name('productstypes.parent');
 
+  // Unidades de Medida
+  Route::get('/units', [UnitController::class, 'index'])->name('unit');
+  Route::post('/units', [UnitController::class, 'store'])->name('unit.store');
+  Route::put('/units/{unit}', [UnitController::class, 'update'])->name('unit.update');
+  Route::delete('/units/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
+
+  // Empresa del Sistema
+  Route::get('/companies', [CompanyController::class, 'index'])->name('company');
+  Route::post('/companies', [CompanyController::class, 'store'])->name('company.store');
+  Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('company.update');
+  Route::delete('/companies/{company}', [CompanyController::class, 'destroy'])->name('company.destroy');
+
+  // Tipos de Unidad de Medida
+  Route::get('/unittypes', [UnitTypeController::class, 'index'])->name('unittype');
+  Route::post('/unittypes', [UnitTypeController::class, 'store'])->name('unittype.store');
+  Route::put('/unittypes/{unitType}', [UnitTypeController::class, 'update'])->name('unittype.update');
+  Route::delete('/unittypes/{unitType}', [UnitTypeController::class, 'destroy'])->name('unittype.destroy');
+
+  // Tipos de Carga
+  Route::get('/loadtypes', [LoadTypeController::class, 'index'])->name('loadtype');
+  Route::post('/loadtypes', [LoadTypeController::class, 'store'])->name('loadtype.store');
+  Route::put('/loadtypes/{loadType}', [LoadTypeController::class, 'update'])->name('loadtype.update');
+  Route::delete('/loadtypes/{loadType}', [LoadTypeController::class, 'destroy'])->name('loadtype.destroy');
+
+  // Tipos de Producto (Clases UN)
+  Route::get('/producttypes', [ProductTypeController::class, 'index'])->name('producttype');
+  Route::post('/producttypes', [ProductTypeController::class, 'store'])->name('producttype.store');
+  Route::put('/producttypes/{productType}', [ProductTypeController::class, 'update'])->name('producttype.update');
+  Route::delete('/producttypes/{productType}', [ProductTypeController::class, 'destroy'])->name('producttype.destroy');
+
+  // Dirigidos por Tipo de Inspección
+  Route::get('/targetedrelsinspe', [TargetedRelsInspectionController::class, 'index'])->name('targetedrelsinspe');
+  Route::post('/targetedrelsinspe', [TargetedRelsInspectionController::class, 'store'])->name('targetedrelsinspe.store');
+  Route::put('/targetedrelsinspe/{targetedRelsInspection}', [TargetedRelsInspectionController::class, 'update'])->name('targetedrelsinspe.update');
+  Route::delete('/targetedrelsinspe/{targetedRelsInspection}', [TargetedRelsInspectionController::class, 'destroy'])->name('targetedrelsinspe.destroy');
+
+  // Seguridad - Permisos
+  Route::get('/permissions', [SecurityController::class, 'permissions'])->name('permissions');
+  Route::get('/permissions/create', [SecurityController::class, 'createPermission'])->name('permissions.create');
+  Route::post('/permissions', [SecurityController::class, 'storePermission'])->name('permissions.store');
+  Route::get('/permissions/{permission}/edit', [SecurityController::class, 'editPermission'])->name('permissions.edit');
+  Route::put('/permissions/{permission}', [SecurityController::class, 'updatePermission'])->name('permissions.update');
+  Route::delete('/permissions/{permission}', [SecurityController::class, 'destroyPermission'])->name('permissions.destroy');
+
+  // Seguridad - Roles
+  Route::get('/roles', [SecurityController::class, 'roles'])->name('roles');
+  Route::get('/roles/create', [SecurityController::class, 'createRole'])->name('roles.create');
+  Route::post('/roles', [SecurityController::class, 'storeRole'])->name('roles.store');
+  Route::get('/roles/{role}/edit', [SecurityController::class, 'editRole'])->name('roles.edit');
+  Route::put('/roles/{role}', [SecurityController::class, 'updateRole'])->name('roles.update');
+  Route::delete('/roles/{role}', [SecurityController::class, 'destroyRole'])->name('roles.destroy');
+
+  // Seguridad - Usuarios
+  Route::get('/users', [SecurityController::class, 'users'])->name('users');
+  Route::get('/users/create', [SecurityController::class, 'createUser'])->name('users.create');
+  Route::post('/users', [SecurityController::class, 'storeUser'])->name('users.store');
+  Route::get('/users/{user}', [SecurityController::class, 'showUser'])->name('users.show');
+  Route::get('/users/{user}/edit', [SecurityController::class, 'editUser'])->name('users.edit');
+  Route::put('/users/{user}', [SecurityController::class, 'updateUser'])->name('users.update');
+  Route::delete('/users/{user}', [SecurityController::class, 'destroyUser'])->name('users.destroy');
 
   Route::get('/unitmovements', [UnitMovementController::class, 'index'])->name('unitmovements');
   Route::get('/unitmovements/create', [UnitMovementController::class, 'create'])->name('unitmovements.create');
@@ -193,5 +255,5 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/unitmovements/export/pdf', [UnitMovementController::class, 'exportPdf'])->name('unitmovements.export.pdf');
 
   Route::get('/report/daily', [ReportController::class, 'daily'])->name('report.daily');
-  Route::get('/rreport/daily/pdf', [ReportController::class, 'dailyPdf'])->name('report.daily.pdf');
+  Route::get('/report/daily/pdf', [ReportController::class, 'dailyPdf'])->name('report.daily.pdf');
 });

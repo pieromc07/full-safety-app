@@ -17,6 +17,11 @@ class Enterprise extends Model
   protected $fillable = [
     'name',
     'ruc',
+    'email',
+    'phone',
+    'address',
+    'contact_name',
+    'website',
     'image',
     'id_enterprise_types',
     'cuid_inserted',
@@ -27,6 +32,11 @@ class Enterprise extends Model
   public static $rules = [
     'name' => 'required|max:128',
     'ruc' => 'required|size:11',
+    'email' => 'nullable|email|max:128',
+    'phone' => 'nullable|max:20',
+    'address' => 'nullable|max:256',
+    'contact_name' => 'nullable|max:128',
+    'website' => 'nullable|max:256',
     'image' => 'nullable',
     'id_enterprise_types' => 'required|exists:enterprise_types,id_enterprise_types'
   ];
@@ -36,6 +46,12 @@ class Enterprise extends Model
     'name.max' => 'El nombre no puede tener más de 128 caracteres.',
     'ruc.required' => 'El RUC es obligatorio.',
     'ruc.size' => 'El RUC debe tener 11 caracteres.',
+    'email.email' => 'El email no es válido.',
+    'email.max' => 'El email no puede tener más de 128 caracteres.',
+    'phone.max' => 'El teléfono no puede tener más de 20 caracteres.',
+    'address.max' => 'La dirección no puede tener más de 256 caracteres.',
+    'contact_name.max' => 'El nombre de contacto no puede tener más de 128 caracteres.',
+    'website.max' => 'El sitio web no puede tener más de 256 caracteres.',
     'id_enterprise_types.required' => 'El tipo de empresa es obligatorio.',
     'id_enterprise_types.exists' => 'El tipo de empresa no existe.'
   ];

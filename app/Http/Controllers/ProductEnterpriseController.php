@@ -34,16 +34,16 @@ class ProductEnterpriseController extends Controller
    */
   public function store(Request $request)
   {
-    $request->validate(ProductEnterprise::$rules, ProductEnterprise::$messages);
+    $validated = $request->validate(ProductEnterprise::$rules, ProductEnterprise::$messages);
     try {
       DB::beginTransaction();
-      ProductEnterprise::create($request->all());
+      ProductEnterprise::create($validated);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
-      return redirect()->route('productenterprises')->with('error', 'Ha ocurrido un error al intentar crear la empresa proveedora.');
+      return redirect()->route('productenterprises')->with('error', 'Ha ocurrido un error al intentar crear la asignación de producto.');
     }
-    return redirect()->route('productenterprises')->with('success', 'La empresa proveedora se ha creado correctamente.');
+    return redirect()->route('productenterprises')->with('success', 'La asignación de producto se ha creado correctamente.');
   }
 
   /**
@@ -67,10 +67,10 @@ class ProductEnterpriseController extends Controller
    */
   public function update(Request $request, ProductEnterprise $productEnterprise)
   {
-    $request->validate(ProductEnterprise::$rules, ProductEnterprise::$messages);
+    $validated = $request->validate(ProductEnterprise::$rules, ProductEnterprise::$messages);
     try {
       DB::beginTransaction();
-      $productEnterprise->update($request->all());
+      $productEnterprise->update($validated);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();
@@ -86,7 +86,7 @@ class ProductEnterpriseController extends Controller
   {
     try {
       DB::beginTransaction();
-      $productEnterprise->delete();
+      $this::softDelete($productEnterprise);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();

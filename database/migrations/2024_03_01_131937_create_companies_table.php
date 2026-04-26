@@ -17,6 +17,11 @@ return new class extends Migration
       $table->string('ruc', 11)->index('companies_ruc_IDX');
       $table->string('name', 128)->index('companies_name_IDX');
       $table->string('commercial_name', 128)->index('companies_commercial_name_IDX');
+      $table->string('email', 128)->nullable();
+      $table->string('phone', 20)->nullable();
+      $table->string('address', 256)->nullable();
+      $table->string('website', 256)->nullable();
+      $table->string('representative', 128)->nullable();
       $table->string('logo', 512)->index('company_logo_IDX');
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();

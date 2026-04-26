@@ -40,10 +40,10 @@ class InspectionType extends Model
 
   public $timestamps = false;
 
-  // public function inspections()
-  // {
-  //   return $this->hasMany(Inspection::class, 'id_inspection_types');
-  // }
+  public function inspections()
+  {
+    return $this->hasMany(Inspection::class, 'id_inspection_types', 'id_inspection_types');
+  }
 
   public function cuidInsertedToDatetime()
   {

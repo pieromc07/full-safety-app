@@ -88,7 +88,11 @@ class EnterpriseTypeController extends Controller
   {
     try {
       DB::beginTransaction();
-      $enterpriseType->delete();
+      $entCount = \App\Models\Enterprise::where('id_enterprise_types', $enterpriseType->id_enterprise_types)->whereNull('cuid_deleted')->count();
+      if ($entCount > 0) {
+        return redirect()->route('enterprisetype')->with('error', 'No se puede eliminar el tipo de empresa porque tiene empresas asociadas.');
+      }
+      $this::softDelete($enterpriseType);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();

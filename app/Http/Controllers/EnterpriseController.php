@@ -46,12 +46,10 @@ class EnterpriseController extends Controller
     try {
       DB::beginTransaction();
       $enterprise = new Enterprise();
-      $enterprise->name = $validated['name'];
-      $enterprise->ruc = $validated['ruc'];
+      $enterprise->fill($validated);
       if ($request->hasFile('image')) {
         $enterprise->image = $this::saveImage($request->file('image'), 'enterprises');
       }
-      $enterprise->id_enterprise_types = $validated['id_enterprise_types'];
       $enterprise->save();
       DB::commit();
     } catch (\Exception $e) {
@@ -114,14 +112,13 @@ class EnterpriseController extends Controller
     $validated = $request->validate(Enterprise::$rules, Enterprise::$rulesMessages);
     try {
       DB::beginTransaction();
-      $enterprise->name = $validated['name'];
-      $enterprise->ruc = $validated['ruc'];
+      $enterprise->fill($validated);
       if ($request->hasFile('image')) {
-        if ($this::dropImage($enterprise->image) || $enterprise->image == null) {
-          $enterprise->image = $this::saveImage($request->file('image'), 'enterprises');
+        if ($enterprise->image) {
+          $this::dropImage($enterprise->image);
         }
+        $enterprise->image = $this::saveImage($request->file('image'), 'enterprises');
       }
-      $enterprise->id_enterprise_types = $validated['id_enterprise_types'];
       $enterprise->save();
       DB::commit();
     } catch (\Exception $e) {
@@ -138,7 +135,21 @@ class EnterpriseController extends Controller
   {
     try {
       DB::beginTransaction();
-      $enterprise->delete();
+      $relCount = \App\Models\EnterpriseRelsEnterprise::where('id_supplier_enterprises', $enterprise->id_enterprises)
+        ->orWhere('id_transport_enterprises', $enterprise->id_enterprises)->count();
+      if ($relCount > 0) {
+        return redirect()->route('enterprise')->with('error', 'No se puede eliminar la empresa porque tiene relaciones con otras empresas.');
+      }
+      $inspectionCount = \App\Models\Inspection::where('id_supplier_enterprises', $enterprise->id_enterprises)
+        ->orWhere('id_transport_enterprises', $enterprise->id_enterprises)->count();
+      if ($inspectionCount > 0) {
+        return redirect()->route('enterprise')->with('error', 'No se puede eliminar la empresa porque tiene inspecciones asociadas.');
+      }
+      $employeeCount = \App\Models\Employee::where('id_transport_enterprises', $enterprise->id_enterprises)->whereNull('cuid_deleted')->count();
+      if ($employeeCount > 0) {
+        return redirect()->route('enterprise')->with('error', 'No se puede eliminar la empresa porque tiene personal asociado.');
+      }
+      $this::softDelete($enterprise);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();

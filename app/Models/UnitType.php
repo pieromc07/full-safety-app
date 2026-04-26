@@ -56,13 +56,19 @@ class UnitType extends Model
    * Rules for validation
    */
   public static $rules = [
-    'name' => 'required',
+    'name' => 'required|max:128',
   ];
 
   /**
    * Error messages
    */
-  public static $messages = [
-    'name.required' => 'El nombre es requerido',
+  public static $rulesMessages = [
+    'name.required' => 'El nombre es obligatorio.',
+    'name.max' => 'El nombre no puede tener más de 128 caracteres.',
   ];
+
+  public function products()
+  {
+    return $this->hasMany(Product::class, 'id_unit_types');
+  }
 }

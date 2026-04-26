@@ -88,7 +88,15 @@ class InspectionTypeController extends Controller
   {
     try {
       DB::beginTransaction();
-      $inspectionType->delete();
+      $inspCount = \App\Models\Inspection::where('id_inspection_types', $inspectionType->id_inspection_types)->count();
+      if ($inspCount > 0) {
+        return redirect()->route('inspectiontype')->with('error', 'No se puede eliminar el tipo de inspección porque tiene inspecciones asociadas.');
+      }
+      $relCount = \App\Models\TargetedRelsInspection::where('id_inspection_types', $inspectionType->id_inspection_types)->count();
+      if ($relCount > 0) {
+        return redirect()->route('inspectiontype')->with('error', 'No se puede eliminar el tipo de inspección porque tiene dirigidos asociados.');
+      }
+      $this::softDelete($inspectionType);
       DB::commit();
     } catch (\Exception $e) {
       DB::rollBack();

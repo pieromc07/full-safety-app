@@ -35,7 +35,6 @@ class ReporteEmail extends Mailable
       'enterpriseTransport',
       'checkpoint',
       'targeted',
-      'category'
     ])->find($inspectionId);
 
 

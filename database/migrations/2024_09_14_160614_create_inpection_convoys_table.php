@@ -53,6 +53,8 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('inpection_convoys');
+    DB::unprepared('DROP TRIGGER IF EXISTS tr_bi_inspection_convoys');
+    DB::unprepared('DROP TRIGGER IF EXISTS tr_bu_inspection_convoys');
+    Schema::dropIfExists('inspection_convoys');
   }
 };

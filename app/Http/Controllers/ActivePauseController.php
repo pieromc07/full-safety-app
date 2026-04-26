@@ -75,7 +75,7 @@ class ActivePauseController extends Controller
       DB::beginTransaction();
       self::dropImage($active->photo_one);
       self::dropImage($active->photo_two);
-      $active->delete();
+      $this::softDelete($active);
       DB::commit();
       return redirect()->route('actives')->with('success', 'Pausa activa Eliminado');
     } catch (\Exception $e) {

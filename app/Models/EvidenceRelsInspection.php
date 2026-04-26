@@ -27,8 +27,8 @@ class EvidenceRelsInspection extends Model
   ];
 
   public static $rules = [
-    'id_inspections' => 'required|exists:inspections,id',
-    'id_evidences' => 'required|exists:evidence,id',
+    'id_inspections' => 'required|exists:inspections,id_inspections',
+    'id_evidences' => 'required|exists:evidences,id_evidences',
     'state' => 'required|in:1,2,3',
     'evidence_one' => 'nullable',
     'evidence_two' => 'nullable',

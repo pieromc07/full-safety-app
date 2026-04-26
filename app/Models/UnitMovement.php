@@ -81,7 +81,7 @@ class UnitMovement extends Model
 
   public function checkpoint()
   {
-    return $this->belongsTo(Checkpoint::class, 'id_checkpoints', 'id_checkpoints');
+    return $this->belongsTo(CheckPoint::class, 'id_checkpoints', 'id_checkpoints');
   }
 
   public function supplierEnterprise()

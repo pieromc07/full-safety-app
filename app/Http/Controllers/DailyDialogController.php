@@ -77,7 +77,7 @@ class DailyDialogController extends Controller
       DB::beginTransaction();
       self::dropImage($dialogue->photo_one);
       self::dropImage($dialogue->photo_two);
-      $dialogue->delete();
+      $this::softDelete($dialogue);
       DB::commit();
       return redirect()->route('dialogues')->with('success', 'Dialogo diario Eliminado');
     } catch (\Exception $e) {

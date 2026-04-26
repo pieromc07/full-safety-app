@@ -89,7 +89,7 @@ class AlcoholTestController extends Controller
           if (!empty($d['id_alcohol_test_details']) && !empty($d['delete'])) {
             $detailToDelete = \App\Models\AlcoholTestDetail::find($d['id_alcohol_test_details']);
             if ($detailToDelete) {
-              $detailToDelete->delete();
+              $this::softDelete($detailToDelete);
             }
             continue;
           }
@@ -141,32 +141,8 @@ class AlcoholTestController extends Controller
     try {
       DB::beginTransaction();
 
-      // Eliminar imágenes del test si existen
-      if (!empty($test->photo_one)) {
-        self::dropImage($test->photo_one);
-      }
-      if (!empty($test->photo_two)) {
-        self::dropImage($test->photo_two);
-      }
-
-      // Eliminar imágenes y registros de detalles asociados
-      foreach ($test->details as $detail) {
-        try {
-          if (!empty($detail->photo_one_uri)) {
-            self::dropImage($detail->photo_one_uri);
-          }
-          if (!empty($detail->photo_two_uri)) {
-            self::dropImage($detail->photo_two_uri);
-          }
-        } catch (\Exception $e) {
-          // No detener la eliminación si no encuentra la imagen; loguear
-          Log::warning('Error deleting detail image: ' . $e->getMessage());
-        }
-        $detail->delete();
-      }
-
-      // Finalmente eliminar la prueba
-      $test->delete();
+      $this::softDeleteWhere('alcohol_test_details', 'id_alcohol_tests', $test->id_alcohol_tests);
+      $this::softDelete($test);
 
       DB::commit();
       return redirect()->route('tests')->with('success', 'Prueba de Alcohol Eliminado');

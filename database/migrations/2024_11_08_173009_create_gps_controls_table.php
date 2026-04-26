@@ -59,6 +59,6 @@ return new class extends Migration
   {
     DB::unprepared('DROP TRIGGER IF EXISTS tr_bi_gps_controls');
     DB::unprepared('DROP TRIGGER IF EXISTS tr_bu_gps_controls');
-    Schema::dropIfExists('g_p_s_controls');
+    Schema::dropIfExists('gps_controls');
   }
 };

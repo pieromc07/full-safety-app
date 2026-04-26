@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AlcoholTestDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AlcoholTestDetailController extends Controller
@@ -62,7 +63,9 @@ class AlcoholTestDetailController extends Controller
     public function destroy(Request $request, AlcoholTestDetail $alcoholTestDetail)
     {
         try {
-            $alcoholTestDetail->delete();
+            DB::beginTransaction();
+            $this::softDelete($alcoholTestDetail);
+            DB::commit();
 
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json(['message' => 'Detalle eliminado correctamente'], 200);
@@ -70,6 +73,7 @@ class AlcoholTestDetailController extends Controller
 
             return redirect()->back()->with('success', 'Detalle eliminado correctamente');
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error deleting AlcoholTestDetail: ' . $e->getMessage());
 
             if ($request->wantsJson() || $request->ajax()) {

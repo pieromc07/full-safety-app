@@ -21,7 +21,7 @@
                         </div>
                         <div class="col-12">
                             <x-input id="ruc" name="ruc" label="RUC" class="form-control" placeholder="RUC"
-                                required="required" autofocus="autofocus" icon="bi-123" />
+                                required="required" icon="bi-123" />
                         </div>
                         <div class="col-12">
                             <x-select id="id_enterprise_types" name="id_enterprise_types" label="Tipo de Empresa"
@@ -36,8 +36,28 @@
                             </x-select>
                         </div>
                         <div class="col-12">
+                            <x-input id="email" name="email" label="Email" class="form-control"
+                                placeholder="empresa@ejemplo.com" icon="bi-envelope" req="0" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <x-input id="phone" name="phone" label="Teléfono" class="form-control"
+                                placeholder="01-1234567" icon="bi-telephone" req="0" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <x-input id="contact_name" name="contact_name" label="Contacto" class="form-control"
+                                placeholder="Persona de contacto" icon="bi-person" req="0" />
+                        </div>
+                        <div class="col-12">
+                            <x-input id="address" name="address" label="Dirección" class="form-control"
+                                placeholder="Dirección fiscal" icon="bi-geo-alt" req="0" />
+                        </div>
+                        <div class="col-12">
+                            <x-input id="website" name="website" label="Sitio Web" class="form-control"
+                                placeholder="www.ejemplo.com" icon="bi-globe" req="0" />
+                        </div>
+                        <div class="col-12">
                             <x-input type="file" id="image" name="image" label="Logo" class="form-control"
-                                placeholder="Logo" autofocus="autofocus" icon="bi-image" req="0"
+                                placeholder="Logo" icon="bi-image" req="0"
                                 accept=".png, .jpg, .jpeg, .gif, .webp" />
                         </div>
                     </div>
@@ -60,28 +80,53 @@
                                 required="required" autofocus="autofocus" icon="bi-building" />
                         </div>
                         <div class="col-12">
-                            <x-input id="ruc" name="ruc" label="RUC" class="form-control" placeholder="RUC"
-                                required="required" autofocus="autofocus" icon="bi-123" />
+                            <x-input id="edit-name" name="name" label="Nombre" class="form-control" placeholder="Nombre"
+                                required="required" autofocus="autofocus" icon="bi-building" />
                         </div>
                         <div class="col-12">
-                            <x-select id="id_enterprise_types" name="id_enterprise_types" label="Tipo de Empresa"
-                                placeholder="Seleccione un Tipo de Empresa" icon="bi-building">
-                                <x-slot name="options">
+                            <x-input id="edit-ruc" name="ruc" label="RUC" class="form-control" placeholder="RUC"
+                                required="required" icon="bi-123" />
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label" for="edit-id_enterprise_types">
+                                    Tipo de Empresa <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="edit-id_enterprise_types" name="id_enterprise_types">
+                                    <option value="">Seleccione un Tipo de Empresa</option>
                                     @foreach ($enterpriseTypes as $enterpriseType)
                                         <option value="{{ $enterpriseType->id_enterprise_types }}">
                                             {{ $enterpriseType->name }}
                                         </option>
                                     @endforeach
-                                </x-slot>
-                            </x-select>
+                                </select>
+                            </div>
                         </div>
                         <div class="col-12">
-                            <x-input type="file" id="image" name="image" label="Logo" class="form-control"
-                                placeholder="Logo" autofocus="autofocus" icon="bi-image" req="0"
+                            <x-input id="edit-email" name="email" label="Email" class="form-control"
+                                placeholder="empresa@ejemplo.com" icon="bi-envelope" req="0" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <x-input id="edit-phone" name="phone" label="Teléfono" class="form-control"
+                                placeholder="01-1234567" icon="bi-telephone" req="0" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <x-input id="edit-contact_name" name="contact_name" label="Contacto" class="form-control"
+                                placeholder="Persona de contacto" icon="bi-person" req="0" />
+                        </div>
+                        <div class="col-12">
+                            <x-input id="edit-address" name="address" label="Dirección" class="form-control"
+                                placeholder="Dirección fiscal" icon="bi-geo-alt" req="0" />
+                        </div>
+                        <div class="col-12">
+                            <x-input id="edit-website" name="website" label="Sitio Web" class="form-control"
+                                placeholder="www.ejemplo.com" icon="bi-globe" req="0" />
+                        </div>
+                        <div class="col-12">
+                            <x-input type="file" id="edit-image" name="image" label="Logo" class="form-control"
+                                placeholder="Logo" icon="bi-image" req="0"
                                 accept=".png, .jpg, .jpeg" />
                         </div>
-
-
                     </div>
                 </div>
                 <div class="card-footer">
@@ -262,17 +307,22 @@
             $('#btn-store').click(() => {
                 $('#form-create').submit();
             });
+            $('#edit-id_enterprise_types').select2();
         });
 
         function Editar(enterprise) {
             $('#form-edit').show();
             $('#form-create').hide();
             $('#form-edit').attr('action', '/enterprises/' + enterprise.id_enterprises);
-            $('#form-edit').find('#name').val(enterprise.name);
-            $('#form-edit').find('#ruc').val(enterprise.ruc);
-            $('#form-edit').find('#id_enterprise_types').val(enterprise.id_enterprise_types);
-            $('#form-edit').find('#image').val(enterprise.image);
-            $('#form-edit').find('#name').focus();
+            $('#form-edit').find('#edit-name').val(enterprise.name);
+            $('#form-edit').find('#edit-ruc').val(enterprise.ruc);
+            $('#edit-id_enterprise_types').val(enterprise.id_enterprise_types).trigger('change');
+            $('#form-edit').find('#edit-email').val(enterprise.email);
+            $('#form-edit').find('#edit-phone').val(enterprise.phone);
+            $('#form-edit').find('#edit-contact_name').val(enterprise.contact_name);
+            $('#form-edit').find('#edit-address').val(enterprise.address);
+            $('#form-edit').find('#edit-website').val(enterprise.website);
+            $('#form-edit').find('#edit-ruc').focus();
         }
 
         function Listar(enterprise) {

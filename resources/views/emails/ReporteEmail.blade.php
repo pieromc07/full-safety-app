@@ -118,47 +118,49 @@
         </tr>
 
 
-        <tr>
-            <td style="padding:0 30px 20px 30px;">
-                <h3
-                    style="margin:0 0 12px 0; color:#333; font-size:16px; border-bottom:2px solid #667eea; padding-bottom:8px;">
-                    Información del Convoy
-                </h3>
+        @if ($convoy)
+            <tr>
+                <td style="padding:0 30px 20px 30px;">
+                    <h3
+                        style="margin:0 0 12px 0; color:#333; font-size:16px; border-bottom:2px solid #667eea; padding-bottom:8px;">
+                        Información del Convoy
+                    </h3>
 
-                <table width="100%" cellpadding="12" cellspacing="0"
-                    style="border:1px solid #e0e0e0; border-radius:6px; background:#fafafa;">
-                    <tr>
-                        <td width="30%" style="color:#666; font-size:13px; font-weight:600;">ID Convoy:</td>
-                        <td style="color:#333; font-size:14px; font-weight:600;">{{ $convoy->convoy }}</td>
-                    </tr>
-                    <tr>
-                        <td
-                            style="color:#666; font-size:13px; font-weight:600; border-top:1px solid #e0e0e0; padding-top:12px;">
-                            Estado:</td>
-                        <td style="border-top:1px solid #e0e0e0; padding-top:12px;">
-                            <span
-                                style="background:{{ $convoy->convoy_status == 1 ? '#d4edda' : '#f8d7da' }}; color:{{ $convoy->convoy_status == 1 ? '#28a745' : '#dc3545' }}; padding:4px 12px; border-radius:4px; font-size:13px; font-weight:600; display:inline-block;">
-                                {{ $convoy->convoy_status == 1 ? 'Activo' : 'Inactivo' }}
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td
-                            style="color:#666; font-size:13px; font-weight:600; border-top:1px solid #e0e0e0; padding-top:12px;">
-                            Unidades Ligeras:</td>
-                        <td style="color:#333; font-size:14px; border-top:1px solid #e0e0e0; padding-top:12px;">
-                            {{ $convoy->quantity_light_units }}</td>
-                    </tr>
-                    <tr>
-                        <td
-                            style="color:#666; font-size:13px; font-weight:600; border-top:1px solid #e0e0e0; padding-top:12px;">
-                            Unidades Pesadas:</td>
-                        <td style="color:#333; font-size:14px; border-top:1px solid #e0e0e0; padding-top:12px;">
-                            {{ $convoy->quantity_heavy_units }}</td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+                    <table width="100%" cellpadding="12" cellspacing="0"
+                        style="border:1px solid #e0e0e0; border-radius:6px; background:#fafafa;">
+                        <tr>
+                            <td width="30%" style="color:#666; font-size:13px; font-weight:600;">ID Convoy:</td>
+                            <td style="color:#333; font-size:14px; font-weight:600;">{{ $convoy->convoy }}</td>
+                        </tr>
+                        <tr>
+                            <td
+                                style="color:#666; font-size:13px; font-weight:600; border-top:1px solid #e0e0e0; padding-top:12px;">
+                                Estado:</td>
+                            <td style="border-top:1px solid #e0e0e0; padding-top:12px;">
+                                <span
+                                    style="background:{{ $convoy->convoy_status == 1 ? '#d4edda' : '#f8d7da' }}; color:{{ $convoy->convoy_status == 1 ? '#28a745' : '#dc3545' }}; padding:4px 12px; border-radius:4px; font-size:13px; font-weight:600; display:inline-block;">
+                                    {{ $convoy->convoy_status == 1 ? 'Activo' : 'Inactivo' }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                style="color:#666; font-size:13px; font-weight:600; border-top:1px solid #e0e0e0; padding-top:12px;">
+                                Unidades Ligeras:</td>
+                            <td style="color:#333; font-size:14px; border-top:1px solid #e0e0e0; padding-top:12px;">
+                                {{ $convoy->quantity_light_units }}</td>
+                        </tr>
+                        <tr>
+                            <td
+                                style="color:#666; font-size:13px; font-weight:600; border-top:1px solid #e0e0e0; padding-top:12px;">
+                                Unidades Pesadas:</td>
+                            <td style="color:#333; font-size:14px; border-top:1px solid #e0e0e0; padding-top:12px;">
+                                {{ $convoy->quantity_heavy_units }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        @endif
 
 
         <tr>
@@ -235,17 +237,12 @@
 
                                 @php
                                     $imgs = [];
+                                    $baseUrl = rtrim(config('app.url'), '/');
                                     if (!empty($ev->evidence_one)) {
-                                        $imgs[] = $ev->evidence_one;
+                                        $imgs[] = $baseUrl . '/' . $ev->evidence_one;
                                     }
                                     if (!empty($ev->evidence_two)) {
-                                        $imgs[] = $ev->evidence_two;
-                                    }
-                                    if (!empty($ev->evidence_one_base64)) {
-                                        $imgs[] = 'data:image/jpeg;base64,' . $ev->evidence_one_base64;
-                                    }
-                                    if (!empty($ev->evidence_two_base64)) {
-                                        $imgs[] = 'data:image/jpeg;base64,' . $ev->evidence_two_base64;
+                                        $imgs[] = $baseUrl . '/' . $ev->evidence_two;
                                     }
                                 @endphp
 

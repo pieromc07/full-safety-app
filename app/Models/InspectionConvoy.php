@@ -27,7 +27,7 @@ class InspectionConvoy extends Model
   ];
 
   public static $rules = [
-    'id_inspections' => 'required|exists:inspections,id',
+    'id_inspections' => 'required|exists:inspections,id_inspections',
     'convoy' => 'nullable',
     'convoy_status' => 'nullable',
     'quantity_light_units' => 'nullable',
@@ -50,7 +50,17 @@ class InspectionConvoy extends Model
 
   public function inspection()
   {
-    return $this->belongsTo(Inspection::class);
+    return $this->belongsTo(Inspection::class, 'id_inspections', 'id_inspections');
+  }
+
+  public function product()
+  {
+    return $this->belongsTo(Product::class, 'id_products', 'id_products');
+  }
+
+  public function productTwo()
+  {
+    return $this->belongsTo(Product::class, 'id_products_two', 'id_products');
   }
 
   public function cuidInsertedToDatetime()
@@ -65,7 +75,7 @@ class InspectionConvoy extends Model
 
   private function cuidToDatetime($cuid)
   {
-    return DB::select('SELECT FROM_UNIXTIME(?) as datetime', [$cuid])[0]->datetime;
+    return DB::selectOne('SELECT CUID_TO_DATETIME(?) AS datetime', [$cuid])->datetime;
   }
 
   public function getConvoyStatusAttribute($value)

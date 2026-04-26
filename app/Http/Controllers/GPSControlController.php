@@ -78,7 +78,7 @@ class GPSControlController extends Controller
       DB::beginTransaction();
       self::dropImage($control->photo_one);
       self::dropImage($control->photo_two);
-      $control->delete();
+      $this::softDelete($control);
       DB::commit();
       return redirect()->route('controls')->with('success', 'Control GPS Eliminado');
     } catch (\Exception $e) {
