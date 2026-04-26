@@ -11,35 +11,16 @@ use App\Models\Targeted;
 use App\Models\TargetedRelsInspection;
 use Illuminate\Database\Seeder;
 
+
 class TestDataSeeder extends Seeder
 {
   public function run(): void
   {
-    $this->seedTargetedRelsInspections();
     $this->seedCategories();
     $this->seedEvidences();
     $this->seedEmployees();
   }
 
-  private function seedTargetedRelsInspections(): void
-  {
-    $operativa = InspectionType::where('name', 'Operativa')->first();
-    $documentaria = InspectionType::where('name', 'Documentaria')->first();
-
-    if (!$operativa || !$documentaria) return;
-
-    $targeteds = Targeted::whereNull('targeted_id')->get();
-    foreach ($targeteds as $targeted) {
-      TargetedRelsInspection::firstOrCreate([
-        'id_targeteds' => $targeted->id_targeteds,
-        'id_inspection_types' => $operativa->id_inspection_types,
-      ]);
-      TargetedRelsInspection::firstOrCreate([
-        'id_targeteds' => $targeted->id_targeteds,
-        'id_inspection_types' => $documentaria->id_inspection_types,
-      ]);
-    }
-  }
 
   private function seedCategories(): void
   {
@@ -51,94 +32,54 @@ class TestDataSeeder extends Seeder
 
     if (!$operativa || !$documentaria) return;
 
-    // === CATEGORIAS OPERATIVAS - CONDUCTOR ===
-    $catConductorOp = Category::firstOrCreate([
-      'name' => 'Conductor',
+    // Crea (o recupera) la fila pivot dirigido↔tipo de inspección.
+    $pair = function ($targeted, $inspectionType) {
+      if (!$targeted) return null;
+      return TargetedRelsInspection::firstOrCreate([
+        'id_targeteds' => $targeted->id_targeteds,
+        'id_inspection_types' => $inspectionType->id_inspection_types,
+      ])->id_targeted_rels_inspections;
+    };
+
+    $conductorOp = $pair($conductor, $operativa);
+    $tractoOp = $pair($tracto, $operativa);
+    $carretaOp = $pair($carreta, $operativa);
+    $conductorDoc = $pair($conductor, $documentaria);
+    $tractoDoc = $pair($tracto, $documentaria);
+
+    $createParent = fn (string $name, ?int $relId) => Category::firstOrCreate([
+      'name' => $name,
       'parent_id' => null,
-      'id_targeteds' => $conductor?->id_targeteds,
-      'id_inspection_types' => $operativa->id_inspection_types,
+      'id_targeted_rels_inspections' => $relId,
     ]);
 
-    $subEpp = Category::firstOrCreate([
-      'name' => 'EPP',
-      'parent_id' => $catConductorOp->id_categories,
-      'id_targeteds' => $conductor?->id_targeteds,
-      'id_inspection_types' => $operativa->id_inspection_types,
+    // Las subcategorías heredan el par del padre vía parent_id (id_targeted_rels_inspections = null).
+    $createChild = fn (string $name, Category $parent) => Category::firstOrCreate([
+      'name' => $name,
+      'parent_id' => $parent->id_categories,
     ]);
 
-    $subDocConductor = Category::firstOrCreate([
-      'name' => 'Documentos del Conductor',
-      'parent_id' => $catConductorOp->id_categories,
-      'id_targeteds' => $conductor?->id_targeteds,
-      'id_inspection_types' => $operativa->id_inspection_types,
-    ]);
+    // === CATEGORIAS OPERATIVAS - CONDUCTOR ===
+    $catConductorOp = $createParent('Conductor', $conductorOp);
+    $createChild('EPP', $catConductorOp);
+    $createChild('Documentos del Conductor', $catConductorOp);
 
     // === CATEGORIAS OPERATIVAS - TRACTO ===
-    $catTractoOp = Category::firstOrCreate([
-      'name' => 'Tracto',
-      'parent_id' => null,
-      'id_targeteds' => $tracto?->id_targeteds,
-      'id_inspection_types' => $operativa->id_inspection_types,
-    ]);
-
-    $subEstadoTracto = Category::firstOrCreate([
-      'name' => 'Estado del Tracto',
-      'parent_id' => $catTractoOp->id_categories,
-      'id_targeteds' => $tracto?->id_targeteds,
-      'id_inspection_types' => $operativa->id_inspection_types,
-    ]);
-
-    $subSeguridadTracto = Category::firstOrCreate([
-      'name' => 'Seguridad del Tracto',
-      'parent_id' => $catTractoOp->id_categories,
-      'id_targeteds' => $tracto?->id_targeteds,
-      'id_inspection_types' => $operativa->id_inspection_types,
-    ]);
+    $catTractoOp = $createParent('Tracto', $tractoOp);
+    $createChild('Estado del Tracto', $catTractoOp);
+    $createChild('Seguridad del Tracto', $catTractoOp);
 
     // === CATEGORIAS OPERATIVAS - CARRETA ===
-    $catCarretaOp = Category::firstOrCreate([
-      'name' => 'Carreta / Acoplado',
-      'parent_id' => null,
-      'id_targeteds' => $carreta?->id_targeteds,
-      'id_inspection_types' => $operativa->id_inspection_types,
-    ]);
-
-    $subEstadoCarreta = Category::firstOrCreate([
-      'name' => 'Estado de la Carreta',
-      'parent_id' => $catCarretaOp->id_categories,
-      'id_targeteds' => $carreta?->id_targeteds,
-      'id_inspection_types' => $operativa->id_inspection_types,
-    ]);
+    $catCarretaOp = $createParent('Carreta / Acoplado', $carretaOp);
+    $createChild('Estado de la Carreta', $catCarretaOp);
 
     // === CATEGORIAS DOCUMENTARIAS - CONDUCTOR ===
-    $catConductorDoc = Category::firstOrCreate([
-      'name' => 'Documentos del Conductor',
-      'parent_id' => null,
-      'id_targeteds' => $conductor?->id_targeteds,
-      'id_inspection_types' => $documentaria->id_inspection_types,
-    ]);
-
-    $subLicencias = Category::firstOrCreate([
-      'name' => 'Licencias y Permisos',
-      'parent_id' => $catConductorDoc->id_categories,
-      'id_targeteds' => $conductor?->id_targeteds,
-      'id_inspection_types' => $documentaria->id_inspection_types,
-    ]);
+    $catConductorDoc = $createParent('Documentos del Conductor', $conductorDoc);
+    $createChild('Licencias y Permisos', $catConductorDoc);
 
     // === CATEGORIAS DOCUMENTARIAS - TRACTO ===
-    $catTractoDoc = Category::firstOrCreate([
-      'name' => 'Documentos del Vehículo',
-      'parent_id' => null,
-      'id_targeteds' => $tracto?->id_targeteds,
-      'id_inspection_types' => $documentaria->id_inspection_types,
-    ]);
-
-    $subDocVehiculo = Category::firstOrCreate([
-      'name' => 'Documentación Vehicular',
-      'parent_id' => $catTractoDoc->id_categories,
-      'id_targeteds' => $tracto?->id_targeteds,
-      'id_inspection_types' => $documentaria->id_inspection_types,
-    ]);
+    $catTractoDoc = $createParent('Documentos del Vehículo', $tractoDoc);
+    $createChild('Documentación Vehicular', $catTractoDoc);
   }
 
   private function seedEvidences(): void
@@ -218,7 +159,6 @@ class TestDataSeeder extends Seeder
         foreach ($items as $evidenceName) {
           Evidence::firstOrCreate([
             'name' => $evidenceName,
-            'id_categories' => $category->id_categories,
             'id_subcategories' => $subcategory->id_categories,
           ], [
             'description' => 'Verificar: ' . $evidenceName,
@@ -257,6 +197,12 @@ class TestDataSeeder extends Seeder
       ['document' => '45678922', 'name' => 'Fernando Jose', 'lastname' => 'Nuñez Aliaga'],
     ];
 
+    // Por defecto sembramos a los empleados como "Conductor" (hijo de Persona).
+    // job_title se deja NULL porque solo aplica cuando el rol es "Otro".
+    $conductorRole = Targeted::where('name', 'Conductor')
+      ->whereHas('targeted', fn ($q) => $q->where('name', 'Persona'))
+      ->first();
+
     $idx = 0;
     foreach ($transportEnterprises as $enterprise) {
       // 2 empleados por empresa transportista
@@ -269,6 +215,7 @@ class TestDataSeeder extends Seeder
           'lastname' => $emp['lastname'],
           'fullname' => $emp['name'] . ' ' . $emp['lastname'],
           'id_transport_enterprises' => $enterprise->id_enterprises,
+          'id_targeteds' => $conductorRole?->id_targeteds,
         ]);
       }
     }
