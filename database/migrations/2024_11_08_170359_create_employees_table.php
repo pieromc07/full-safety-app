@@ -20,6 +20,13 @@ return new class extends Migration
       $table->string('fullname', 150)->index('employees_fullname_IDX');
       $table->unsignedBigInteger('id_transport_enterprises');
       $table->foreign('id_transport_enterprises')->references('id_enterprises')->on('enterprises');
+      $table->unsignedBigInteger('id_users')->nullable();
+      $table->foreign('id_users')->references('id_users')->on('users')->nullOnDelete();
+      // Dirigido (rol/puesto): apunta a un hijo de "Persona" (Conductor, Supervisor, Mecanico, Otro).
+      $table->unsignedBigInteger('id_targeteds')->nullable();
+      $table->foreign('id_targeteds')->references('id_targeteds')->on('targeteds')->nullOnDelete();
+      // Cargo libre, se llena solo cuando el rol (id_targeteds) es "Otro".
+      $table->string('job_title', 128)->nullable();
       $table->unsignedBigInteger('cuid_inserted')->unique();
       $table->unsignedBigInteger('cuid_updated')->unique();
       $table->unsignedBigInteger('cuid_deleted')->unique()->nullable();

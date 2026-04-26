@@ -20,17 +20,23 @@ class Employee extends Model
     'lastname',
     'fullname',
     'id_transport_enterprises',
+    'id_users',
+    'id_targeteds',
+    'job_title',
     'cuid_inserted',
     'cuid_updated',
     'cuid_deleted',
   ];
 
-  // Reglas de validación
+  // Reglas base. La regla condicional `required_if` para job_title se aplica
+  // en EmployeeController porque depende del id_targeteds runtime de "Otro".
   public static $rules = [
     'document' => 'required|string|max:16',
     'name' => 'required|string|max:50',
     'lastname' => 'required|string|max:50',
     'id_transport_enterprises' => 'required|exists:enterprises,id_enterprises',
+    'id_targeteds' => 'nullable|exists:targeteds,id_targeteds',
+    'job_title' => 'nullable|string|max:128',
   ];
 
   // Mensajes de validación personalizados
@@ -56,6 +62,19 @@ class Employee extends Model
   public function enterpriseTransport()
   {
     return $this->belongsTo(Enterprise::class, 'id_transport_enterprises');
+  }
+
+  public function user()
+  {
+    return $this->belongsTo(User::class, 'id_users', 'id_users');
+  }
+
+  /**
+   * Dirigido (rol/puesto). Apunta a un hijo de la raíz "Persona".
+   */
+  public function targeted()
+  {
+    return $this->belongsTo(Targeted::class, 'id_targeteds', 'id_targeteds');
   }
 
   public function cuidInsertedToDatetime()

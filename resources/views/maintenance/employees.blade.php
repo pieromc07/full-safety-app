@@ -37,6 +37,22 @@
                                 </x-slot>
                             </x-select>
                         </div>
+                        <div class="col-12">
+                            <x-select id="id_targeteds" name="id_targeteds" icon="bi-person-badge"
+                                label="Rol" placeholder="Seleccione un rol" req="0">
+                                <x-slot name="options">
+                                    @foreach ($targetedRoles as $role)
+                                        <option value="{{ $role->id_targeteds }}">
+                                            {{ $role->name }}
+                                        </option>
+                                    @endforeach
+                                </x-slot>
+                            </x-select>
+                        </div>
+                        <div class="col-12 wrap-job-title" style="display:none;">
+                            <x-input id="job_title" name="job_title" label="Cargo (especificar)"
+                                placeholder="Ej: Operador de cisterna" icon="bi-briefcase" req="0" />
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -76,6 +92,22 @@
                                 </x-slot>
                             </x-select>
                         </div>
+                        <div class="col-12">
+                            <x-select id="id_targeteds" name="id_targeteds" icon="bi-person-badge"
+                                label="Rol" placeholder="Seleccione un rol" req="0">
+                                <x-slot name="options">
+                                    @foreach ($targetedRoles as $role)
+                                        <option value="{{ $role->id_targeteds }}">
+                                            {{ $role->name }}
+                                        </option>
+                                    @endforeach
+                                </x-slot>
+                            </x-select>
+                        </div>
+                        <div class="col-12 wrap-job-title" style="display:none;">
+                            <x-input id="job_title" name="job_title" label="Cargo (especificar)"
+                                placeholder="Ej: Operador de cisterna" icon="bi-briefcase" req="0" />
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -95,12 +127,14 @@
                         <th colspan="1" class="text-center">ID</th>
                         <th colspan="1" class="text-center">Documento</th>
                         <th colspan="1" class="text-center">Nombre</th>
+                        <th colspan="1" class="text-center">Rol</th>
+                        <th colspan="1" class="text-center">Cargo</th>
                         <th colspan="1" class="text-center">Acciones</th>
                     </x-slot>
                     <x-slot name='slot'>
                         @if ($employees->isEmpty())
                             <tr class="text-center fs-5">
-                                <td colspan="4">No hay registros</td>
+                                <td colspan="6">No hay registros</td>
                             </tr>
                         @else
                             @foreach ($employees as $key => $employee)
@@ -115,7 +149,12 @@
                                         {{ $employee->fullname }}
                                     </td>
                                     <td class="text-center">
-                                        {{-- <x-button-icon btn="btn-info" icon="bi-eye-fill" title="Ver" onclick="" /> --}}
+                                        {{ optional($employee->targeted)->name ?? '-' }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $employee->job_title ?? '-' }}
+                                    </td>
+                                    <td class="text-center">
                                         <x-button-icon btn="btn-warning" icon="bi-pencil-square" title="Editar"
                                             onclick="Editar({{ $employee }})" />
                                         <x-form-table id="form-delete-{{ $employee->id_employees }}"
@@ -145,21 +184,45 @@
 
 @push('scripts')
     <script type="text/javascript">
+        const OTRO_ROLE_ID = @json($otroRoleId);
+
+        // Toggle del campo job_title: visible solo cuando el rol elegido es "Otro".
+        function syncJobTitleVisibility($form) {
+            const selected = String($form.find('#id_targeteds').val() ?? '');
+            const $wrap = $form.find('.wrap-job-title');
+            if (OTRO_ROLE_ID && selected === String(OTRO_ROLE_ID)) {
+                $wrap.show();
+            } else {
+                $wrap.hide();
+                $form.find('#job_title').val('');
+            }
+        }
+
         $(document).ready(() => {
             $('#btn-store').click(() => {
                 $('#form-create').submit();
             });
+            // Vinculamos el toggle a ambos forms.
+            $('#form-create, #form-edit').each(function () {
+                const $form = $(this);
+                $form.find('#id_targeteds').on('change', () => syncJobTitleVisibility($form));
+                syncJobTitleVisibility($form);
+            });
         });
 
         function Editar(employee) {
-            $('#form-edit').show();
+            const $form = $('#form-edit');
+            $form.show();
             $('#form-create').hide();
-            $('#form-edit').attr('action', '/employees/' + employee.id_employees);
-            $('#form-edit').find('#document').val(employee.document);
-            $('#form-edit').find('#name').val(employee.name);
-            $('#form-edit').find('#lastname').val(employee.lastname);
-            $('#form-edit').find('#id_transport_enterprises').val(employee.id_transport_enterprises);
-            $('#form-edit').find('#name').focus();
+            $form.attr('action', '/employees/' + employee.id_employees);
+            $form.find('#document').val(employee.document);
+            $form.find('#name').val(employee.name);
+            $form.find('#lastname').val(employee.lastname);
+            $form.find('#id_transport_enterprises').val(employee.id_transport_enterprises).trigger('change');
+            $form.find('#id_targeteds').val(employee.id_targeteds).trigger('change');
+            $form.find('#job_title').val(employee.job_title ?? '');
+            syncJobTitleVisibility($form);
+            $form.find('#name').focus();
         }
 
         function Eliminar(id) {
