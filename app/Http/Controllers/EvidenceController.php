@@ -16,17 +16,9 @@ class EvidenceController extends Controller
    */
   public function index()
   {
-    $evidences = Evidence::paginate(self::LARGETAKE);
+    $evidences = Evidence::paginate(10);
     $subcategories = Category::where('parent_id', '<>', null)->get();
     return view($this::$viewDir . '.evidences', compact('evidences', 'subcategories'));
-  }
-
-  /**
-   * Show the form for creating a new resource.
-   */
-  public function create()
-  {
-    return view($this::$viewDir . '.create');
   }
 
   /**

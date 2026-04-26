@@ -27,17 +27,9 @@ class CategoryController extends Controller
   public function index1()
   {
     //
-    $subcategories = Category::where('parent_id', '<>', null)->paginate(self::LARGETAKE);
+    $subcategories = Category::where('parent_id', '<>', null)->paginate(10);
     $categories = Category::where('parent_id', null)->get();
     return view($this::$viewDir . '.category', compact('categories', 'subcategories'));
-  }
-
-  /**
-   * Show the form for creating a new resource.
-   */
-  public function create()
-  {
-    return view($this::$viewDir . '.create');
   }
 
   /**

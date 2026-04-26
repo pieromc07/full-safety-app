@@ -21,7 +21,7 @@ class TargetedController extends Controller
   {
     $targeteds = Targeted::with(['targetedRelsInspections.inspectionType', 'targetedRelsLoadTypes.loadType'])
       ->whereNull('targeted_id')
-      ->paginate(5);
+      ->paginate(10);
     $inspectionTypes = InspectionType::all();
     $loadTypes = LoadType::whereNull('cuid_deleted')->get();
     return view($this::$viewDir . '.targeteds', compact('targeteds', 'inspectionTypes', 'loadTypes'));
@@ -30,17 +30,9 @@ class TargetedController extends Controller
   public function index1()
   {
     //
-    $targets = Targeted::where('targeted_id', '<>', null)->paginate(5);
+    $targets = Targeted::where('targeted_id', '<>', null)->paginate(10);
     $targeteds = Targeted::where('targeted_id', null)->get();
     return view($this::$viewDir . '.targeted', compact('targeteds', 'targets'));
-  }
-
-  /**
-   * Show the form for creating a new resource.
-   */
-  public function create()
-  {
-    return view($this::$viewDir . '.create');
   }
 
   /**
